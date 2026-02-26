@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { createServerClient } from "@/lib/supabase/server";
 
 // Tipos para o Voice DNA guardado no Clerk
 interface VoiceDNA {
@@ -146,8 +147,24 @@ Escreve o conteúdo completo, pronto a publicar.`;
       );
     }
 
+    const generatedText = content.text;
+
+    // Guarda no Supabase (sem bloquear a resposta se falhar)
+    try {
+      const supabase = createServerClient();
+      await supabase.from("generated_content").insert({
+        user_id: userId,
+        platform,
+        topic,
+        content: generatedText,
+      });
+    } catch (dbError) {
+      // Log mas não bloqueia — o utilizador recebe o conteúdo mesmo se o save falhar
+      console.error("Erro ao guardar no Supabase:", dbError);
+    }
+
     return NextResponse.json({
-      content: content.text,
+      content: generatedText,
       platform,
       topic,
       tokens: message.usage.input_tokens + message.usage.output_tokens,
