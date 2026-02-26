@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPE_SQUAD — Sistema Operacional</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0A0E1A;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --text: #F0ECE4;
+      --text-muted: #8892a4;
+      --accent: #BFD64B;
+      --accent-dim: rgba(191,214,75,0.12);
+      --red: #FF4D4D;
+      --red-dim: rgba(255,77,77,0.12);
+      --blue: #4D9FFF;
+      --blue-dim: rgba(77,159,255,0.12);
+      --green: #4DFFB4;
+      --green-dim: rgba(77,255,180,0.12);
+      --orange: #FF9F4D;
+      --orange-dim: rgba(255,159,77,0.12);
+      --purple: #B44DFF;
+      --purple-dim: rgba(180,77,255,0.12);
+      --border: rgba(240,236,228,0.08);
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,14,26,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; }
+    .nav-badge {
+      background: var(--accent); color: var(--bg);
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      padding: 3px 8px; border-radius: 4px;
+    }
+    .nav-title { font-weight: 700; font-size: 16px; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a {
+      color: var(--text-muted); text-decoration: none;
+      font-size: 13px; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-status {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--text-muted);
+    }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; } 50% { opacity: 0.4; }
+    }
+
+    /* LAYOUT */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+    section { padding: 80px 0; }
+    section + section { border-top: 1px solid var(--border); }
+
+    /* TYPOGRAPHY */
+    .label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+      color: var(--accent); text-transform: uppercase; margin-bottom: 12px;
+    }
+    h1 { font-family: 'Fraunces', serif; font-size: clamp(48px,6vw,80px); font-weight: 700; line-height: 1.05; }
+    h2 { font-family: 'Fraunces', serif; font-size: clamp(32px,4vw,48px); font-weight: 700; line-height: 1.1; }
+    h3 { font-size: 20px; font-weight: 700; }
+    h4 { font-size: 15px; font-weight: 600; }
+    p { color: var(--text-muted); line-height: 1.7; }
+
+    .accent { color: var(--accent); }
+    .tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--accent-dim); border: 1px solid rgba(191,214,75,0.3);
+      color: var(--accent); font-size: 12px; font-weight: 600;
+      padding: 4px 12px; border-radius: 20px; margin-bottom: 16px;
+    }
+
+    /* HERO */
+    .hero {
+      padding: 100px 0 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -200px; right: -200px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(191,214,75,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+    .hero-meta { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+    .hero-meta span { font-size: 12px; color: var(--text-muted); }
+    .hero-desc { font-size: 18px; color: var(--text-muted); margin-top: 24px; max-width: 480px; }
+    .hero-desc strong { color: var(--text); }
+    .hero-stats { display: flex; gap: 32px; margin-top: 40px; flex-wrap: wrap; }
+    .hero-stat { }
+    .hero-stat-num { font-size: 32px; font-weight: 700; color: var(--accent); font-family: 'Fraunces', serif; }
+    .hero-stat-label { font-size: 12px; color: var(--text-muted); }
+
+    /* CARDS GRID */
+    .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 16px; }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .card:hover { border-color: rgba(191,214,75,0.3); transform: translateY(-2px); }
+    .card-icon { font-size: 28px; margin-bottom: 16px; }
+    .card-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+    /* ENGINE CARDS */
+    .engine-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px;
+      position: relative; overflow: hidden;
+    }
+    .engine-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .engine-build::before { background: var(--blue); }
+    .engine-grow::before { background: var(--accent); }
+    .engine-convert::before { background: var(--orange); }
+    .engine-retain::before { background: var(--green); }
+    .engine-run::before { background: var(--purple); }
+
+    .engine-number {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+      color: var(--text-muted); margin-bottom: 8px;
+    }
+    .engine-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .engine-subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
+    .engine-items { list-style: none; }
+    .engine-items li {
+      font-size: 13px; color: var(--text-muted);
+      padding: 4px 0;
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .engine-items li::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+
+    /* PIPELINE */
+    .pipeline {
+      display: flex; align-items: stretch; gap: 0;
+      overflow-x: auto; padding-bottom: 8px;
+    }
+    .pipeline-step {
+      flex: 1; min-width: 160px;
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 20px 16px; position: relative;
+      transition: border-color 0.2s;
+    }
+    .pipeline-step:first-child { border-radius: 12px 0 0 12px; }
+    .pipeline-step:last-child { border-radius: 0 12px 12px 0; }
+    .pipeline-step:hover { border-color: rgba(191,214,75,0.4); background: var(--surface2); }
+    .pipeline-arrow {
+      position: absolute; right: -12px; top: 50%; transform: translateY(-50%);
+      width: 24px; height: 24px; background: var(--accent); color: var(--bg);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; z-index: 2;
+    }
+    .pipeline-step:last-child .pipeline-arrow { display: none; }
+    .step-num {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      color: var(--accent); margin-bottom: 8px;
+    }
+    .step-name { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .step-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+
+    /* MODULES */
+    .module {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .module-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 16px;
+    }
+    .module-num {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--accent-dim); border: 1px solid rgba(191,214,75,0.3);
+      color: var(--accent); font-size: 14px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .module-info { flex: 1; }
+    .module-title { font-size: 15px; font-weight: 700; }
+    .module-time { font-size: 12px; color: var(--accent); }
+    .module-body { padding: 20px 24px; }
+    .module-row { display: grid; grid-template-columns: 80px 1fr; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .module-row:last-child { border-bottom: none; }
+    .module-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .module-value { font-size: 13px; color: var(--text); }
+
+    /* ROUTINE */
+    .routine-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .routine-block {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .routine-header {
+      padding: 16px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .routine-header.morning { background: rgba(77,159,255,0.08); border-bottom: 1px solid var(--blue-dim); }
+    .routine-header.afternoon { background: rgba(191,214,75,0.08); border-bottom: 1px solid var(--accent-dim); }
+    .routine-title { font-size: 16px; font-weight: 700; }
+    .routine-hours { font-size: 12px; color: var(--text-muted); }
+    .routine-items { padding: 16px 24px; }
+    .routine-item {
+      display: flex; gap: 16px; padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .routine-item:last-child { border-bottom: none; }
+    .routine-time { font-size: 13px; font-weight: 600; color: var(--accent); white-space: nowrap; min-width: 90px; }
+    .routine-task { font-size: 13px; }
+    .routine-task strong { display: block; margin-bottom: 2px; }
+    .routine-task span { color: var(--text-muted); font-size: 12px; }
+    .routine-engine {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+      padding: 2px 8px; border-radius: 4px; white-space: nowrap; align-self: flex-start; margin-top: 2px;
+    }
+    .tag-build { background: var(--blue-dim); color: var(--blue); }
+    .tag-grow { background: var(--accent-dim); color: var(--accent); }
+    .tag-retain { background: var(--green-dim); color: var(--green); }
+    .tag-run { background: var(--purple-dim); color: var(--purple); }
+
+    /* VETO */
+    .veto-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+    .veto-card {
+      background: var(--red-dim); border: 1px solid rgba(255,77,77,0.2);
+      border-radius: var(--radius); padding: 20px 24px;
+      display: flex; gap: 16px; align-items: flex-start;
+    }
+    .veto-icon { font-size: 20px; flex-shrink: 0; }
+    .veto-title { font-size: 14px; font-weight: 700; color: var(--red); margin-bottom: 4px; }
+    .veto-desc { font-size: 13px; color: var(--text-muted); }
+
+    /* ROADMAP */
+    .roadmap { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; position: relative; }
+    .roadmap::before {
+      content: '';
+      position: absolute; top: 28px; left: 10%; right: 10%;
+      height: 2px; background: linear-gradient(90deg, var(--accent), rgba(191,214,75,0.2));
+      z-index: 0;
+    }
+    .roadmap-week {
+      position: relative; z-index: 1;
+      padding: 0 12px; text-align: center;
+    }
+    .roadmap-dot {
+      width: 56px; height: 56px; border-radius: 50%;
+      margin: 0 auto 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700;
+      border: 2px solid;
+    }
+    .roadmap-dot.active {
+      background: var(--accent); border-color: var(--accent);
+      color: var(--bg); box-shadow: 0 0 20px rgba(191,214,75,0.4);
+    }
+    .roadmap-dot.upcoming {
+      background: var(--surface); border-color: var(--border);
+      color: var(--text-muted);
+    }
+    .roadmap-week-label { font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+    .roadmap-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+    .roadmap-items { list-style: none; text-align: left; }
+    .roadmap-items li {
+      font-size: 12px; color: var(--text-muted);
+      padding: 3px 0;
+      display: flex; align-items: flex-start; gap: 6px;
+    }
+    .roadmap-items li::before { content: '·'; color: var(--accent); }
+
+    /* METRICS */
+    .metrics-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+    .metric-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px;
+      text-align: center;
+    }
+    .metric-value {
+      font-size: 40px; font-weight: 700; font-family: 'Fraunces', serif;
+      color: var(--accent); line-height: 1;
+      margin-bottom: 4px;
+    }
+    .metric-label { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+    .metric-target {
+      font-size: 11px; font-weight: 600;
+      background: var(--accent-dim); color: var(--accent);
+      padding: 4px 12px; border-radius: 20px;
+      display: inline-block;
+    }
+
+    /* AUTOMATION TABLE */
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left; padding: 12px 16px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-muted); border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 14px 16px; font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface2); }
+    .badge {
+      font-size: 11px; font-weight: 700; padding: 3px 10px;
+      border-radius: 4px; letter-spacing: 0.05em;
+    }
+    .badge-veto { background: var(--red-dim); color: var(--red); }
+    .badge-auto { background: var(--accent-dim); color: var(--accent); }
+    .badge-human { background: var(--blue-dim); color: var(--blue); }
+
+    /* SECTION HEADER */
+    .section-header { margin-bottom: 48px; }
+    .section-header p { margin-top: 12px; font-size: 16px; max-width: 600px; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0; text-align: center;
+    }
+    footer p { font-size: 13px; color: var(--text-muted); }
+    footer strong { color: var(--accent); }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .grid-5 { grid-template-columns: repeat(2,1fr); }
+      .roadmap { grid-template-columns: repeat(2,1fr); }
+      .metrics-grid { grid-template-columns: repeat(2,1fr); }
+      .routine-grid { grid-template-columns: 1fr; }
+      .veto-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      section { padding: 60px 0; }
+      .container { padding: 0 20px; }
+    }
+    @media (max-width: 600px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .metrics-grid { grid-template-columns: 1fr 1fr; }
+      .roadmap { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <span class="nav-badge">OPE</span>
+    <span class="nav-title">Sistema Operacional</span>
+  </div>
+  <div class="nav-links">
+    <a href="#engines">Engines</a>
+    <a href="#content-engine">Content Engine V1</a>
+    <a href="#rotina">Rotina</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#metricas">Métricas</a>
+  </div>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    <span>v1.0 · Fev 2026</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="tag">⚙️ Pedro Valério · Processo Absolutista</div>
+        <h1>OPE_SQUAD<br><span class="accent">Sistema</span><br>Operacional</h1>
+        <p class="hero-desc">
+          <strong>One Person. Full Squad Power.</strong><br>
+          O mapa completo de como este negócio opera — processos, rotinas, automações e veto conditions. Nada aqui depende de boa vontade.
+        </p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-num">5</div>
+            <div class="hero-stat-label">Engines activos</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">7h</div>
+            <div class="hero-stat-label">Dia de trabalho</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">V1</div>
+            <div class="hero-stat-label">Content Engine</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="module">
+          <div class="module-header">
+            <div class="module-num">⚡</div>
+            <div class="module-info">
+              <div class="module-title">Problema que o V1 Resolve</div>
+              <div class="module-time">Content Engine</div>
+            </div>
+          </div>
+          <div class="module-body">
+            <div style="background:var(--accent-dim);border:1px solid rgba(191,214,75,0.2);border-radius:8px;padding:16px;margin-bottom:16px;">
+              <p style="color:var(--text);font-size:14px;font-style:italic;line-height:1.6;">
+                "O solopreneur sabe o que vende mas não aparece todos os dias, em todo o lado, sem gastar 4 horas a criar conteúdo."
+              </p>
+            </div>
+            <div class="module-row">
+              <div class="module-label">Input</div>
+              <div class="module-value">Nicho + oferta + voz</div>
+            </div>
+            <div class="module-row">
+              <div class="module-label">Output</div>
+              <div class="module-value">30 posts/mês × 4 plataformas</div>
+            </div>
+            <div class="module-row">
+              <div class="module-label">Tempo</div>
+              <div class="module-value">15 min de setup → automático</div>
+            </div>
+            <div class="module-row">
+              <div class="module-label">Stack</div>
+              <div class="module-value">Next.js + Stripe + Rewardful + Claude API</div>
+            </div>
+            <div class="module-row" style="background:rgba(255,77,77,0.05);">
+              <div class="module-label" style="color:var(--red);">Removido</div>
+              <div class="module-value" style="color:var(--text-muted);text-decoration:line-through;">Skool — 26/02/2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 ENGINES -->
+<section id="engines">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">Os 5 Engines</div>
+      <h2>Como Este Negócio Opera</h2>
+      <p>Cada engine tem processo claro, owner definido, automação e veto conditions. Nada aqui depende de memória ou boa vontade.</p>
+    </div>
+    <div class="grid-5">
+      <div class="engine-card engine-build">
+        <div class="engine-number">ENGINE 01</div>
+        <div class="engine-name">BUILD</div>
+        <div class="engine-subtitle">Como o produto evolui</div>
+        <ul class="engine-items">
+          <li>Claude Code + AIOS</li>
+          <li>Cada feature = story</li>
+          <li>4h manhã, 7 dias/semana</li>
+          <li>Deploy automático (Vercel)</li>
+        </ul>
+      </div>
+      <div class="engine-card engine-grow">
+        <div class="engine-number">ENGINE 02</div>
+        <div class="engine-name">GROW</div>
+        <div class="engine-subtitle">Como utilizadores chegam</div>
+        <ul class="engine-items">
+          <li>Content Engine (dogfood)</li>
+          <li>Instagram + LinkedIn + X</li>
+          <li>Afiliados Rewardful (50%)</li>
+          <li>Link de afiliado automático</li>
+        </ul>
+      </div>
+      <div class="engine-card engine-convert">
+        <div class="engine-number">ENGINE 03</div>
+        <div class="engine-name">CONVERT</div>
+        <div class="engine-subtitle">Como leads viram pagantes</div>
+        <ul class="engine-items">
+          <li>Free trial 7 dias (cartão)</li>
+          <li>Day 8: cobra automático</li>
+          <li>Nurture no Skool (D1-7)</li>
+          <li>Meta: &gt;30% trial→paid</li>
+        </ul>
+      </div>
+      <div class="engine-card engine-retain">
+        <div class="engine-number">ENGINE 04</div>
+        <div class="engine-name">RETAIN</div>
+        <div class="engine-subtitle">Como utilizadores ficam</div>
+        <ul class="engine-items">
+          <li>Resultado visível rápido</li>
+          <li>Suporte directo (DMs)</li>
+          <li>Afiliados = stake no produto</li>
+          <li>Anti-churn: histórico + dados</li>
+        </ul>
+      </div>
+      <div class="engine-card engine-run">
+        <div class="engine-number">ENGINE 05</div>
+        <div class="engine-name">RUN</div>
+        <div class="engine-subtitle">Rotinas, finanças, ops</div>
+        <ul class="engine-items">
+          <li>7h/dia (4h manhã + 3h tarde)</li>
+          <li>Revolut + Profit First</li>
+          <li>Review semanal sexta</li>
+          <li>IRS Jovem 2025 (50%)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT ENGINE V1 -->
+<section id="content-engine">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">V1 · Content Engine</div>
+      <h2>Pipeline <span class="accent">Completa</span></h2>
+      <p>Do onboarding à publicação. Engenharia reversa do end state para o início.</p>
+    </div>
+
+    <!-- Pipeline visual -->
+    <div style="margin-bottom:48px;">
+      <div class="label" style="margin-bottom:16px;">End State → Início (Future Back-Casting)</div>
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <div class="pipeline-arrow">→</div>
+          <div class="step-num">STEP 01</div>
+          <div class="step-name">Onboarding</div>
+          <div class="step-desc">Nicho + oferta + voz + plataformas capturados em 15 min</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipeline-arrow">→</div>
+          <div class="step-num">STEP 02</div>
+          <div class="step-name">Voice DNA</div>
+          <div class="step-desc">Card gerado: signature phrases, tom, ângulos, ICP</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipeline-arrow">→</div>
+          <div class="step-num">STEP 03</div>
+          <div class="step-name">Content Strategy</div>
+          <div class="step-desc">3 pilares, 5 ângulos, formatos por plataforma</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipeline-arrow">→</div>
+          <div class="step-num">STEP 04</div>
+          <div class="step-name">AIOS Gera</div>
+          <div class="step-desc">30 posts adaptados: Instagram + LinkedIn + X + Email</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipeline-arrow">→</div>
+          <div class="step-num">STEP 05</div>
+          <div class="step-name">Aprovação</div>
+          <div class="step-desc">Review rápida + 1-click approve ou editar</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">STEP 06</div>
+          <div class="step-name">Publicado</div>
+          <div class="step-desc">Agendado e publicado no timing ideal de cada plataforma</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 Módulos -->
+    <div class="label" style="margin-bottom:20px;">Os 3 Módulos do V1</div>
+    <div class="grid-3" style="margin-bottom:48px;">
+      <div class="module">
+        <div class="module-header">
+          <div class="module-num">1</div>
+          <div class="module-info">
+            <div class="module-title">Onboarding</div>
+            <div class="module-time">Uma vez · 15 minutos</div>
+          </div>
+        </div>
+        <div class="module-body">
+          <div class="module-row">
+            <div class="module-label">Input</div>
+            <div class="module-value">Nicho, oferta, tom de voz, plataformas alvo</div>
+          </div>
+          <div class="module-row">
+            <div class="module-label">Output</div>
+            <div class="module-value">Voice DNA card + Content Strategy base</div>
+          </div>
+          <div class="module-row">
+            <div class="module-label">Veto</div>
+            <div class="module-value" style="color:var(--red);">Nicho vazio → bloqueado</div>
+          </div>
+        </div>
+      </div>
+      <div class="module">
+        <div class="module-header">
+          <div class="module-num">2</div>
+          <div class="module-info">
+            <div class="module-title">Content Factory</div>
+            <div class="module-time">Mensal · Automático</div>
+          </div>
+        </div>
+        <div class="module-body">
+          <div class="module-row">
+            <div class="module-label">Input</div>
+            <div class="module-value">Voice DNA + mês seleccionado</div>
+          </div>
+          <div class="module-row">
+            <div class="module-label">Output</div>
+            <div class="module-value">30 posts × 4 plataformas prontos</div>
+          </div>
+          <div class="module-row">
+            <div class="module-label">Veto</div>
+            <div class="module-value" style="color:var(--red);">Post sem CTA → bloqueado</div>
+          </div>
+        </div>
+      </div>
+      <div class="module">
+        <div class="module-header">
+          <div class="module-num">3</div>
+          <div class="module-info">
+            <div class="module-title">Publish & Track</div>
+            <div class="module-time">Diário · Automático</div>
+          </div>
+        </div>
+        <div class="module-body">
+          <div class="module-row">
+            <div class="module-label">Input</div>
+            <div class="module-value">Posts aprovados + calendário</div>
+          </div>
+          <div class="module-row">
+            <div class="module-label">Output</div>
+            <div class="module-value">Posts publicados + engagement report</div>
+          </div>
+          <div class="module-row">
+            <div class="module-label">Veto</div>
+            <div class="module-value" style="color:var(--red);">Sem aprovação → bloqueado</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Automação Table -->
+    <div class="label" style="margin-bottom:16px;">Automações + Guardrails</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <table>
+        <thead>
+          <tr>
+            <th>Trigger</th>
+            <th>Automação</th>
+            <th>Guardrail</th>
+            <th>Tipo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Onboarding completo</td>
+            <td>Gera Voice DNA + Content Strategy</td>
+            <td>VETO se nicho estiver vazio</td>
+            <td><span class="badge badge-veto">VETO</span></td>
+          </tr>
+          <tr>
+            <td>Voice DNA aprovado</td>
+            <td>Gera 30 posts × 4 plataformas</td>
+            <td>VETO se Voice DNA incompleto</td>
+            <td><span class="badge badge-veto">VETO</span></td>
+          </tr>
+          <tr>
+            <td>Post gerado</td>
+            <td>Adapta formato por plataforma</td>
+            <td>VETO se post sem CTA</td>
+            <td><span class="badge badge-veto">VETO</span></td>
+          </tr>
+          <tr>
+            <td>Utilizador aprova</td>
+            <td>Agenda publicação nos horários ideais</td>
+            <td>VETO se sem data seleccionada</td>
+            <td><span class="badge badge-auto">AUTO</span></td>
+          </tr>
+          <tr>
+            <td>7 dias após publicação</td>
+            <td>Relatório de engagement + sugestões</td>
+            <td>Log de erros + retry 3x</td>
+            <td><span class="badge badge-auto">AUTO</span></td>
+          </tr>
+          <tr>
+            <td>Performance abaixo do alvo</td>
+            <td>Notifica utilizador + sugere ajuste</td>
+            <td>Humano decide se ajusta strategy</td>
+            <td><span class="badge badge-human">HUMANO</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ROTINA DIÁRIA -->
+<section id="rotina">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">Engine 05 · RUN</div>
+      <h2>Rotina <span class="accent">Diária</span></h2>
+      <p>7 horas por dia. 4h manhã (BUILD) + 3h tarde (GROW + RUN). Cada bloco tem owner, tarefa e resultado esperado.</p>
+    </div>
+
+    <div class="routine-grid">
+      <div class="routine-block">
+        <div class="routine-header morning">
+          <div>
+            <div class="routine-title">🌅 Manhã — BUILD</div>
+            <div class="routine-hours">07:00 – 11:00 · 4 horas</div>
+          </div>
+          <span class="badge" style="background:var(--blue-dim);color:var(--blue);">PRODUTO</span>
+        </div>
+        <div class="routine-items">
+          <div class="routine-item">
+            <div class="routine-time">07:00–07:15</div>
+            <div class="routine-task">
+              <strong>Review do dia anterior</strong>
+              <span>O que ficou por fazer? O que bloqueou?</span>
+            </div>
+            <span class="routine-engine tag-build">BUILD</span>
+          </div>
+          <div class="routine-item">
+            <div class="routine-time">07:15–09:00</div>
+            <div class="routine-task">
+              <strong>Desenvolvimento SaaS</strong>
+              <span>Claude Code + AIOS. 1 feature por dia.</span>
+            </div>
+            <span class="routine-engine tag-build">BUILD</span>
+          </div>
+          <div class="routine-item">
+            <div class="routine-time">09:00–10:30</div>
+            <div class="routine-task">
+              <strong>Feature / Bug / Melhoria</strong>
+              <span>Continuar desenvolvimento ou resolver blockers</span>
+            </div>
+            <span class="routine-engine tag-build">BUILD</span>
+          </div>
+          <div class="routine-item">
+            <div class="routine-time">10:30–11:00</div>
+            <div class="routine-task">
+              <strong>Deploy + Commit + Notas</strong>
+              <span>git commit + push. Escrever o que ficou por fazer.</span>
+            </div>
+            <span class="routine-engine tag-build">BUILD</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="routine-block">
+        <div class="routine-header afternoon">
+          <div>
+            <div class="routine-title">🌇 Tarde — GROW + RUN</div>
+            <div class="routine-hours">14:00 – 17:00 · 3 horas</div>
+          </div>
+          <span class="badge" style="background:var(--accent-dim);color:var(--accent);">NEGÓCIO</span>
+        </div>
+        <div class="routine-items">
+          <div class="routine-item">
+            <div class="routine-time">14:00–15:00</div>
+            <div class="routine-task">
+              <strong>Conteúdo (dogfood)</strong>
+              <span>Usar o próprio OPE_SQUAD para criar o teu conteúdo do dia</span>
+            </div>
+            <span class="routine-engine tag-grow">GROW</span>
+          </div>
+          <div class="routine-item">
+            <div class="routine-time">15:00–16:00</div>
+            <div class="routine-task">
+              <strong>Afiliados + Suporte</strong>
+              <span>DMs de afiliados, feedback de utilizadores, suporte activo.</span>
+            </div>
+            <span class="routine-engine tag-retain">RETAIN</span>
+          </div>
+          <div class="routine-item">
+            <div class="routine-time">16:00–16:45</div>
+            <div class="routine-task">
+              <strong>Vendas / Afiliados</strong>
+              <span>DMs, follow-up, verificar afiliados. 5 outreaches/dia.</span>
+            </div>
+            <span class="routine-engine tag-grow">GROW</span>
+          </div>
+          <div class="routine-item">
+            <div class="routine-time">16:45–17:00</div>
+            <div class="routine-task">
+              <strong>Métricas do dia</strong>
+              <span>MRR, novos utilizadores, churn, engagement. 15 min máximo.</span>
+            </div>
+            <span class="routine-engine tag-run">RUN</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Regra chave -->
+    <div style="margin-top:24px;background:var(--accent-dim);border:1px solid rgba(191,214,75,0.3);border-radius:var(--radius);padding:24px;display:flex;gap:20px;align-items:flex-start;">
+      <div style="font-size:24px;flex-shrink:0;">🔑</div>
+      <div>
+        <h4 style="color:var(--accent);margin-bottom:8px;">Regra de Ouro: Tu és o Utilizador #1</h4>
+        <p>Usas o OPE_SQUAD todos os dias às 14:00 para criar o teu próprio conteúdo. O teu marketing <strong style="color:var(--text);">é</strong> o produto a funcionar. Se o produto não resolver o teu problema, não resolve o de ninguém.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VETO CONDITIONS -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="label">Bloqueios Físicos</div>
+      <h2>Veto <span class="accent">Conditions</span></h2>
+      <p>Caminhos errados que o sistema impossibilita. Não são sugestões — são bloqueios físicos.</p>
+    </div>
+    <div class="veto-grid">
+      <div class="veto-card">
+        <div class="veto-icon">🚫</div>
+        <div>
+          <div class="veto-title">UI que requer terminal</div>
+          <div class="veto-desc">Nenhum utilizador do OPE_SQUAD deve tocar numa linha de código ou abrir o terminal. Se acontece, o design falhou.</div>
+        </div>
+      </div>
+      <div class="veto-card">
+        <div class="veto-icon">🚫</div>
+        <div>
+          <div class="veto-title">Conteúdo sem Voice DNA</div>
+          <div class="veto-desc">Conteúdo genérico não funciona. O sistema não gera nada antes de ter o Voice DNA completo do utilizador.</div>
+        </div>
+      </div>
+      <div class="veto-card">
+        <div class="veto-icon">🚫</div>
+        <div>
+          <div class="veto-title">Post sem call-to-action</div>
+          <div class="veto-desc">Conteúdo sem CTA é entretenimento. Todo o post gerado DEVE ter uma acção clara para o leitor tomar.</div>
+        </div>
+      </div>
+      <div class="veto-card">
+        <div class="veto-icon">🚫</div>
+        <div>
+          <div class="veto-title">Deploy sem aprovação</div>
+          <div class="veto-desc">Nada entra em produção sem passar pelos testes. CI/CD bloqueia deploy se testes falharem.</div>
+        </div>
+      </div>
+      <div class="veto-card">
+        <div class="veto-icon">🚫</div>
+        <div>
+          <div class="veto-title">Feature sem problema definido</div>
+          <div class="veto-desc">Nenhuma feature entra no backlog sem estar ligada a um problema real de um utilizador real.</div>
+        </div>
+      </div>
+      <div class="veto-card">
+        <div class="veto-icon">🚫</div>
+        <div>
+          <div class="veto-title">Automação sem guardrails</div>
+          <div class="veto-desc">Toda a automação precisa de: idempotência, log, retry logic, manual escape e limite de loop.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">V1 Roadmap</div>
+      <h2>4 Semanas para <span class="accent">Primeiros Utilizadores</span></h2>
+      <p>Uma semana, um módulo. No fim das 4 semanas o Content Engine está funcional com utilizadores reais.</p>
+    </div>
+    <div class="roadmap">
+      <div class="roadmap-week">
+        <div class="roadmap-dot active">1</div>
+        <div class="roadmap-week-label">SEMANA 1</div>
+        <div class="roadmap-title">Foundation</div>
+        <ul class="roadmap-items">
+          <li>Next.js setup</li>
+          <li>CLAUDE.md + estrutura</li>
+          <li>Landing page</li>
+          <li>Auth (Clerk)</li>
+          <li>DB setup (Supabase)</li>
+        </ul>
+      </div>
+      <div class="roadmap-week">
+        <div class="roadmap-dot upcoming">2</div>
+        <div class="roadmap-week-label">SEMANA 2</div>
+        <div class="roadmap-title">Onboarding</div>
+        <ul class="roadmap-items">
+          <li>Questionário Voice DNA</li>
+          <li>Content Strategy generator</li>
+          <li>Dashboard básico</li>
+          <li>Primeiro teste real</li>
+        </ul>
+      </div>
+      <div class="roadmap-week">
+        <div class="roadmap-dot upcoming">3</div>
+        <div class="roadmap-week-label">SEMANA 3</div>
+        <div class="roadmap-title">Content Factory</div>
+        <ul class="roadmap-items">
+          <li>Claude API integration</li>
+          <li>AIOS agents no backend</li>
+          <li>Geração de 30 posts</li>
+          <li>Preview + aprovação</li>
+        </ul>
+      </div>
+      <div class="roadmap-week">
+        <div class="roadmap-dot upcoming">4</div>
+        <div class="roadmap-week-label">SEMANA 4</div>
+        <div class="roadmap-title">Beta Launch</div>
+        <ul class="roadmap-items">
+          <li>Pagamento (Stripe)</li>
+          <li>5 beta users</li>
+          <li>Feedback loop</li>
+          <li>Ajuste V1.1</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MÉTRICAS -->
+<section id="metricas">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">North Star Metrics</div>
+      <h2>O Que <span class="accent">Medir</span></h2>
+      <p>Se não está a ser medido, não está a acontecer. 4 métricas. Uma por engine. Revistas todas as sextas.</p>
+    </div>
+    <div class="metrics-grid" style="margin-bottom:40px;">
+      <div class="metric-card">
+        <div class="metric-value">—</div>
+        <div class="metric-label">MRR (Receita Recorrente)</div>
+        <div class="metric-target">Meta M1: €500</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">—</div>
+        <div class="metric-label">Utilizadores Activos</div>
+        <div class="metric-target">Meta M1: 10 users</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">—</div>
+        <div class="metric-label">Posts Gerados / User</div>
+        <div class="metric-target">Meta: 30/mês</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">—</div>
+        <div class="metric-label">Trial → Paid %</div>
+        <div class="metric-target">Meta: &gt;30%</div>
+      </div>
+    </div>
+
+    <!-- Review semanal -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:20px 24px;border-bottom:1px solid var(--border);">
+        <h3>Review Semanal — Sexta 16:45</h3>
+        <p style="font-size:13px;margin-top:4px;">15 minutos. Não mais.</p>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Pergunta</th>
+            <th>Fonte de Dados</th>
+            <th>Acção se Vermelho</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Quantos utilizadores novos esta semana?</td>
+            <td>Supabase / Stripe</td>
+            <td>Aumentar outreach (5 → 10/dia)</td>
+          </tr>
+          <tr>
+            <td>Qual é o churn desta semana?</td>
+            <td>Stripe</td>
+            <td>Entrevistar 1 utilizador que saiu</td>
+          </tr>
+          <tr>
+            <td>Posts gerados vs aprovados (%)?</td>
+            <td>Dashboard OPE</td>
+            <td>Melhorar prompts do Content Factory</td>
+          </tr>
+          <tr>
+            <td>Qual foi o engagement médio dos posts?</td>
+            <td>Analytics integrado</td>
+            <td>Testar ângulo diferente na próxima semana</td>
+          </tr>
+          <tr>
+            <td>O que bloqueou o desenvolvimento?</td>
+            <td>Notas diárias</td>
+            <td>Resolver o blocker antes de avançar features</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p style="font-size:20px;font-family:'Fraunces',serif;margin-bottom:16px;">
+      "A melhor coisa é você <strong>impossibilitar caminhos.</strong>"
+    </p>
+    <p>OPE_SQUAD Sistema Operacional v1.0 · <strong>Telmo Cerveira</strong> · Fevereiro 2026</p>
+    <p style="margin-top:8px;font-size:11px;">Construído com Pedro Valério — Process Absolutist & Automation Architect</p>
+    <div style="margin-top:32px;display:inline-grid;grid-template-columns:repeat(4,1fr);gap:16px;text-align:left;max-width:800px;width:100%;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Frontend</div>
+        <div style="font-size:14px;font-weight:600;">Next.js + Tailwind</div>
+        <div style="font-size:12px;color:var(--accent);">$0</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Auth + DB + Deploy</div>
+        <div style="font-size:14px;font-weight:600;">Clerk + Supabase + Vercel</div>
+        <div style="font-size:12px;color:var(--accent);">$0 (V1)</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Afiliados</div>
+        <div style="font-size:14px;font-weight:600;">Rewardful</div>
+        <div style="font-size:12px;color:var(--accent);">$49/mês</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid rgba(255,77,77,0.2);border-radius:8px;padding:16px;">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Removido</div>
+        <div style="font-size:14px;font-weight:600;text-decoration:line-through;color:var(--text-muted);">Skool</div>
+        <div style="font-size:12px;color:var(--red);">-$99/mês poupado</div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

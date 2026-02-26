@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+/* Tokens OPE_SQUAD */
+:root {
+  --bg: #0A0E1A;
+  --surface: #111827;
+  --surface2: #1a2235;
+  --text: #F0ECE4;
+  --text-muted: #8892a4;
+  --accent: #BFD64B;
+  --border: rgba(240, 236, 228, 0.08);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
