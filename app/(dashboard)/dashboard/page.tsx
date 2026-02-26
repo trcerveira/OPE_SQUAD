@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { currentUser } from "@clerk/nextjs/server";
 
 // Dashboard principal — rota protegida
@@ -42,11 +43,12 @@ export default async function DashboardPage() {
             5 perguntas rápidas sobre o teu nicho, oferta e tom de voz.
             Leva 15 minutos. Fazemos uma vez só.
           </p>
-          <button
-            className="bg-[#BFD64B] text-[#0A0E1A] font-bold px-6 py-3 rounded-lg hover:opacity-90 transition-opacity"
+          <Link
+            href="/onboarding"
+            className="inline-block bg-[#BFD64B] text-[#0A0E1A] font-bold px-6 py-3 rounded-lg hover:opacity-90 transition-opacity"
           >
             Começar Onboarding →
-          </button>
+          </Link>
         </div>
       </div>
 
