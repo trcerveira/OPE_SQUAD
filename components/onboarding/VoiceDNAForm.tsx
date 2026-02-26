@@ -144,14 +144,6 @@ export default function VoiceDNAForm() {
 
   return (
     <div className="min-h-screen flex flex-col px-6 py-10">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-12">
-        <span className="bg-[#BFD64B] text-[#0A0E1A] text-[10px] font-bold tracking-widest px-2 py-1 rounded">
-          OPE
-        </span>
-        <span className="font-bold text-[#F0ECE4] text-sm">SQUAD</span>
-      </div>
-
       {/* Barra de progresso */}
       <div className="max-w-2xl mx-auto w-full mb-10">
         <div className="flex justify-between items-center mb-2">
