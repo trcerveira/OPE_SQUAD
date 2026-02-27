@@ -295,7 +295,7 @@ export default function ManifestoAssessment() {
           </h2>
           <p className="text-[#8892a4] text-base leading-relaxed">
             O Claude está a analisar as tuas respostas e a escrever o teu
-            manifesto completo — 22 blocos na tua voz. Isto demora 30 a 60 segundos.
+            manifesto completo — 22 blocos na tua voz. Pode demorar um momento.
           </p>
         </div>
       </div>

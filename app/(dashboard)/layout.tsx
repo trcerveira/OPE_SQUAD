@@ -21,6 +21,19 @@ export default async function DashboardLayout({
     const user = await currentUser();
     if (user) {
       const supabase = createServerClient();
+
+      // Garante que o perfil existe (cria com defaults se for o primeiro acesso)
+      await supabase.from("user_profiles").upsert(
+        {
+          user_id: user.id,
+          brand_bg:      "#0A0E1A",
+          brand_surface: "#111827",
+          brand_accent:  "#BFD64B",
+          brand_text:    "#F0ECE4",
+        },
+        { onConflict: "user_id", ignoreDuplicates: true }
+      );
+
       const { data: profile } = await supabase
         .from("user_profiles")
         .select("brand_bg, brand_surface, brand_accent, brand_text")
@@ -39,10 +52,6 @@ export default async function DashboardLayout({
   } catch {
     // Usa as cores por defeito se houver erro
   }
-
-  const cssVars = Object.entries(brandColors)
-    .map(([k, v]) => `${k}: ${v}`)
-    .join("; ");
 
   return (
     <div

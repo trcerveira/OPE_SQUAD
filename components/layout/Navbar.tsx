@@ -5,9 +5,10 @@ import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 
 const navLinks = [
-  { href: "/dashboard", label: "Início",   icon: "⚡" },
-  { href: "/content",   label: "Conteúdo", icon: "✍️" },
-  { href: "/settings",  label: "Marca",    icon: "🎨" },
+  { href: "/dashboard",  label: "Início",    icon: "⚡" },
+  { href: "/editorial",  label: "Editorial", icon: "🏛️" },
+  { href: "/content",    label: "Conteúdo",  icon: "✍️" },
+  { href: "/settings",   label: "Marca",     icon: "🎨" },
 ];
 
 export default function Navbar() {

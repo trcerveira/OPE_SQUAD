@@ -31,14 +31,14 @@ export async function POST(req: Request) {
 
   const { error } = await supabase
     .from('user_profiles')
-    .update({
+    .upsert({
+      user_id:       userId,
       brand_bg:      brand_bg      || '#0A0E1A',
       brand_surface: brand_surface || '#111827',
       brand_accent:  brand_accent  || '#BFD64B',
       brand_text:    brand_text    || '#F0ECE4',
       updated_at: new Date().toISOString(),
-    })
-    .eq('user_id', userId)
+    }, { onConflict: 'user_id' })
 
   if (error) {
     console.error('Erro ao guardar cores:', error)

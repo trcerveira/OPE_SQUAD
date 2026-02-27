@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 interface ManifestoAnswers {
@@ -143,7 +143,7 @@ Agora cria os 22 blocos do manifesto em JSON. Cada bloco com 5-7 frases no corpo
 
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 8000,
+      max_tokens: 4096,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
     });
@@ -162,6 +162,19 @@ Agora cria os 22 blocos do manifesto em JSON. Cada bloco com 5-7 frases no corpo
     }
 
     const parsed = JSON.parse(jsonText);
+
+    // Guarda as respostas no Clerk para uso posterior (Linha Editorial)
+    try {
+      const client = await clerkClient();
+      await client.users.updateUserMetadata(userId, {
+        unsafeMetadata: {
+          manifestoAnswers: answers,
+          manifestoComplete: true,
+        },
+      });
+    } catch (metaErr) {
+      console.error("Erro ao guardar manifestoAnswers no Clerk:", metaErr);
+    }
 
     return NextResponse.json({
       blocks: parsed.blocks,

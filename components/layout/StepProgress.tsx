@@ -7,11 +7,12 @@ const steps = [
   { number: 1, label: "Genius Zone", icon: "🧬" },
   { number: 2, label: "Manifesto",   icon: "📜" },
   { number: 3, label: "Voz & DNA",   icon: "🎙️" },
-  { number: 4, label: "Conteúdo",    icon: "✍️" },
+  { number: 4, label: "Editorial",   icon: "🏛️" },
+  { number: 5, label: "Conteúdo",    icon: "✍️" },
 ];
 
 interface StepProgressProps {
-  currentStep: 1 | 2 | 3 | 4;
+  currentStep: 1 | 2 | 3 | 4 | 5;
 }
 
 export default async function StepProgress({ currentStep }: StepProgressProps) {
@@ -22,8 +23,10 @@ export default async function StepProgress({ currentStep }: StepProgressProps) {
   if (meta.geniusComplete)    completedSteps.push(1);
   if (meta.manifestoComplete) completedSteps.push(2);
   if (meta.vozDNAComplete)    completedSteps.push(3);
+  if (meta.editorialComplete) completedSteps.push(4);
 
   const progressPercent = ((currentStep - 1) / (steps.length - 1)) * 100;
+
 
   return (
     <div className="w-full max-w-2xl mx-auto mb-10 px-6">

@@ -10,13 +10,17 @@ const isProtectedRoute = createRouteMatcher([
   '/genius(.*)',
   '/manifesto(.*)',
   '/voz-dna(.*)',
+  '/editorial(.*)',
   '/settings(.*)',
 ])
 
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
-    // 1. Garante que está autenticado
-    const { userId } = await auth.protect()
+    // 1. Verifica autenticação manualmente (evita o bug do auth.protect() em dev mode)
+    const { userId } = await auth()
+    if (!userId) {
+      return NextResponse.redirect(new URL('/sign-in', req.url))
+    }
 
     // 2. Verifica se tem acesso beta
     const client = await clerkClient()
@@ -25,7 +29,7 @@ export default clerkMiddleware(async (auth, req) => {
 
     if (!hasBetaAccess(email)) {
       // Sem acesso — redireciona para a landing page (lista de espera)
-      return NextResponse.redirect(new URL('/#beta', req.url))
+      return NextResponse.redirect(new URL('/', req.url))
     }
   }
 })
