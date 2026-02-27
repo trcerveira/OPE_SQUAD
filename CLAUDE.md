@@ -23,21 +23,28 @@ Solopreneurs: coaches, consultores, criadores de conteúdo, freelancers. 1 pesso
 **Problema específico resolvido:**
 > "O solopreneur sabe o que vende mas não aparece todos os dias, em todo o lado, sem gastar 4 horas a criar conteúdo."
 
-**Pipeline V1:**
+**Pipeline V1 (sequência actual):**
 ```
-ONBOARDING (15 min, uma vez)
-  → Input: nicho + oferta + voz + plataformas
+GENIUS ZONE (24 perguntas, uma vez)
+  → Input: 7 frameworks (Hendricks, Hamilton, Clifton, Sullivan, Kolbe, Hogshead, Hormozi)
+  → Output: Genius Profile completo (zona, perfil, voz, squad ideal)
+
+MANIFESTO (leitura + aceitação)
+  → 10 princípios do solopreneur
+  → Compromisso com o processo
+
+VOICE DNA (5 perguntas, uma vez)
+  → Input: nicho + oferta + dor + tom + diferencial
   → Output: Voice DNA card do solopreneur
 
-CONTENT FACTORY (mensal)
-  → Input: Voice DNA + período
-  → AIOS gera: 30 posts por plataforma
-  → Output: Instagram + LinkedIn + X + Email prontos
+CONTENT FACTORY (contínuo)
+  → Input: Voice DNA + Genius Profile + tema
+  → Claude gera: posts para Instagram, LinkedIn, X, Email
+  → Output: conteúdo pronto a publicar na voz do utilizador
 
-PUBLISH & TRACK (automático)
+PUBLISH & TRACK (em breve)
   → Agenda nas plataformas
   → Tracking de engagement
-  → Ajuste de estratégia semanal
 ```
 
 **Veto Conditions V1:**
@@ -111,9 +118,11 @@ OPE_SQUAD/
 │   ├── page.tsx              ← Landing page
 │   ├── (auth)/               ← Login/signup
 │   └── (dashboard)/          ← App principal
-│       ├── onboarding/       ← Voice DNA setup
-│       ├── content/          ← Content Factory
-│       └── publish/          ← Publish & Track
+│       ├── genius/           ← Genius Zone (Passo 1)
+│       ├── manifesto/        ← Manifesto do Solopreneur (Passo 2)
+│       ├── onboarding/       ← Voice DNA setup (Passo 3)
+│       ├── content/          ← Content Factory (Passo 4)
+│       └── publish/          ← Publish & Track (em breve)
 ├── components/               ← UI components reutilizáveis
 ├── lib/                      ← Utilities, API calls
 ├── squads/                   ← AIOS agents (motor do produto)

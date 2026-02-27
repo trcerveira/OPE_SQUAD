@@ -12,6 +12,14 @@ interface VoiceDNA {
   differentiator?: string;
 }
 
+// Tipos para o Genius Profile guardado no Clerk
+interface GeniusProfile {
+  hendricksZone?: string;
+  wealthProfile?: string;
+  kolbeMode?: string;
+  fascinationAdvantage?: string;
+}
+
 // Mapeia as plataformas para instruções de formato específicas
 const platformFormats: Record<string, string> = {
   instagram: `
@@ -88,11 +96,30 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Obtém o utilizador para ter o nome
+  // Obtém o utilizador para ter o nome e o Genius Profile
   const user = await currentUser();
   const authorName = user?.firstName ?? "Coach";
+  const geniusProfile = user?.unsafeMetadata?.geniusProfile as GeniusProfile | undefined;
 
-  // Constrói o system prompt com Voice DNA + MaaS
+  // Secção do Genius Profile (só incluída se existir)
+  const geniusSection = geniusProfile
+    ? `
+GENIUS PROFILE DE ${authorName.toUpperCase()}:
+- Zona de Genialidade (Hendricks): ${geniusProfile.hendricksZone ?? "não definida"}
+- Perfil de Riqueza (Wealth Dynamics): ${geniusProfile.wealthProfile ?? "não definido"}
+- Modo de Acção (Kolbe): ${geniusProfile.kolbeMode ?? "não definido"}
+- Vantagem Fascinante (Hogshead): ${geniusProfile.fascinationAdvantage ?? "não definida"}
+
+Usa o Genius Profile para posicionar o conteúdo no ângulo único desta pessoa:
+- Se o perfil é "star": conteúdo centrado na história pessoal e marca pessoal
+- Se o perfil é "creator": conteúdo focado em inovação e perspectivas únicas
+- Se o perfil é "mechanic": conteúdo sobre sistemas, processos e resultados mensuráveis
+- Se a vantagem é "passion": conteúdo com emoção e conexão humana
+- Se a vantagem é "power": conteúdo directo, sem filtros, com autoridade
+- Adapta o ângulo ao perfil real — não ao perfil genérico.`
+    : "";
+
+  // Constrói o system prompt com Voice DNA + Genius Profile + MaaS
   const systemPrompt = `És um especialista em criação de conteúdo para ${authorName}, um solopreneur.
 
 VOICE DNA DE ${authorName.toUpperCase()}:
@@ -101,7 +128,7 @@ VOICE DNA DE ${authorName.toUpperCase()}:
 - Dor do cliente: ${voiceDNA?.pain ?? "falta de tempo e resultados"}
 - Tom de voz: ${toneInstructions[voiceDNA?.tone ?? "directo"]}
 - Diferencial: ${voiceDNA?.differentiator ?? "abordagem única e prática"}
-
+${geniusSection}
 REGRAS ABSOLUTAS:
 1. Escreve NA VOZ de ${authorName} — primeira pessoa, como se ele próprio escrevesse
 2. Usa APENAS o tom definido no Voice DNA — nunca genérico
