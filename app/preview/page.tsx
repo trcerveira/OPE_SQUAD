@@ -257,10 +257,10 @@ export default function PreviewLanding() {
           <div className="text-center mb-14">
             <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-4">COMO FUNCIONA</div>
             <h2 className="text-3xl md:text-4xl font-bold text-[#F0ECE4]">
-              4 passos. Uma vez. Para sempre.
+              6 passos. Uma vez. Para sempre.
             </h2>
             <p className="text-[#8892a4] mt-4 max-w-xl mx-auto">
-              Fazes o setup uma única vez. O sistema aprende quem és. Depois é só gerar.
+              Fazes o setup uma única vez. O sistema aprende quem és, estrutura o teu plano editorial, e depois é só gerar.
             </p>
           </div>
           <div className="space-y-4">
@@ -317,6 +317,34 @@ export default function PreviewLanding() {
                 </p>
               </div>
             </div>
+
+            <div className="flex gap-5 items-start bg-[#111827] border border-white/[0.06] rounded-xl p-6">
+              <div className="bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] font-bold text-sm w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
+                05
+              </div>
+              <div>
+                <h3 className="font-bold text-[#F0ECE4] mb-1">Linhas Editoriais — o teu plano de conteúdo</h3>
+                <p className="text-[#8892a4] text-sm leading-relaxed">
+                  Define os pilares editoriais da tua marca — os temas que vais dominar,
+                  a frequência por plataforma, e a estrutura que garante consistência
+                  sem teres de reinventar o que publicar cada semana.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-5 items-start bg-[#111827] border border-white/[0.06] rounded-xl p-6">
+              <div className="bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] font-bold text-sm w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
+                06
+              </div>
+              <div>
+                <h3 className="font-bold text-[#F0ECE4] mb-1">Calendário de Conteúdos — agenda e tracking</h3>
+                <p className="text-[#8892a4] text-sm leading-relaxed">
+                  Visualiza o que está planeado, o que foi publicado, e o que está pendente.
+                  Nunca mais ficas sem saber o que publicar amanhã —
+                  o sistema gere o pipeline por ti.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -363,6 +391,8 @@ export default function PreviewLanding() {
                 "Voz & DNA — o teu sistema de voz codificado",
                 "Content Factory — posts para 4 plataformas",
                 "Ângulos Únicos — 5 ângulos que só tu podes tomar",
+                "Linhas Editoriais — estrutura editorial por tema e pilar",
+                "Calendário de Conteúdos — agenda e tracking do que publicas",
                 "Optimizado para o algoritmo Instagram 2025",
               ].map((item) => (
                 <div key={item} className="flex items-center gap-3 text-sm text-[#8892a4]">
