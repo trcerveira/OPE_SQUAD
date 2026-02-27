@@ -267,7 +267,11 @@ export default function ContentFactory() {
                 </pre>
               </div>
               {/* Designer de imagem para redes sociais */}
-              <ContentDesigner content={generatedContent} platform={selectedPlatform} />
+              <ContentDesigner
+                content={generatedContent}
+                platform={selectedPlatform}
+                niche={(user?.unsafeMetadata?.niche as string) || ""}
+              />
 
               <div className="flex gap-3 mt-4">
                 <button
