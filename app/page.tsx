@@ -25,7 +25,7 @@ export default function Home() {
             Preços
           </a>
           <a
-            href="#trial"
+            href="/sign-up"
             className="bg-[#BFD64B] text-[#0A0E1A] font-bold text-sm px-5 py-2 rounded-lg hover:opacity-90 transition-opacity"
           >
             Começar Grátis
@@ -52,7 +52,7 @@ export default function Home() {
 
         <div className="flex flex-col sm:flex-row items-center gap-4" id="trial">
           <a
-            href="#"
+            href="/sign-up"
             className="bg-[#BFD64B] text-[#0A0E1A] font-bold text-lg px-10 py-4 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto"
           >
             Começar Grátis — 7 dias
@@ -147,7 +147,7 @@ export default function Home() {
             </div>
             <p className="text-[#8892a4] text-sm mb-6">7 dias grátis · Cancela quando quiseres</p>
             <a
-              href="#"
+              href="/sign-up"
               className="block bg-[#BFD64B] text-[#0A0E1A] font-bold py-4 rounded-xl hover:opacity-90 transition-opacity"
             >
               Começar Trial Grátis
