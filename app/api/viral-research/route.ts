@@ -1,29 +1,24 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@/lib/supabase/server";
 
-// Queries de pesquisa por plataforma — sem ano hardcoded, foco em conteúdo recente
-function getPlatformQueries(platform: string): string[] {
-  const queries: Record<string, string[]> = {
-    instagram: [
-      "viral instagram reels {niche} trending this week hooks engagement",
-      "most viral instagram content {niche} recent examples what works now",
-    ],
-    linkedin: [
-      "viral linkedin posts {niche} trending this week impressions likes",
-      "linkedin content that went viral {niche} recent this month examples",
-    ],
-    twitter: [
-      "viral twitter X threads {niche} trending this week hooks engagement",
-      "most viral tweets {niche} recent examples what works now",
-    ],
-    email: [
-      "best email subject lines {niche} high open rate recent trending now",
-      "email newsletter viral {niche} recent what works this month",
-    ],
-  };
-  return queries[platform] ?? queries.instagram;
+// Voice DNA guardado no Clerk
+interface VozDNA {
+  arquetipo?: string;
+  descricaoArquetipo?: string;
+  tomEmTresPalavras?: string[];
+  vocabularioActivo?: string[];
+  vocabularioProibido?: string[];
+  frasesAssinatura?: string[];
+  regrasEstilo?: string[];
+}
+
+// Genius Profile guardado no Clerk
+interface GeniusProfile {
+  hendricksZone?: string;
+  wealthProfile?: string;
+  kolbeMode?: string;
+  fascinationAdvantage?: string;
 }
 
 const platformNames: Record<string, string> = {
@@ -33,44 +28,11 @@ const platformNames: Record<string, string> = {
   email: "Email",
 };
 
-interface TavilyResult {
-  answer?: string;
-  results?: { title: string; content: string; url: string }[];
-}
-
-async function searchTavily(query: string, apiKey: string): Promise<TavilyResult | null> {
-  try {
-    const res = await fetch("https://api.tavily.com/search", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        api_key: apiKey,
-        query,
-        search_depth: "advanced",
-        max_results: 7,
-        include_answer: true,
-        days: 30, // só resultados dos últimos 30 dias — conteúdo mesmo recente
-      }),
-    });
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
-}
-
+// Gera 5 ângulos únicos para um tema baseado no perfil do criador
 export async function POST(request: NextRequest) {
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
-  }
-
-  const tavilyKey = process.env.TAVILY_API_KEY;
-  if (!tavilyKey) {
-    return NextResponse.json(
-      { error: "TAVILY_API_KEY não configurada" },
-      { status: 500 }
-    );
   }
 
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -80,121 +42,111 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let body: { platform: string; niche: string };
+  let body: { platform: string; topic: string };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Body inválido" }, { status: 400 });
   }
 
-  const { platform, niche } = body;
-  if (!platform || !niche?.trim()) {
-    return NextResponse.json({ error: "platform e niche são obrigatórios" }, { status: 400 });
-  }
-
-  const nicheClean = niche.trim().toLowerCase();
-  const now = new Date();
-  const today = now.toISOString().split("T")[0]; // YYYY-MM-DD
-  const currentYear = now.getFullYear();
-
-  // Verifica cache no Supabase (platform + niche + dia)
-  try {
-    const supabase = createServerClient();
-    const { data: cached } = await supabase
-      .from("viral_research_cache")
-      .select("result")
-      .eq("platform", platform)
-      .eq("niche", nicheClean)
-      .eq("cache_date", today)
-      .single();
-
-    if (cached?.result) {
-      // Cache hit — devolve sem chamar Tavily
-      return NextResponse.json({ ...cached.result, fromCache: true });
-    }
-  } catch {
-    // Cache falhou — continua sem cache
-  }
-
-  // Cache miss — pesquisa com Tavily (últimos 30 dias)
-  const queries = getPlatformQueries(platform).map((q) =>
-    q.replace(/{niche}/g, nicheClean)
-  );
-
-  const searches = queries.map((q) => searchTavily(q, tavilyKey));
-  const results = await Promise.allSettled(searches);
-
-  const searchData = results
-    .filter((r): r is PromiseFulfilledResult<TavilyResult | null> => r.status === "fulfilled")
-    .map((r) => r.value)
-    .filter((v): v is TavilyResult => v !== null)
-    .flatMap((r) => [
-      r.answer ? `RESUMO: ${r.answer}` : "",
-      ...(r.results ?? []).map(
-        (res) =>
-          `TÍTULO: ${res.title}\nEXCERPTO: ${res.content.substring(0, 400)}\nFONTE: ${res.url}`
-      ),
-    ])
-    .filter(Boolean)
-    .join("\n\n---\n\n");
-
-  if (!searchData) {
+  const { platform, topic } = body;
+  if (!platform || !topic?.trim()) {
     return NextResponse.json(
-      { error: "Sem resultados da pesquisa. Verifica a TAVILY_API_KEY." },
-      { status: 500 }
+      { error: "platform e topic são obrigatórios" },
+      { status: 400 }
     );
   }
 
-  // Claude sintetiza os resultados
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  // Lê o perfil do utilizador do Clerk
+  const user = await currentUser();
+  const authorName = user?.firstName ?? "Criador";
+  const vozDNA = user?.unsafeMetadata?.vozDNA as VozDNA | undefined;
+  const geniusProfile = user?.unsafeMetadata?.geniusProfile as GeniusProfile | undefined;
+
   const platformName = platformNames[platform] ?? platform;
 
-  // Obtém nome do utilizador para personalizar
-  const user = await currentUser();
-  const authorName = user?.firstName ?? "Coach";
+  // Secção de Voice DNA para o prompt
+  const vozSection = vozDNA
+    ? `VOICE DNA DE ${authorName.toUpperCase()}:
+- Arquétipo: ${vozDNA.arquetipo ?? "não definido"}
+- Tom: ${vozDNA.tomEmTresPalavras?.join(", ") ?? "não definido"}
+- Vocabulário activo: ${vozDNA.vocabularioActivo?.join(", ") ?? "não definido"}
+- Frases assinatura: ${vozDNA.frasesAssinatura?.join(" | ") ?? "nenhuma"}
+- Regras de estilo: ${vozDNA.regrasEstilo?.join(" | ") ?? "nenhuma"}`
+    : `VOICE DNA DE ${authorName.toUpperCase()}: não definido ainda`;
 
-  const systemPrompt = `És um especialista em conteúdo viral para criadores de conteúdo no nicho de ${nicheClean}. O teu trabalho é analisar dados de pesquisa RECENTES (últimos 30 dias) sobre o que está viral no ${platformName} especificamente para este nicho. A data de hoje é ${today}. Extrai apenas insights do que está a funcionar AGORA — zero referências a tendências antigas ou anos anteriores.`;
+  // Secção de Genius Profile para o prompt
+  const geniusSection = geniusProfile
+    ? `GENIUS PROFILE DE ${authorName.toUpperCase()}:
+- Zona de Genialidade (Hendricks): ${geniusProfile.hendricksZone ?? "não definida"}
+- Perfil de Riqueza (Wealth Dynamics): ${geniusProfile.wealthProfile ?? "não definido"}
+- Modo de Acção (Kolbe): ${geniusProfile.kolbeMode ?? "não definido"}
+- Vantagem Fascinante (Hogshead): ${geniusProfile.fascinationAdvantage ?? "não definida"}`
+    : `GENIUS PROFILE DE ${authorName.toUpperCase()}: não definido ainda`;
 
-  const userPrompt = `Analisa estes dados de pesquisa sobre conteúdo viral no ${platformName} para o nicho de "${nicheClean}":
+  const systemPrompt = `És um estratega de conteúdo especialista em posicionamento único para solopreneurs. O teu trabalho é analisar o perfil único de um criador e gerar ângulos de abordagem que APENAS essa pessoa pode tomar de forma autêntica.
 
-${searchData}
+PRINCÍPIO CENTRAL: O algoritmo do ${platformName} em 2025 premia conteúdo original que só o criador poderia fazer. Cada ângulo que geras deve ser impossível de copiar por outra pessoa — deve reflectir directamente o arquétipo, experiência, e perspectiva única deste criador.
 
-Criador de conteúdo: ${authorName}
-Nicho específico: ${nicheClean}
-Data actual: ${today} (ano ${currentYear})
+NUNCA: ângulos genéricos que qualquer conta poderia publicar.
+SEMPRE: ângulos que revelam uma perspectiva que só ${authorName} tem.`;
 
-Extrai insights e devolve EXACTAMENTE este JSON (sem markdown, sem explicações — só o JSON válido):
+  const userPrompt = `CRIADOR: ${authorName}
+PLATAFORMA: ${platformName}
+TEMA BRUTO: "${topic}"
+
+${vozSection}
+
+${geniusSection}
+
+Gera 5 ângulos únicos para ${authorName} abordar o tema acima no ${platformName}.
+
+Cada ângulo deve:
+1. Reflectir directamente o Voice DNA e Genius Profile deste criador
+2. Ser impossível de tomar por outra pessoa — específico à sua experiência e perspectiva
+3. Incluir um hook de abertura concreto e específico, pronto a usar como primeira linha
+4. Explicar em 1 frase curta porque só ${authorName} pode falar a partir deste ângulo
+
+Devolve EXACTAMENTE este JSON (sem markdown, sem explicações — só JSON válido):
 {
-  "hooks": [
-    "Linha de abertura viral 1 — completa, específica para ${nicheClean}, pronta a usar",
-    "Linha de abertura viral 2",
-    "Linha de abertura viral 3",
-    "Linha de abertura viral 4",
-    "Linha de abertura viral 5"
-  ],
-  "topics": [
-    "Ângulo/tema específico em alta 1 — relevante para ${nicheClean}",
-    "Ângulo/tema específico em alta 2",
-    "Ângulo/tema específico em alta 3",
-    "Ângulo/tema específico em alta 4",
-    "Ângulo/tema específico em alta 5"
-  ],
-  "formats": [
-    "Formato 1 — estrutura completa (ex: Thread de 7: problema → causa → sistema → resultado → CTA)",
-    "Formato 2 — estrutura completa",
-    "Formato 3 — estrutura completa"
-  ],
-  "insight": "Uma frase concreta sobre o padrão que domina o ${platformName} no nicho de ${nicheClean} agora (${today})"
+  "angles": [
+    {
+      "title": "Nome curto e memorável do ângulo (máx 5 palavras)",
+      "hook": "Linha de abertura completa — específica, pronta a usar como primeira frase do post",
+      "why_unique": "1 frase: porque só ${authorName} pode tomar este ângulo"
+    },
+    {
+      "title": "...",
+      "hook": "...",
+      "why_unique": "..."
+    },
+    {
+      "title": "...",
+      "hook": "...",
+      "why_unique": "..."
+    },
+    {
+      "title": "...",
+      "hook": "...",
+      "why_unique": "..."
+    },
+    {
+      "title": "...",
+      "hook": "...",
+      "why_unique": "..."
+    }
+  ]
 }
 
-REGRAS OBRIGATÓRIAS:
-- Hooks são linhas de abertura COMPLETAS e ESPECÍFICAS para ${nicheClean} — não genéricas
-- Temas são ângulos de ataque CONCRETOS com contexto real do nicho
-- Formatos descrevem a ESTRUTURA completa
-- Tudo em Português de Portugal
-- Baseia-te nos dados reais da pesquisa`;
+REGRAS:
+- Hooks são linhas de abertura COMPLETAS — não títulos, não perguntas vagas
+- Cada hook deve parar o scroll em 1,7 segundos (regra Mosseri)
+- O why_unique refere sempre uma característica específica do Voice DNA ou Genius Profile
+- Tudo em Português de Portugal`;
 
   try {
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 1024,
@@ -223,24 +175,11 @@ REGRAS OBRIGATÓRIAS:
       );
     }
 
-    // Guarda no cache (sem bloquear a resposta)
-    try {
-      const supabase = createServerClient();
-      await supabase.from("viral_research_cache").upsert({
-        platform,
-        niche: nicheClean,
-        cache_date: today,
-        result: parsed,
-      });
-    } catch {
-      // Cache falhou — não crítico
-    }
-
-    return NextResponse.json({ ...parsed, fromCache: false });
+    return NextResponse.json(parsed);
   } catch (error) {
     console.error("Erro na API Anthropic:", error);
     return NextResponse.json(
-      { error: "Erro ao analisar resultados. Tenta novamente." },
+      { error: "Erro ao gerar ângulos. Tenta novamente." },
       { status: 500 }
     );
   }

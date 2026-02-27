@@ -186,14 +186,6 @@ export default function ContentFactory() {
             </div>
           </div>
 
-          {/* Pesquisa Viral — aparece depois de seleccionar plataforma */}
-          {selectedPlatform && (
-            <ViralResearch
-              selectedPlatform={selectedPlatform}
-              onSelectInsight={(text) => setTopic(text)}
-            />
-          )}
-
           {/* Passo 2: Tema */}
           {selectedPlatform && (
             <div className="mb-8">
@@ -222,6 +214,15 @@ export default function ContentFactory() {
                   ))}
                 </div>
               </div>
+
+              {/* Ângulos Únicos — aparece quando o utilizador já escreveu o tema */}
+              {topic.trim().length > 5 && (
+                <ViralResearch
+                  selectedPlatform={selectedPlatform}
+                  topic={topic}
+                  onSelectAngle={(hook) => setTopic(hook)}
+                />
+              )}
               <div className="mt-5">
                 <button
                   onClick={handleGenerate}
