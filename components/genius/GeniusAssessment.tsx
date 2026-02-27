@@ -811,7 +811,7 @@ export default function GeniusAssessment() {
           setCurrentAnswer("");
           setProfile(null);
         }}
-        onContinue={() => router.push("/content")}
+        onContinue={() => router.push("/manifesto")}
       />
     );
   }

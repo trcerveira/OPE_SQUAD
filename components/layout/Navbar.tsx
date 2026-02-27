@@ -5,12 +5,8 @@ import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 
 const navLinks = [
-  { href: "/dashboard", label: "Dashboard", icon: "⚡" },
-  { href: "/genius", label: "Genius Zone", icon: "🧬" },
-  { href: "/manifesto", label: "Manifesto", icon: "📜" },
-  { href: "/voz-dna", label: "Voz & DNA", icon: "🎙️" },
-  { href: "/content", label: "Content", icon: "✍️" },
-  { href: "/publish", label: "Publish", icon: "🚀", disabled: true },
+  { href: "/dashboard", label: "Início",   icon: "⚡" },
+  { href: "/content",   label: "Conteúdo", icon: "✍️" },
 ];
 
 export default function Navbar() {
@@ -28,24 +24,10 @@ export default function Navbar() {
           <span className="font-bold text-[#F0ECE4] text-sm">SQUAD</span>
         </Link>
 
-        {/* Links de navegação */}
+        {/* Links principais */}
         <div className="flex items-center gap-1">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
-
-            if (link.disabled) {
-              return (
-                <span
-                  key={link.href}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-[#3a4555] cursor-not-allowed select-none"
-                  title="Em breve"
-                >
-                  <span>{link.icon}</span>
-                  <span className="hidden sm:inline">{link.label}</span>
-                </span>
-              );
-            }
-
             return (
               <Link
                 key={link.href}
@@ -57,20 +39,14 @@ export default function Navbar() {
                 }`}
               >
                 <span>{link.icon}</span>
-                <span className="hidden sm:inline">{link.label}</span>
+                <span>{link.label}</span>
               </Link>
             );
           })}
         </div>
 
-        {/* Avatar do utilizador (Clerk) */}
-        <UserButton
-          appearance={{
-            elements: {
-              avatarBox: "w-8 h-8",
-            },
-          }}
-        />
+        {/* Avatar */}
+        <UserButton appearance={{ elements: { avatarBox: "w-8 h-8" } }} />
       </div>
     </nav>
   );

@@ -1,10 +1,13 @@
 import ManifestoAssessment from "@/components/manifesto/ManifestoAssessment";
+import StepProgress from "@/components/layout/StepProgress";
 
-// Página do Manifesto — entrevista de 9 perguntas que gera o manifesto personalizado
 export default function ManifestoPage() {
   return (
-    <main className="min-h-screen bg-[#0A0E1A] px-8 py-10">
-      <ManifestoAssessment />
+    <main className="min-h-screen bg-[#0A0E1A] pt-8">
+      <StepProgress currentStep={2} />
+      <div className="px-8 pb-10">
+        <ManifestoAssessment />
+      </div>
     </main>
   );
 }
