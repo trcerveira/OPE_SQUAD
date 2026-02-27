@@ -2,6 +2,8 @@
 // Problema: solopreneur não consegue aparecer todos os dias sem gastar 4h a criar conteúdo
 // Solução: Content Engine alimentado por AIOS + Claude API
 
+import Link from "next/link";
+
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col">
@@ -24,12 +26,12 @@ export default function Home() {
           <a href="#precos" className="text-[#8892a4] text-sm hover:text-[#F0ECE4] transition-colors">
             Preços
           </a>
-          <a
+          <Link
             href="/sign-up"
             className="bg-[#BFD64B] text-[#0A0E1A] font-bold text-sm px-5 py-2 rounded-lg hover:opacity-90 transition-opacity"
           >
             Começar Grátis
-          </a>
+          </Link>
         </div>
       </nav>
 
@@ -51,12 +53,12 @@ export default function Home() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center gap-4" id="trial">
-          <a
+          <Link
             href="/sign-up"
             className="bg-[#BFD64B] text-[#0A0E1A] font-bold text-lg px-10 py-4 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto"
           >
             Começar Grátis — 7 dias
-          </a>
+          </Link>
           <span className="text-[#8892a4] text-sm">
             Cartão obrigatório · Cancela quando quiseres
           </span>
@@ -146,12 +148,12 @@ export default function Home() {
               <span className="text-lg text-[#8892a4] font-normal">/mês</span>
             </div>
             <p className="text-[#8892a4] text-sm mb-6">7 dias grátis · Cancela quando quiseres</p>
-            <a
+            <Link
               href="/sign-up"
               className="block bg-[#BFD64B] text-[#0A0E1A] font-bold py-4 rounded-xl hover:opacity-90 transition-opacity"
             >
               Começar Trial Grátis
-            </a>
+            </Link>
             <p className="text-[#8892a4] text-xs mt-4">Cartão obrigatório. Cobrado no Day 8.</p>
           </div>
         </div>
