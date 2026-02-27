@@ -7,21 +7,30 @@ import { UserButton } from "@clerk/nextjs";
 const navLinks = [
   { href: "/dashboard", label: "Início",   icon: "⚡" },
   { href: "/content",   label: "Conteúdo", icon: "✍️" },
+  { href: "/settings",  label: "Marca",    icon: "🎨" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className="border-b border-[#1a2035] bg-[#0A0E1A] sticky top-0 z-50">
+    <nav
+      className="border-b sticky top-0 z-50"
+      style={{ backgroundColor: "var(--bg)", borderColor: "var(--surface)" }}
+    >
       <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
 
         {/* Logo */}
         <Link href="/dashboard" className="flex items-center gap-2">
-          <span className="bg-[#BFD64B] text-[#0A0E1A] text-[10px] font-bold tracking-widest px-2 py-1 rounded">
-            OPE
+          <span
+            className="text-[10px] font-bold tracking-widest px-2 py-1 rounded"
+            style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }}
+          >
+            OPB
           </span>
-          <span className="font-bold text-[#F0ECE4] text-sm">SQUAD</span>
+          <span className="font-bold text-sm" style={{ color: "var(--text)" }}>
+            CREW
+          </span>
         </Link>
 
         {/* Links principais */}
@@ -32,11 +41,18 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
+                style={
                   isActive
-                    ? "bg-[#BFD64B]/10 text-[#BFD64B] border border-[#BFD64B]/20"
-                    : "text-[#8892a4] hover:text-[#F0ECE4] hover:bg-[#111827]"
-                }`}
+                    ? {
+                        backgroundColor: "var(--accent)22",
+                        color: "var(--accent)",
+                        border: "1px solid var(--accent)44",
+                      }
+                    : {
+                        color: "#8892a4",
+                      }
+                }
               >
                 <span>{link.icon}</span>
                 <span>{link.label}</span>

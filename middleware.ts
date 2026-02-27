@@ -10,6 +10,7 @@ const isProtectedRoute = createRouteMatcher([
   '/genius(.*)',
   '/manifesto(.*)',
   '/voz-dna(.*)',
+  '/settings(.*)',
 ])
 
 export default clerkMiddleware(async (auth, req) => {
