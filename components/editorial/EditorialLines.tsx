@@ -52,10 +52,21 @@ export default function EditorialLines() {
         body: JSON.stringify({ form }),
       });
 
-      const data = await res.json();
+      let data: { editorias?: Editoria[]; error?: string };
+      try {
+        data = await res.json();
+      } catch {
+        setError("A geração demorou demasiado. Tenta novamente — pode demorar até 60 segundos.");
+        return;
+      }
 
       if (!res.ok) {
         setError(data.error ?? "Erro ao gerar linha editorial.");
+        return;
+      }
+
+      if (!data.editorias || data.editorias.length === 0) {
+        setError("Resposta inválida da IA. Tenta novamente.");
         return;
       }
 
@@ -63,7 +74,7 @@ export default function EditorialLines() {
       setGerado(true);
       setActiveTab(0);
     } catch {
-      setError("Erro de ligação. Tenta novamente.");
+      setError("Erro de ligação. Verifica a tua conexão e tenta novamente.");
     } finally {
       setLoading(false);
     }
