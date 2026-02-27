@@ -42,11 +42,11 @@ export default async function DashboardPage() {
     <main className="px-8 py-10">
       <div className="max-w-2xl">
 
-        {/* Badge de Super Admin — visível só para admins */}
+        {/* Badge de Super Admin com link para painel — visível só para admins */}
         {admin && (
-          <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold tracking-widest px-4 py-2 rounded-full mb-4">
-            🔑 SUPER ADMIN
-          </div>
+          <Link href="/admin" className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold tracking-widest px-4 py-2 rounded-full mb-4 hover:bg-red-500/20 transition-colors">
+            🔑 SUPER ADMIN — Ver Painel →
+          </Link>
         )}
 
         <div className="inline-flex items-center gap-2 bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] text-xs font-bold tracking-widest px-4 py-2 rounded-full mb-6">

@@ -12,6 +12,7 @@ const isProtectedRoute = createRouteMatcher([
   '/voz-dna(.*)',
   '/editorial(.*)',
   '/settings(.*)',
+  '/admin(.*)',
 ])
 
 export default clerkMiddleware(async (auth, req) => {
