@@ -62,10 +62,10 @@ Responde APENAS com JSON válido, sem texto antes ou depois:
 
 REGRAS ABSOLUTAS:
 - Escreve em Português europeu (não brasileiro)
-- Usa as palavras e expressões exactas do solopreneur sempre que possível
-- Cada destaque é uma frase que alguém quereria guardar para sempre
+- A resposta 2 (Personalidade e voz) é a tua bússola de tom: se disseram "informal e directo", escreve assim; se listaram palavras que nunca usam, nunca as uses; se listaram palavras que sempre usam, usa-as
+- Usa as palavras e expressões exactas do solopreneur sempre que possível — o manifesto deve soar a eles, não a um template
+- Cada destaque é uma frase que alguém quereria guardar para sempre, escrita na sua voz
 - Nunca inventas informação que não está nas respostas
-- O tom deve reflectir a personalidade descrita pelo solopreneur
 - Os blocos devem fluir: quem sou → para quem → o que faço → porque importa → o compromisso`;
 
   const userPrompt = `Cria o manifesto de marca de ${nome}, um solopreneur.
@@ -77,7 +77,7 @@ BLOCO 1 — FUNDAMENTOS
 1. Especialidade e diferenciação no mercado:
 ${answers.especialidade}
 
-2. Personalidade da marca:
+2. Personalidade da marca + tom de voz (palavras que usa sempre / palavras que nunca usa):
 ${answers.personalidade}
 
 3. O que irrita no mercado / o que se recusa a fazer:

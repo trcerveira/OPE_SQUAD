@@ -47,11 +47,11 @@ const perguntasPorBloco = {
     },
     {
       id: "personalidade" as const,
-      titulo: "A personalidade da tua marca",
+      titulo: "A personalidade e voz da tua marca",
       descricao:
-        "Se a tua marca fosse uma pessoa, como seria? Rebelde, Cuidadora, Estrategista, Visionária, Disruptiva? Explica o porquê.",
+        "Se a tua marca fosse uma pessoa, como seria? Rebelde, Cuidadora, Estrategista, Visionária? E como fala? Formal ou informal? Directa ou suave? Que palavras usa sempre? Que palavras nunca usa? Quanto mais específico, mais o manifesto vai soar exactamente a ti.",
       placeholder:
-        "Ex: A minha marca é Rebelde porque recuso os atalhos e as promessas vazias. É também Estrategista porque...",
+        "Ex: A minha marca é Rebelde e Directa — fala de igual para igual, nunca de cima para baixo. Usa 'tu', nunca 'você'. Diz 'sistema' em vez de 'motivação'. Nunca usa 'fácil', 'rápido' ou 'segredo'. É também Estrategista porque recusa atalhos sem substância...",
       tipo: "textarea" as const,
     },
     {
