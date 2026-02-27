@@ -393,7 +393,6 @@ export default function PreviewLanding() {
                 "Ângulos Únicos — 5 ângulos que só tu podes tomar",
                 "Linhas Editoriais — estrutura editorial por tema e pilar",
                 "Calendário de Conteúdos — agenda e tracking do que publicas",
-                "Optimizado para o algoritmo Instagram 2025",
               ].map((item) => (
                 <div key={item} className="flex items-center gap-3 text-sm text-[#8892a4]">
                   <span className="text-[#BFD64B] flex-shrink-0">✓</span>
