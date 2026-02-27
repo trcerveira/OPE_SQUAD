@@ -21,6 +21,12 @@ interface CalendarioRow {
   logica: string;
 }
 
+interface BulkResult {
+  row: CalendarioRow;
+  content: string;
+  error?: string;
+}
+
 interface FormCalendario {
   dias: number;
   formatos: string[];
@@ -49,10 +55,30 @@ const coresPaleta = [
   { bg: "rgba(252,129,74,0.15)",  text: "#FC814A" },
 ];
 
+// Converte formato do calendário → format+subtype da API generate
+function mapFormato(formato: string): { format: string; subtype: string } {
+  const f = formato.toLowerCase();
+  if (f.includes("viral 7s") || f.includes("viral7s"))        return { format: "reel",      subtype: "viral7s" };
+  if (f.includes("problema") || f.includes("solução"))        return { format: "reel",      subtype: "problemaSolucao" };
+  if (f.includes("infotenimento") && f.includes("reel"))      return { format: "reel",      subtype: "infotenimento" };
+  if (f.includes("utilidade") && f.includes("reel"))          return { format: "reel",      subtype: "utilidade" };
+  if (f.includes("opinião") && f.includes("reel"))            return { format: "reel",      subtype: "opiniao" };
+  if (f.includes("carrossel") && f.includes("utilidade"))     return { format: "carrossel", subtype: "utilidade" };
+  if (f.includes("carrossel") && f.includes("infotenimento")) return { format: "carrossel", subtype: "infotenimento" };
+  if (f.includes("carrossel") && f.includes("narrativa"))     return { format: "carrossel", subtype: "opiniao" };
+  if (f.includes("carrossel") && f.includes("vendas"))        return { format: "carrossel", subtype: "vendas" };
+  if (f.includes("carrossel"))                                return { format: "carrossel", subtype: "utilidade" };
+  if (f.includes("threads") || f.includes("/x"))              return { format: "post",      subtype: "twitter" };
+  if (f.includes("story"))                                    return { format: "story",     subtype: "narrativaDensa" };
+  if (f.includes("post"))                                     return { format: "post",      subtype: "instagram" };
+  return { format: "reel", subtype: "viral7s" };
+}
+
 export default function CalendarioPlanner() {
   const { user } = useUser();
   const router = useRouter();
-  const [fase, setFase] = useState<"form" | "loading" | "tabela">("form");
+
+  const [fase, setFase] = useState<"form" | "loading" | "tabela" | "bulk" | "bulkDone">("form");
   const [guardando, setGuardando] = useState(false);
   const [form, setForm] = useState<FormCalendario>({
     dias: 7,
@@ -63,6 +89,12 @@ export default function CalendarioPlanner() {
   const [diasCustom, setDiasCustom] = useState(false);
   const [rows, setRows] = useState<CalendarioRow[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  // Bulk generation
+  const [bulkProgress, setBulkProgress] = useState(0);
+  const [bulkResults, setBulkResults] = useState<BulkResult[]>([]);
+  const [expandedBulk, setExpandedBulk] = useState<string | null>(null);
+  const [copiedBulk, setCopiedBulk] = useState<string | null>(null);
 
   const editorialLines = (user?.unsafeMetadata?.editorialLines as EditorialLine[]) ?? [];
   const temEditorias = editorialLines.length > 0;
@@ -88,6 +120,13 @@ export default function CalendarioPlanner() {
     );
   }
 
+  async function copiarBulk(id: string, text: string) {
+    await navigator.clipboard.writeText(text);
+    setCopiedBulk(id);
+    setTimeout(() => setCopiedBulk(null), 2000);
+  }
+
+  // Guarda calendário no Clerk e vai para /content
   async function guardarEIr() {
     setGuardando(true);
     try {
@@ -100,8 +139,54 @@ export default function CalendarioPlanner() {
           },
         });
       }
-    } catch { /* se falhar, navega na mesma */ }
+    } catch { /* navega na mesma */ }
     router.push("/content");
+  }
+
+  // Gera o conteúdo para TODOS os posts do calendário sequencialmente
+  async function gerarBulk() {
+    setFase("bulk");
+    setBulkProgress(0);
+    setBulkResults([]);
+
+    const vozDNA = user?.unsafeMetadata?.vozDNA ?? {};
+    const results: BulkResult[] = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const mapeado = mapFormato(row.formato);
+
+      try {
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            format: mapeado.format,
+            subtype: mapeado.subtype,
+            topic: row.tema,
+            vozDNA,
+          }),
+        });
+        const data = await res.json();
+        results.push({
+          row,
+          content: data.content ?? "",
+          error: res.ok ? undefined : (data.error ?? "Erro desconhecido"),
+        });
+      } catch {
+        results.push({ row, content: "", error: "Erro de ligação" });
+      }
+
+      setBulkProgress(i + 1);
+      setBulkResults([...results]);
+
+      // Pequena pausa entre pedidos para não sobrecarregar a API
+      if (i < rows.length - 1) {
+        await new Promise((r) => setTimeout(r, 600));
+      }
+    }
+
+    setFase("bulkDone");
   }
 
   async function gerarCalendario() {
@@ -145,13 +230,13 @@ export default function CalendarioPlanner() {
     }
   }
 
-  // Mapa de cores por linha editorial (baseado na posição)
+  // Mapa de cores por linha editorial
   const coresEditorias: Record<string, { bg: string; text: string }> = {};
   editorialLines.forEach((ed, i) => {
     coresEditorias[ed.nome] = coresPaleta[i % coresPaleta.length];
   });
 
-  // --- LOADING ---
+  // ─── LOADING (calendário) ────────────────────────────────────────────────
   if (fase === "loading") {
     const total = form.dias * form.formatos.length;
     return (
@@ -167,7 +252,147 @@ export default function CalendarioPlanner() {
     );
   }
 
-  // --- TABELA ---
+  // ─── BULK (a gerar conteúdo) ────────────────────────────────────────────
+  if (fase === "bulk") {
+    const percentagem = Math.round((bulkProgress / rows.length) * 100);
+    return (
+      <div className="max-w-3xl mx-auto py-12">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] text-xs font-bold tracking-widest px-4 py-2 rounded-full mb-4">
+            A GERAR CONTEÚDO
+          </div>
+          <h1 className="text-2xl font-bold text-[#F0ECE4] mb-2">
+            {bulkProgress} de {rows.length} posts gerados
+          </h1>
+          <p className="text-[#8892a4] text-sm">
+            A IA está a escrever o conteúdo para cada post do teu calendário...
+          </p>
+        </div>
+
+        {/* Barra de progresso */}
+        <div className="bg-[#1a2035] rounded-full h-3 mb-8 overflow-hidden">
+          <div
+            className="bg-[#BFD64B] h-3 rounded-full transition-all duration-500"
+            style={{ width: `${percentagem}%` }}
+          />
+        </div>
+        <p className="text-center text-[#BFD64B] text-sm font-bold mb-10">{percentagem}%</p>
+
+        {/* Posts já gerados */}
+        {bulkResults.length > 0 && (
+          <div className="flex flex-col gap-2">
+            {bulkResults.map((r, i) => (
+              <div
+                key={i}
+                className={`rounded-xl border px-4 py-3 flex items-center gap-3 text-sm ${
+                  r.error
+                    ? "border-red-500/30 bg-red-900/10"
+                    : "border-[#BFD64B]/30 bg-[#BFD64B]/5"
+                }`}
+              >
+                <span className={r.error ? "text-red-400" : "text-[#BFD64B]"}>
+                  {r.error ? "✗" : "✓"}
+                </span>
+                <span className="text-[#8892a4] text-xs w-20 shrink-0">{r.row.data}</span>
+                <span className="text-[#F0ECE4] truncate flex-1">{r.row.tema}</span>
+                <span className="text-[#4a5568] text-xs shrink-0">{r.row.formato}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ─── BULK DONE (resultados) ──────────────────────────────────────────────
+  if (fase === "bulkDone") {
+    const sucessos = bulkResults.filter((r) => !r.error).length;
+    const erros = bulkResults.filter((r) => r.error).length;
+    return (
+      <div className="max-w-3xl mx-auto py-8">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] text-xs font-bold tracking-widest px-4 py-2 rounded-full mb-4">
+            CONTEÚDO GERADO
+          </div>
+          <h1 className="text-2xl font-bold text-[#F0ECE4] mb-2">
+            {sucessos} posts escritos {erros > 0 && `· ${erros} com erro`}
+          </h1>
+          <p className="text-[#8892a4] text-sm">
+            Todo o conteúdo foi guardado no teu histórico. Clica em cada post para ver e copiar.
+          </p>
+        </div>
+
+        <div className="flex gap-3 justify-center mb-8">
+          <a
+            href="/content"
+            className="bg-[#BFD64B] text-[#0A0E1A] font-bold py-3 px-6 rounded-xl text-sm hover:opacity-90 transition-all"
+          >
+            Ver Histórico →
+          </a>
+          <button
+            onClick={() => setFase("tabela")}
+            className="text-[#8892a4] text-sm hover:text-[#BFD64B] transition-colors px-4 py-3"
+          >
+            ← Voltar ao calendário
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          {bulkResults.map((r, i) => (
+            <div
+              key={i}
+              className="bg-[#111827] border border-[#1a2035] rounded-xl overflow-hidden"
+            >
+              {/* Header do post */}
+              <div
+                className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-[#1a2035] transition-colors"
+                onClick={() => setExpandedBulk(expandedBulk === r.row.id ? null : r.row.id)}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className={`text-sm shrink-0 ${r.error ? "text-red-400" : "text-[#BFD64B]"}`}>
+                    {r.error ? "✗" : "✓"}
+                  </span>
+                  <span className="text-[#8892a4] text-xs shrink-0 w-20">{r.row.data}</span>
+                  <span className="text-[#F0ECE4] text-sm truncate">{r.row.tema}</span>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="text-[#4a5568] text-xs hidden sm:block">{r.row.formato}</span>
+                  <span className="text-[#8892a4] text-xs">{expandedBulk === r.row.id ? "▲" : "▼"}</span>
+                </div>
+              </div>
+
+              {/* Conteúdo expandido */}
+              {expandedBulk === r.row.id && (
+                <div className="px-4 pb-4">
+                  {r.error ? (
+                    <p className="text-red-400 text-sm py-2">Erro: {r.error}</p>
+                  ) : (
+                    <>
+                      <pre className="text-[#F0ECE4] text-sm leading-relaxed whitespace-pre-wrap font-sans bg-[#0d1420] rounded-lg p-4 mb-3 max-h-96 overflow-y-auto">
+                        {r.content}
+                      </pre>
+                      <button
+                        onClick={() => copiarBulk(r.row.id, r.content)}
+                        className={`text-xs font-bold px-4 py-2 rounded-lg transition-all ${
+                          copiedBulk === r.row.id
+                            ? "bg-[#BFD64B] text-[#0A0E1A]"
+                            : "border border-[#2a3555] text-[#8892a4] hover:border-[#BFD64B]/50 hover:text-[#F0ECE4]"
+                        }`}
+                      >
+                        {copiedBulk === r.row.id ? "✓ Copiado!" : "Copiar"}
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ─── TABELA ──────────────────────────────────────────────────────────────
   if (fase === "tabela") {
     return (
       <div className="max-w-7xl mx-auto py-8">
@@ -181,7 +406,7 @@ export default function CalendarioPlanner() {
               {form.dias} dias · {form.formatos.length} formato(s)/dia · {rows.length} posts
             </h1>
             <p className="text-[#8892a4] text-sm mt-1">
-              Clica em qualquer célula a amarelo para editar — Tema, Plataforma e Lógica são editáveis.
+              Ajusta os temas se quiseres — depois gera o conteúdo de todos de uma vez.
             </p>
           </div>
           <button
@@ -210,18 +435,19 @@ export default function CalendarioPlanner() {
           </div>
         )}
 
-        <div className="overflow-x-auto rounded-xl border border-[#1a2035]">
+        {/* Tabela */}
+        <div className="overflow-x-auto rounded-xl border border-[#1a2035] mb-10">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-[#0d1420] border-b border-[#1a2035]">
-                {["DATA", "FORMATO", "LINHA EDITORIAL", "TEMA / TÍTULO", "PLATAFORMA", "LÓGICA"].map((col, i) => (
+                {["DATA", "FORMATO", "LINHA EDITORIAL", "TEMA / TÍTULO ✎", "PLATAFORMA ✎", "LÓGICA ✎"].map((col, i) => (
                   <th
                     key={col}
                     className={`text-left text-[10px] font-bold tracking-widest px-4 py-3 ${
                       i >= 3 ? "text-[#BFD64B]/60" : "text-[#4a5568]"
                     }`}
                   >
-                    {col}{i >= 3 && " ✎"}
+                    {col}
                   </th>
                 ))}
               </tr>
@@ -235,15 +461,8 @@ export default function CalendarioPlanner() {
                     key={row.id}
                     className={`border-b border-[#1a2035] ${isEven ? "bg-[#0A0E1A]" : "bg-[#0d1218]"} hover:bg-[#111827] transition-colors`}
                   >
-                    {/* DATA */}
-                    <td className="px-4 py-3 text-[#8892a4] font-mono text-xs whitespace-nowrap">
-                      {row.data}
-                    </td>
-                    {/* FORMATO */}
-                    <td className="px-4 py-3 text-[#F0ECE4] font-medium text-xs whitespace-nowrap">
-                      {row.formato}
-                    </td>
-                    {/* LINHA EDITORIAL */}
+                    <td className="px-4 py-3 text-[#8892a4] font-mono text-xs whitespace-nowrap">{row.data}</td>
+                    <td className="px-4 py-3 text-[#F0ECE4] font-medium text-xs whitespace-nowrap">{row.formato}</td>
                     <td className="px-4 py-3">
                       <span
                         className="text-[10px] font-bold tracking-wide px-2 py-1 rounded-md whitespace-nowrap"
@@ -252,7 +471,6 @@ export default function CalendarioPlanner() {
                         {row.linhaEditorial}
                       </span>
                     </td>
-                    {/* TEMA — editável */}
                     <td className="px-4 py-3 min-w-[220px]">
                       <input
                         value={row.tema}
@@ -261,7 +479,6 @@ export default function CalendarioPlanner() {
                         placeholder="Escreve o tema..."
                       />
                     </td>
-                    {/* PLATAFORMA — editável */}
                     <td className="px-4 py-3 min-w-[100px]">
                       <input
                         value={row.plataforma}
@@ -270,7 +487,6 @@ export default function CalendarioPlanner() {
                         placeholder="Plataforma..."
                       />
                     </td>
-                    {/* LÓGICA — editável */}
                     <td className="px-4 py-3 min-w-[160px]">
                       <input
                         value={row.logica}
@@ -286,24 +502,39 @@ export default function CalendarioPlanner() {
           </table>
         </div>
 
-        {/* Botão próximo passo */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
+        {/* CTAs */}
+        <div className="flex flex-col items-center gap-4">
+          {/* CTA principal — Gerar tudo */}
           <button
-            onClick={guardarEIr}
-            disabled={guardando}
-            className="bg-[#BFD64B] text-[#0A0E1A] font-bold py-4 px-10 rounded-xl text-lg hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={gerarBulk}
+            className="bg-[#BFD64B] text-[#0A0E1A] font-bold py-4 px-10 rounded-xl text-lg hover:opacity-90 transition-all flex items-center gap-3"
           >
-            {guardando ? "A guardar..." : "Usar este calendário → Gerar Conteúdo"}
+            <span>🚀</span>
+            Gerar conteúdo para todos os {rows.length} posts
           </button>
-          <a href="/content" className="text-[#8892a4] text-sm hover:text-[#BFD64B] transition-colors">
-            Ir para conteúdo sem guardar →
-          </a>
+          <p className="text-[#4a5568] text-xs">
+            A IA escreve o roteiro/copy de cada post. Tudo guardado no histórico automaticamente.
+          </p>
+
+          {/* CTAs secundários */}
+          <div className="flex gap-6 mt-2">
+            <button
+              onClick={guardarEIr}
+              disabled={guardando}
+              className="text-[#8892a4] text-sm hover:text-[#BFD64B] transition-colors disabled:opacity-50"
+            >
+              {guardando ? "A guardar..." : "Guardar e criar posts um a um →"}
+            </button>
+            <a href="/content" className="text-[#4a5568] text-sm hover:text-[#8892a4] transition-colors">
+              Ir para conteúdo sem guardar →
+            </a>
+          </div>
         </div>
       </div>
     );
   }
 
-  // --- FORMULÁRIO ---
+  // ─── FORMULÁRIO ──────────────────────────────────────────────────────────
   return (
     <div className="max-w-2xl mx-auto py-8">
 
@@ -317,7 +548,6 @@ export default function CalendarioPlanner() {
         <p className="text-[#8892a4] leading-relaxed">
           Define as regras. A IA monta o calendário — com temas reais para cada post.
         </p>
-        {/* Opção de saltar */}
         <div className="mt-5 pt-5 border-t border-[#1a2035]">
           <p className="text-[#4a5568] text-xs mb-2">Queres criar apenas 1 post agora?</p>
           <a
@@ -329,7 +559,6 @@ export default function CalendarioPlanner() {
         </div>
       </div>
 
-      {/* Aviso se não tem editorias */}
       {!temEditorias && (
         <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-4 mb-8">
           <p className="text-amber-400 text-sm">
@@ -341,7 +570,6 @@ export default function CalendarioPlanner() {
         </div>
       )}
 
-      {/* Editorias detectadas */}
       {temEditorias && (
         <div className="bg-[#BFD64B]/5 border border-[#BFD64B]/20 rounded-xl p-4 mb-8">
           <p className="text-[10px] font-bold tracking-widest text-[#BFD64B] mb-2">LINHAS EDITORIAIS DETECTADAS</p>
@@ -364,7 +592,6 @@ export default function CalendarioPlanner() {
 
       <div className="space-y-8">
 
-        {/* Pergunta 1 — Dias */}
         <div>
           <label className="block text-xs font-bold tracking-widest text-[#8892a4] mb-3">
             1. QUANTOS DIAS DE CALENDÁRIO?
@@ -407,7 +634,6 @@ export default function CalendarioPlanner() {
           )}
         </div>
 
-        {/* Pergunta 2 — Formatos */}
         <div>
           <label className="block text-xs font-bold tracking-widest text-[#8892a4] mb-3">
             2. QUE FORMATOS PUBLICAS POR DIA? <span className="text-[#4a5568] normal-case font-normal">(selecciona todos)</span>
@@ -441,7 +667,6 @@ export default function CalendarioPlanner() {
           )}
         </div>
 
-        {/* Pergunta 3 — Objectivo */}
         <div>
           <label className="block text-xs font-bold tracking-widest text-[#8892a4] mb-3">
             3. QUAL É O TEU OBJECTIVO NESTE PERÍODO?
@@ -464,15 +689,12 @@ export default function CalendarioPlanner() {
                   </span>
                   <span className="text-xs text-[#4a5568]">{o.desc}</span>
                 </div>
-                {form.objectivo === o.id && (
-                  <span className="ml-auto text-[#BFD64B] text-lg">✓</span>
-                )}
+                {form.objectivo === o.id && <span className="ml-auto text-[#BFD64B] text-lg">✓</span>}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Pergunta 4 — Data de início */}
         <div>
           <label className="block text-xs font-bold tracking-widest text-[#8892a4] mb-3">
             4. QUANDO COMEÇAS?
