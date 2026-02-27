@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { currentUser } from "@clerk/nextjs/server";
 import { isAdmin } from "@/lib/config/admins";
+import { syncUserProfile } from "@/lib/supabase/user-profiles";
 
 // Dashboard principal — rota protegida
 // Nova sequência: Genius Zone → Manifesto → Voice DNA → Content Factory
@@ -11,6 +12,18 @@ export default async function DashboardPage() {
   const geniusComplete    = user?.unsafeMetadata?.geniusComplete    as boolean;
   const manifestoComplete = user?.unsafeMetadata?.manifestoComplete as boolean;
   const vozDNAComplete    = user?.unsafeMetadata?.vozDNAComplete    as boolean;
+
+  // Sincroniza o perfil com Supabase sempre que o utilizador abre o dashboard
+  if (user && email) {
+    await syncUserProfile({
+      userId:            user.id,
+      email,
+      name:              user.firstName ? `${user.firstName} ${user.lastName ?? ""}`.trim() : null,
+      geniusComplete:    geniusComplete    ?? false,
+      manifestoComplete: manifestoComplete ?? false,
+      vozDNAComplete:    vozDNAComplete    ?? false,
+    });
+  }
 
   // Título dinâmico consoante o progresso
   const tituloHero = vozDNAComplete
