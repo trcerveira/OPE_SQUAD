@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { currentUser } from "@clerk/nextjs/server";
+import { isAdmin } from "@/lib/config/admins";
 
 // Dashboard principal — rota protegida
 // Nova sequência: Genius Zone → Manifesto → Voice DNA → Content Factory
 export default async function DashboardPage() {
   const user = await currentUser();
+  const email = user?.emailAddresses?.[0]?.emailAddress ?? null;
+  const admin = isAdmin(email);
   const geniusComplete    = user?.unsafeMetadata?.geniusComplete    as boolean;
   const manifestoComplete = user?.unsafeMetadata?.manifestoComplete as boolean;
   const vozDNAComplete    = user?.unsafeMetadata?.vozDNAComplete    as boolean;
@@ -25,6 +28,14 @@ export default async function DashboardPage() {
   return (
     <main className="px-8 py-10">
       <div className="max-w-2xl">
+
+        {/* Badge de Super Admin — visível só para admins */}
+        {admin && (
+          <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold tracking-widest px-4 py-2 rounded-full mb-4">
+            🔑 SUPER ADMIN
+          </div>
+        )}
+
         <div className="inline-flex items-center gap-2 bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] text-xs font-bold tracking-widest px-4 py-2 rounded-full mb-6">
           ⚡ CONTENT ENGINE V1
         </div>
