@@ -7,11 +7,7 @@ import { syncUserProfile } from "@/lib/supabase/user-profiles";
 // Nova sequência: Genius Zone → Manifesto → Voice DNA → Content Factory
 export default async function DashboardPage() {
   const user = await currentUser();
-  // Tenta obter email pelo endereço primário ou pelo primeiro da lista
-  const email =
-    user?.primaryEmailAddress?.emailAddress ??
-    user?.emailAddresses?.[0]?.emailAddress ??
-    null;
+  const email = user?.emailAddresses?.[0]?.emailAddress ?? null;
   const admin = isAdmin(email);
   const geniusComplete    = user?.unsafeMetadata?.geniusComplete    as boolean;
   const manifestoComplete = user?.unsafeMetadata?.manifestoComplete as boolean;
