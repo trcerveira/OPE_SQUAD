@@ -295,7 +295,7 @@ export default function ManifestoAssessment() {
           </h2>
           <p className="text-[#8892a4] text-base leading-relaxed">
             O Claude está a analisar as tuas respostas e a escrever o teu
-            manifesto na tua voz. Isto demora 15 a 30 segundos.
+            manifesto completo — 22 blocos na tua voz. Isto demora 30 a 60 segundos.
           </p>
         </div>
       </div>
@@ -328,23 +328,37 @@ export default function ManifestoAssessment() {
 
         {/* Blocos do manifesto */}
         <div className="max-w-3xl mx-auto px-8 py-16 space-y-20">
-          {blocos.map((bloco) => (
+          {blocos.map((bloco, idx) => (
             <div key={bloco.numero}>
-              <div className="text-[#BFD64B]/25 text-8xl font-black leading-none mb-4 select-none">
+              {/* Separador de parte (a cada 5 blocos) */}
+              {idx > 0 && parseInt(bloco.numero) % 5 === 1 && (
+                <div className="flex items-center gap-4 mb-20 -mt-4">
+                  <div className="flex-1 h-px bg-gradient-to-r from-[#BFD64B]/30 to-transparent" />
+                  <span className="text-[#BFD64B]/50 text-xs font-bold tracking-[0.2em]">
+                    PARTE {Math.ceil(parseInt(bloco.numero) / 5)}
+                  </span>
+                  <div className="flex-1 h-px bg-gradient-to-l from-[#BFD64B]/30 to-transparent" />
+                </div>
+              )}
+
+              <div className="text-[#BFD64B]/20 text-8xl font-black leading-none mb-4 select-none">
                 {bloco.numero}
               </div>
-              <h2 className="text-2xl font-bold text-[#F0ECE4] mb-4 leading-snug">
+              <h2 className="text-2xl font-bold text-[#F0ECE4] mb-5 leading-snug">
                 {bloco.titulo}
               </h2>
-              <p className="text-[#8892a4] text-base leading-relaxed mb-6">
-                {bloco.corpo}
-              </p>
+              {/* Corpo — texto completo, sem truncar */}
+              <div className="text-[#8892a4] text-base leading-[1.85] mb-7 space-y-4">
+                {bloco.corpo.split(/\n+/).map((para, i) => (
+                  <p key={i}>{para}</p>
+                ))}
+              </div>
               <div className="border-l-2 border-[#BFD64B] pl-5">
                 <p className="text-[#F0ECE4] font-medium text-base italic leading-relaxed">
                   &ldquo;{bloco.destaque}&rdquo;
                 </p>
               </div>
-              {bloco.numero !== "10" && (
+              {idx < blocos.length - 1 && (
                 <div className="mt-20 h-px bg-gradient-to-r from-transparent via-[#1a2035] to-transparent" />
               )}
             </div>

@@ -2,8 +2,6 @@ import Anthropic from "@anthropic-ai/sdk";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-// API que gera o manifesto personalizado com base nas 9 respostas do solopreneur
-
 interface ManifestoAnswers {
   especialidade: string;
   personalidade: string;
@@ -40,72 +38,103 @@ export async function POST(request: NextRequest) {
   const user = await currentUser();
   const nome = user?.firstName ?? "Solopreneur";
 
-  const systemPrompt = `És um especialista em criação de manifestos de marca para solopreneurs.
-Com base nas respostas de um solopreneur, cria o SEU manifesto pessoal — na primeira pessoa, com a voz deles, usando as suas palavras e expressões.
+  const systemPrompt = `És um especialista em criação de manifestos de marca para solopreneurs. O teu trabalho é criar documentos densos, autênticos e com profundidade real — não resumos superficiais.
 
-O manifesto deve ter exactamente 10 blocos numerados.
+Com base nas respostas de ${nome}, cria o SEU manifesto pessoal completo — na primeira pessoa, com a voz deles, usando as suas palavras exactas e expressões.
 
-Cada bloco tem:
-- numero: string de 2 dígitos ("01" a "10")
-- titulo: frase de impacto curta (máx 8 palavras, sem ponto final)
-- corpo: 2-3 frases explicativas na primeira pessoa, baseadas nas respostas do solopreneur
-- destaque: citação memorável entre aspas (máx 15 palavras), como se fosse uma frase de manifesto que o solopreneur diria
+O manifesto tem exactamente 22 blocos numerados, organizados em 6 partes temáticas.
+
+ESTRUTURA DOS 22 BLOCOS:
+
+PARTE I — QUEM SOU (blocos 01-05)
+01. Origem e percurso — de onde vieste, o que viveste, como chegaste aqui
+02. A especialidade — o que fazes melhor que ninguém no teu espaço
+03. O que te diferencia — o ângulo único, a perspectiva que mais ninguém tem
+04. A personalidade da marca — como a tua marca se manifesta no mundo
+05. Tom de voz e vocabulário — como falas, palavras que uses sempre vs nunca
+
+PARTE II — O QUE RECUSO (blocos 06-08)
+06. O que te irrita no mercado — o que discordas profundamente, o que te revolta ver
+07. O que nunca farás — os teus limites não negociáveis, as linhas que não cruzas
+08. Os teus padrões de qualidade — o que exiges de ti mesmo e do teu trabalho
+
+PARTE III — PARA QUEM (blocos 09-11)
+09. O teu cliente ideal — quem é exactamente, como pensa, como vive
+10. A dor que ninguém vê — o que os prende, o que não falam, o que sentem às 3 da manhã
+11. O momento de mudança — o que despoleta a decisão de procurar ajuda
+
+PARTE IV — A TRANSFORMAÇÃO (blocos 12-15)
+12. A promessa — o que transformas, em quê, sem quê
+13. A abordagem — como trabalhas, o teu processo, o que te distingue metodologicamente
+14. Os resultados concretos — o que consegue o teu cliente, em números ou realidades tangíveis
+15. A prova — exemplos, padrões que vês repetidamente nos teus clientes
+
+PARTE V — O QUE ACREDITO (blocos 16-18)
+16. A crença fundamental — a verdade central que governa tudo o que fazes
+17. Sobre conteúdo, consistência e presença digital — a tua filosofia
+18. Sobre negócios, dinheiro e sucesso — o que acreditas que a maioria não percebe
+
+PARTE VI — O PORQUÊ (blocos 19-22)
+19. A história que te trouxe aqui — a ferida, a promessa, o turning point real
+20. O que te move todos os dias — não a resposta bonita, a resposta verdadeira
+21. O impacto que queres ter no mundo — a mudança a 10 anos
+22. O compromisso — a declaração final, o que prometes às pessoas que te seguem
+
+FORMATO DE CADA BLOCO:
+- numero: "01" a "22"
+- titulo: frase de impacto (máx 10 palavras, sem ponto final, sem clichés)
+- corpo: 1 parágrafo denso e autêntico (5-7 frases) na primeira pessoa — usa as palavras exactas do solopreneur, vai fundo, não superficializa
+- destaque: a frase mais poderosa do bloco (máx 20 palavras), algo que queriam tatuar numa parede
 
 Responde APENAS com JSON válido, sem texto antes ou depois:
 {
   "blocks": [
     {"numero":"01","titulo":"...","corpo":"...","destaque":"..."},
-    {"numero":"02","titulo":"...","corpo":"...","destaque":"..."},
-    ...10 blocos no total...
+    ...22 blocos...
   ]
 }
 
 REGRAS ABSOLUTAS:
-- Escreve em Português europeu (não brasileiro)
-- A resposta 2 (Personalidade e voz) é a tua bússola de tom: se disseram "informal e directo", escreve assim; se listaram palavras que nunca usam, nunca as uses; se listaram palavras que sempre usam, usa-as
-- Usa as palavras e expressões exactas do solopreneur sempre que possível — o manifesto deve soar a eles, não a um template
-- Cada destaque é uma frase que alguém quereria guardar para sempre, escrita na sua voz
-- Nunca inventas informação que não está nas respostas
-- Os blocos devem fluir: quem sou → para quem → o que faço → porque importa → o compromisso`;
+- Português europeu (não brasileiro)
+- A resposta sobre personalidade/tom é a tua bússola: se listaram palavras proibidas, nunca as uses; se listaram palavras que sempre usam, usa-as em todos os blocos relevantes
+- Cada bloco tem 5-7 frases no corpo — não 2, não 3. Um parágrafo real com substância
+- Usa as expressões exactas do solopreneur — o manifesto soa a eles, não a um template de coaching
+- Nunca inventas — tudo tem de estar nas respostas
+- Destaque: uma frase que alguém guardaria para sempre, não um clichê motivacional
+- O fluxo do manifesto conta uma história: quem sou → o que recuso → para quem → como transformo → no que acredito → porque importa`;
 
-  const userPrompt = `Cria o manifesto de marca de ${nome}, um solopreneur.
+  const userPrompt = `Cria o manifesto completo de ${nome}.
 
 RESPOSTAS DA ENTREVISTA:
 
-BLOCO 1 — FUNDAMENTOS
-
-1. Especialidade e diferenciação no mercado:
+1. ESPECIALIDADE E DIFERENCIAÇÃO NO MERCADO:
 ${answers.especialidade}
 
-2. Personalidade da marca + tom de voz (palavras que usa sempre / palavras que nunca usa):
+2. PERSONALIDADE DA MARCA + TOM DE VOZ (palavras que usa sempre / nunca usa):
 ${answers.personalidade}
 
-3. O que irrita no mercado / o que se recusa a fazer:
+3. O QUE IRRITA NO MERCADO / O QUE SE RECUSA A FAZER:
 ${answers.irritacoes}
 
-BLOCO 2 — PÚBLICO E TRANSFORMAÇÃO
-
-4. Cliente ideal e dor mais profunda:
+4. CLIENTE IDEAL E DOR MAIS PROFUNDA:
 ${answers.publicoAlvo}
 
-5. Promessa de transformação:
+5. PROMESSA DE TRANSFORMAÇÃO:
 ${answers.transformacao}
 
-6. Resultados concretos que o cliente alcança:
+6. RESULTADOS CONCRETOS QUE O CLIENTE ALCANÇA:
 ${answers.resultados}
 
-BLOCO 3 — POSICIONAMENTO
-
-7. Crenças sobre negócios, conteúdo e empreendedorismo:
+7. CRENÇAS SOBRE NEGÓCIOS, CONTEÚDO E EMPREENDEDORISMO:
 ${answers.crencas}
 
-8. Grande porquê / propósito:
+8. GRANDE PORQUÊ / PROPÓSITO:
 ${answers.proposito}
 
-9. Impacto que quer ter no mercado:
+9. IMPACTO QUE QUER TER NO MERCADO:
 ${answers.visao}
 
-Agora cria o manifesto de 10 blocos em JSON, na primeira pessoa, usando as palavras e ideias de ${nome}.`;
+Agora cria os 22 blocos do manifesto em JSON. Cada bloco com 5-7 frases no corpo. Vai fundo. Usa as palavras de ${nome}.`;
 
   try {
     const anthropic = new Anthropic({
@@ -114,7 +143,7 @@ Agora cria o manifesto de 10 blocos em JSON, na primeira pessoa, usando as palav
 
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 2048,
+      max_tokens: 8000,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
     });
