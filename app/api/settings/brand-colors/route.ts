@@ -1,5 +1,5 @@
 import { auth } from '@clerk/nextjs/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServerClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 // Valida se um valor é uma cor hex válida (#RRGGBB)
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     }
   }
 
-  const supabase = await createClient()
+  const supabase = createServerClient()
 
   const { error } = await supabase
     .from('user_profiles')

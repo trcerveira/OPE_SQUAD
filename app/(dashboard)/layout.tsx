@@ -1,5 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import Navbar from "@/components/layout/Navbar";
 
 // Layout partilhado por todas as páginas do dashboard.
@@ -20,7 +20,7 @@ export default async function DashboardLayout({
   try {
     const user = await currentUser();
     if (user) {
-      const supabase = await createClient();
+      const supabase = createServerClient();
       const { data: profile } = await supabase
         .from("user_profiles")
         .select("brand_bg, brand_surface, brand_accent, brand_text")

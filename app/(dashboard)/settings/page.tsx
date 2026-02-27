@@ -1,6 +1,6 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import BrandColorPicker from "@/components/settings/BrandColorPicker";
 import Link from "next/link";
 
@@ -9,7 +9,7 @@ export default async function SettingsPage() {
   if (!user) redirect("/sign-in");
 
   // Busca as cores guardadas do utilizador
-  const supabase = await createClient();
+  const supabase = createServerClient();
   const { data: profile } = await supabase
     .from("user_profiles")
     .select("brand_bg, brand_surface, brand_accent, brand_text")
