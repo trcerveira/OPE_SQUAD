@@ -25,15 +25,15 @@ export default function Home() {
           <a href="#como-funciona" className="text-[#8892a4] text-sm hover:text-[#F0ECE4] transition-colors hidden md:block">
             Como Funciona
           </a>
-          <a href="#precos" className="text-[#8892a4] text-sm hover:text-[#F0ECE4] transition-colors hidden md:block">
-            Preços
+          <a href="#waitlist" className="text-[#8892a4] text-sm hover:text-[#F0ECE4] transition-colors hidden md:block">
+            Lista de Espera
           </a>
-          <Link
-            href="/sign-up"
+          <a
+            href="#waitlist"
             className="bg-[#BFD64B] text-[#0A0E1A] font-bold text-sm px-5 py-2 rounded-lg hover:opacity-90 transition-opacity"
           >
-            Começar Grátis
-          </Link>
+            Entrar na Lista →
+          </a>
         </div>
       </nav>
 
@@ -42,7 +42,7 @@ export default function Home() {
 
         {/* Badge de acesso antecipado — credibilidade real sem inventar números */}
         <div className="inline-flex items-center gap-2 bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] text-xs font-bold tracking-widest px-4 py-2 rounded-full mb-10">
-          ⚡ ACESSO ANTECIPADO ABERTO
+          🚀 EM BREVE — LISTA DE ESPERA ABERTA
         </div>
 
         {/* Headline — Schwartz: espelha o pensamento que eles já têm toda a semana */}
@@ -63,14 +63,14 @@ export default function Home() {
 
         {/* CTA Principal — Kennedy: específico, sem ambiguidade */}
         <div className="flex flex-col sm:flex-row items-center gap-4" id="trial">
-          <Link
-            href="/sign-up"
-            className="bg-[#BFD64B] text-[#0A0E1A] font-bold text-lg px-10 py-4 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto"
+          <a
+            href="#waitlist"
+            className="bg-[#BFD64B] text-[#0A0E1A] font-bold text-lg px-10 py-4 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto text-center"
           >
-            Quero criar conteúdo na minha voz →
-          </Link>
+            Quero estar na lista de espera →
+          </a>
           <span className="text-[#8892a4] text-sm">
-            Grátis para começar · Sem cartão
+            Grátis · Sem compromisso
           </span>
         </div>
 
@@ -284,9 +284,9 @@ export default function Home() {
       <section id="precos" className="px-6 py-20 border-t border-white/[0.08]">
         <div className="max-w-lg mx-auto">
           <div className="text-center mb-10">
-            <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-4">ACESSO</div>
+            <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-4">O QUE ESTÁ A SER CONSTRUÍDO</div>
             <h2 className="text-3xl md:text-4xl font-bold text-[#F0ECE4]">
-              Começa grátis.<br />Decide depois.
+              Tudo o que vais ter<br />quando lançarmos.
             </h2>
           </div>
 
@@ -309,22 +309,22 @@ export default function Home() {
 
             <div className="border-t border-white/[0.08] pt-6 mb-6">
               <div className="text-center">
-                <div className="text-[#8892a4] text-sm mb-1">Acesso antecipado</div>
+                <div className="text-[#8892a4] text-sm mb-1">Preço a anunciar em breve</div>
                 <div className="text-4xl font-bold text-[#F0ECE4]">
-                  Grátis
-                  <span className="text-lg text-[#8892a4] font-normal ml-2">para começar</span>
+                  Em breve
+                  <span className="text-lg text-[#8892a4] font-normal ml-2">— lista de espera aberta</span>
                 </div>
               </div>
             </div>
 
-            <Link
-              href="/sign-up"
+            <a
+              href="#waitlist"
               className="block bg-[#BFD64B] text-[#0A0E1A] font-bold py-4 text-center rounded-xl hover:opacity-90 transition-opacity text-lg"
             >
-              Quero começar agora →
-            </Link>
+              Entrar na lista de espera →
+            </a>
             <p className="text-[#8892a4] text-xs text-center mt-4">
-              Sem cartão. Sem compromisso. Sais quando quiseres.
+              Sem spam. Avisamos-te quando lançarmos.
             </p>
           </div>
         </div>
@@ -340,27 +340,27 @@ export default function Home() {
           <p className="text-[#8892a4] text-lg mb-10">
             15 minutos para configurar. Uma vida de conteúdo na tua voz.
           </p>
-          <Link
-            href="/sign-up"
+          <a
+            href="#waitlist"
             className="inline-block bg-[#BFD64B] text-[#0A0E1A] font-bold text-lg px-12 py-5 rounded-xl hover:opacity-90 transition-opacity"
           >
-            Começar agora — é grátis →
-          </Link>
+            Entrar na lista de espera →
+          </a>
         </div>
       </section>
 
-      {/* BETA WAITLIST */}
-      <section id="beta" className="px-6 py-20 border-t border-white/[0.08] bg-[#0d1117]">
+      {/* LISTA DE ESPERA */}
+      <section id="waitlist" className="px-6 py-20 border-t border-white/[0.08] bg-[#0d1117]">
         <div className="max-w-xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] text-xs font-bold tracking-widest px-4 py-2 rounded-full mb-8">
-            ⚡ BETA FECHADO — CANDIDATA-TE
+            🚀 LISTA DE ESPERA DE LANÇAMENTO
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-[#F0ECE4] mb-4 leading-tight">
-            Queres ser beta tester?
+            Sê o primeiro a saber.
           </h2>
           <p className="text-[#8892a4] text-lg mb-10 leading-relaxed">
-            Estamos a seleccionar os primeiros utilizadores a testar o OPB Crew.
-            Deixa o teu email — avisamos-te quando a tua vaga abrir.
+            O OPB Crew está a ser construído. Quando lançarmos,
+            avisamos-te — antes de toda a gente.
           </p>
           <BetaWaitlist />
         </div>
