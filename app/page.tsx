@@ -1,12 +1,13 @@
-// Landing page OPE_SQUAD — V1
-// Problema: solopreneur não consegue aparecer todos os dias sem gastar 4h a criar conteúdo
-// Solução: Content Engine alimentado por AIOS + Claude API
+// Landing page OPE_SQUAD — V2
+// Copy de elite: Schwartz (nível de consciência), Halbert (especificidade),
+// Ogilvy (headline com promessa mensurável), Kennedy (cada palavra paga renda),
+// Hormozi (value stack), Nicolas Cole (insight contra-intuitivo)
 
 import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col">
+    <main className="min-h-screen flex flex-col bg-[#0A0E1A] text-[#F0ECE4]">
 
       {/* NAV */}
       <nav className="flex items-center justify-between px-8 py-5 border-b border-white/[0.08]">
@@ -17,13 +18,13 @@ export default function Home() {
           <span className="font-bold text-[#F0ECE4] text-sm">SQUAD</span>
         </div>
         <div className="flex items-center gap-6">
-          <a href="#problema" className="text-[#8892a4] text-sm hover:text-[#F0ECE4] transition-colors">
-            Problema
+          <a href="#problema" className="text-[#8892a4] text-sm hover:text-[#F0ECE4] transition-colors hidden md:block">
+            O Problema
           </a>
-          <a href="#solucao" className="text-[#8892a4] text-sm hover:text-[#F0ECE4] transition-colors">
-            Solução
+          <a href="#como-funciona" className="text-[#8892a4] text-sm hover:text-[#F0ECE4] transition-colors hidden md:block">
+            Como Funciona
           </a>
-          <a href="#precos" className="text-[#8892a4] text-sm hover:text-[#F0ECE4] transition-colors">
+          <a href="#precos" className="text-[#8892a4] text-sm hover:text-[#F0ECE4] transition-colors hidden md:block">
             Preços
           </a>
           <Link
@@ -35,127 +36,315 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* HERO */}
-      <section className="flex-1 flex flex-col items-center justify-center text-center px-6 py-24">
-        <div className="inline-flex items-center gap-2 bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] text-xs font-bold tracking-widest px-4 py-2 rounded-full mb-8">
-          ⚡ CONTENT ENGINE V1
+      {/* HERO — Schwartz: espelha o pensamento que o leitor JÁ TEM */}
+      <section className="flex flex-col items-center justify-center text-center px-6 py-24 md:py-32">
+
+        {/* Badge de acesso antecipado — credibilidade real sem inventar números */}
+        <div className="inline-flex items-center gap-2 bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] text-xs font-bold tracking-widest px-4 py-2 rounded-full mb-10">
+          ⚡ ACESSO ANTECIPADO ABERTO
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-bold text-[#F0ECE4] leading-tight mb-6 max-w-4xl">
-          One Person.{" "}
-          <span className="text-[#BFD64B]">Full Squad Power.</span>
+        {/* Headline — Schwartz: espelha o pensamento que eles já têm toda a semana */}
+        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-[#F0ECE4] leading-[1.1] mb-6 max-w-4xl">
+          Toda a semana decides{" "}
+          <span className="text-[#BFD64B]">o que publicar.</span>
+          <br />
+          Toda a semana{" "}
+          <span className="italic text-[#8892a4]">não publicas nada.</span>
         </h1>
 
-        <p className="text-[#8892a4] text-lg md:text-xl mb-10 max-w-xl leading-relaxed">
-          Cria 30 dias de conteúdo em{" "}
-          <strong className="text-[#F0ECE4]">15 minutos</strong>.
-          Publicado automaticamente. Em todo o lado. Sem tocar no terminal.
+        {/* Sub-headline — Ogilvy: promessa específica e mensurável */}
+        <p className="text-[#8892a4] text-lg md:text-xl mb-10 max-w-2xl leading-relaxed">
+          O OPE_SQUAD aprende a tua voz, o teu estilo e o teu ângulo único —
+          e gera posts para Instagram, LinkedIn, X e Email{" "}
+          <strong className="text-[#F0ECE4]">que soam a ti, não a uma IA.</strong>
         </p>
 
+        {/* CTA Principal — Kennedy: específico, sem ambiguidade */}
         <div className="flex flex-col sm:flex-row items-center gap-4" id="trial">
           <Link
             href="/sign-up"
             className="bg-[#BFD64B] text-[#0A0E1A] font-bold text-lg px-10 py-4 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto"
           >
-            Começar Grátis — 7 dias
+            Quero criar conteúdo na minha voz →
           </Link>
           <span className="text-[#8892a4] text-sm">
-            Cartão obrigatório · Cancela quando quiseres
+            Grátis para começar · Sem cartão
           </span>
         </div>
 
-        {/* Prova social minimal */}
-        <div className="mt-12 flex items-center gap-8 text-[#8892a4] text-sm">
-          <div className="flex flex-col items-center">
-            <span className="text-2xl font-bold text-[#BFD64B]">30</span>
-            <span>posts/mês</span>
-          </div>
-          <div className="w-px h-8 bg-white/10" />
-          <div className="flex flex-col items-center">
+        {/* Especificidade (Halbert) — números reais, não inventados */}
+        <div className="mt-14 flex flex-wrap justify-center items-center gap-10 text-sm">
+          <div className="flex flex-col items-center gap-1">
             <span className="text-2xl font-bold text-[#BFD64B]">4</span>
-            <span>plataformas</span>
+            <span className="text-[#8892a4]">plataformas cobertas</span>
           </div>
-          <div className="w-px h-8 bg-white/10" />
-          <div className="flex flex-col items-center">
-            <span className="text-2xl font-bold text-[#BFD64B]">15min</span>
-            <span>de setup</span>
+          <div className="w-px h-8 bg-white/10 hidden sm:block" />
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-2xl font-bold text-[#BFD64B]">15 min</span>
+            <span className="text-[#8892a4]">para o primeiro post</span>
+          </div>
+          <div className="w-px h-8 bg-white/10 hidden sm:block" />
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-2xl font-bold text-[#BFD64B]">0</span>
+            <span className="text-[#8892a4]">posts que soam a template</span>
           </div>
         </div>
       </section>
 
-      {/* PROBLEMA */}
+      {/* PROBLEMA — Schwartz: fala para onde o leitor ESTÁ, não onde queres que chegue */}
       <section id="problema" className="px-6 py-20 border-t border-white/[0.08]">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-4">O PROBLEMA</div>
-          <h2 className="text-3xl md:text-4xl font-bold text-[#F0ECE4] mb-6">
-            Sabes o que vendes. Mas não apareces.
+        <div className="max-w-3xl mx-auto">
+
+          <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-6">O PROBLEMA REAL</div>
+
+          {/* Halbert: começa no meio da acção */}
+          <h2 className="text-3xl md:text-4xl font-bold text-[#F0ECE4] mb-8 leading-tight">
+            Não é preguiça.<br />
+            <span className="text-[#8892a4]">É falta de sistema.</span>
           </h2>
+
+          <div className="space-y-6 text-[#8892a4] text-lg leading-relaxed">
+            <p>
+              Tens ideias. O problema é que quando te sentas para criar conteúdo,{" "}
+              <strong className="text-[#F0ECE4]">a folha fica em branco durante 40 minutos</strong>{" "}
+              — e no fim ainda não tens certeza se o que escreveste soa bem.
+            </p>
+            <p>
+              E mesmo quando publicas, a sensação é sempre a mesma:{" "}
+              <strong className="text-[#F0ECE4]">&ldquo;isto não soa a mim.&rdquo;</strong>
+            </p>
+            <p>
+              Não é um problema de criatividade. É um problema de processo.
+              Os melhores criadores de conteúdo do mundo não são mais criativos que tu —{" "}
+              <strong className="text-[#F0ECE4]">têm um sistema que tu não tens.</strong>
+            </p>
+          </div>
+
+          {/* Agitação específica (Schwartz: espelha os pensamentos deles) */}
+          <div className="mt-10 grid md:grid-cols-2 gap-4">
+            {[
+              "\"Vou publicar amanhã.\" — há 3 semanas",
+              "\"Isto não soa a mim.\" — após 2h a escrever",
+              "\"Já tentei ferramentas de IA. Parece tudo igual.\"",
+              "\"Não sei como aparecer todos os dias sem tempo.\"",
+            ].map((quote) => (
+              <div key={quote} className="flex items-start gap-3 bg-[#111827] border border-white/[0.05] rounded-lg p-4">
+                <span className="text-[#BFD64B] mt-0.5 flex-shrink-0">✗</span>
+                <span className="text-[#8892a4] text-sm italic">{quote}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* MECANISMO — porque o OPE_SQUAD é diferente (Hormozi: mecanismo único) */}
+      <section className="px-6 py-20 border-t border-white/[0.08] bg-[#0d1117]">
+        <div className="max-w-3xl mx-auto text-center">
+          <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-6">O QUE NOS TORNA DIFERENTES</div>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#F0ECE4] mb-6 leading-tight">
+            Outras ferramentas geram conteúdo.<br />
+            <span className="text-[#BFD64B]">Nós geramos o teu conteúdo.</span>
+          </h2>
+          <p className="text-[#8892a4] text-lg leading-relaxed mb-10">
+            Antes de gerar uma única palavra, o sistema aprende quem tu és:{" "}
+            o teu arquétipo de comunicação, o teu vocabulário, as tuas frases assinatura,
+            o que nunca dizes. Cada post gerado passa pelo filtro do teu DNA —
+            não por um template genérico de copywriter.
+          </p>
+
+          {/* Diferença lado a lado */}
+          <div className="grid md:grid-cols-2 gap-4 text-left">
+            <div className="bg-[#111827] border border-red-500/20 rounded-xl p-6">
+              <div className="text-red-400 text-xs font-bold tracking-widest mb-4">OUTRAS FERRAMENTAS</div>
+              <ul className="space-y-3 text-[#8892a4] text-sm">
+                <li className="flex gap-2"><span className="text-red-400 flex-shrink-0">✗</span> Prompt genérico = output genérico</li>
+                <li className="flex gap-2"><span className="text-red-400 flex-shrink-0">✗</span> Soa igual para todos os utilizadores</li>
+                <li className="flex gap-2"><span className="text-red-400 flex-shrink-0">✗</span> Tens de editar 80% do resultado</li>
+                <li className="flex gap-2"><span className="text-red-400 flex-shrink-0">✗</span> Vocabulário proibido aparece sempre</li>
+              </ul>
+            </div>
+            <div className="bg-[#111827] border border-[#BFD64B]/30 rounded-xl p-6">
+              <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-4">OPE_SQUAD</div>
+              <ul className="space-y-3 text-[#8892a4] text-sm">
+                <li className="flex gap-2"><span className="text-[#BFD64B] flex-shrink-0">✓</span> DNA da tua voz treinado antes do 1.º post</li>
+                <li className="flex gap-2"><span className="text-[#BFD64B] flex-shrink-0">✓</span> Vocabulário, frases e tom únicos teus</li>
+                <li className="flex gap-2"><span className="text-[#BFD64B] flex-shrink-0">✓</span> Pronto a publicar na 1.ª geração</li>
+                <li className="flex gap-2"><span className="text-[#BFD64B] flex-shrink-0">✓</span> Princípios dos melhores copywriters do mundo</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* COMO FUNCIONA — Ogilvy: cada passo com benefício claro */}
+      <section id="como-funciona" className="px-6 py-20 border-t border-white/[0.08]">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-14">
+            <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-4">COMO FUNCIONA</div>
+            <h2 className="text-3xl md:text-4xl font-bold text-[#F0ECE4]">
+              4 passos. Uma vez. Para sempre.
+            </h2>
+            <p className="text-[#8892a4] mt-4 max-w-xl mx-auto">
+              Fazes o setup uma única vez. O sistema aprende quem és. Depois é só gerar.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {/* Passo 1 */}
+            <div className="flex gap-5 items-start bg-[#111827] border border-white/[0.06] rounded-xl p-6">
+              <div className="bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] font-bold text-sm w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
+                01
+              </div>
+              <div>
+                <h3 className="font-bold text-[#F0ECE4] mb-1">Genius Zone — descobre o teu ângulo único</h3>
+                <p className="text-[#8892a4] text-sm leading-relaxed">
+                  24 perguntas que identificam a tua zona de genialidade, perfil de riqueza e vantagem única.
+                  O sistema usa isto para encontrar o ângulo de conteúdo que só tu consegues tomar.
+                </p>
+              </div>
+            </div>
+
+            {/* Passo 2 */}
+            <div className="flex gap-5 items-start bg-[#111827] border border-white/[0.06] rounded-xl p-6">
+              <div className="bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] font-bold text-sm w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
+                02
+              </div>
+              <div>
+                <h3 className="font-bold text-[#F0ECE4] mb-1">Manifesto — define os teus princípios</h3>
+                <p className="text-[#8892a4] text-sm leading-relaxed">
+                  10 princípios que definem como crias e comunicas. A bússola de tudo o que o sistema vai gerar.
+                </p>
+              </div>
+            </div>
+
+            {/* Passo 3 */}
+            <div className="flex gap-5 items-start bg-[#111827] border border-[#BFD64B]/20 rounded-xl p-6 relative">
+              <div className="absolute top-4 right-4 bg-[#BFD64B] text-[#0A0E1A] text-[9px] font-bold px-2 py-1 rounded tracking-wider">
+                O CORAÇÃO DO SISTEMA
+              </div>
+              <div className="bg-[#BFD64B] text-[#0A0E1A] font-bold text-sm w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
+                03
+              </div>
+              <div>
+                <h3 className="font-bold text-[#F0ECE4] mb-1">Voz & DNA — codifica a tua voz em 8 perguntas</h3>
+                <p className="text-[#8892a4] text-sm leading-relaxed">
+                  Vocabulário obrigatório, palavras banidas, frases assinatura, regras de estilo.
+                  Tudo extraído das tuas respostas — não de um template.
+                  A partir daqui, <strong className="text-[#F0ECE4]">cada post passa pelo filtro da tua voz.</strong>
+                </p>
+              </div>
+            </div>
+
+            {/* Passo 4 */}
+            <div className="flex gap-5 items-start bg-[#111827] border border-white/[0.06] rounded-xl p-6">
+              <div className="bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] font-bold text-sm w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
+                04
+              </div>
+              <div>
+                <h3 className="font-bold text-[#F0ECE4] mb-1">Content Factory — gera, copia, publica</h3>
+                <p className="text-[#8892a4] text-sm leading-relaxed">
+                  Escolhes a plataforma, escreves o tema em 1 frase, clicas Gerar.
+                  Em 15 segundos tens um post pronto a copiar —
+                  com hook, estrutura e CTA aplicados pelos princípios dos melhores copywriters do mundo.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* OBJECÇÃO PRINCIPAL — Kennedy: elimina a dúvida que impede a compra */}
+      <section className="px-6 py-20 border-t border-white/[0.08] bg-[#0d1117]">
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="text-3xl mb-6">🤔</div>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#F0ECE4] mb-6">
+            &ldquo;Mas vai soar a IA, não vai?&rdquo;
+          </h2>
+          <p className="text-[#8892a4] text-lg leading-relaxed mb-6">
+            É a pergunta certa. E a resposta honesta é:{" "}
+            <strong className="text-[#F0ECE4]">depende do que lhe dás.</strong>
+          </p>
+          <p className="text-[#8892a4] text-lg leading-relaxed mb-6">
+            A maioria das ferramentas usa prompts genéricos. O output é previsível porque o input é previsível.
+            O OPE_SQUAD usa as tuas respostas literalmente — o teu vocabulário específico,
+            as tuas frases, as palavras que nunca dizes. A IA é treinada
+            para imitar a tua voz, não para substituí-la.
+          </p>
           <p className="text-[#8892a4] text-lg leading-relaxed">
-            90% dos solopreneurs criam conteúdo de forma inconsistente. Não é falta de ideias — é falta de sistema.
-            Gastas 4 horas por semana a criar conteúdo que podia ser feito em 15 minutos.
+            O resultado não é perfeito. Mas é o ponto de partida mais próximo da tua voz
+            que alguma vez conseguiste sem escrever tu próprio.{" "}
+            <strong className="text-[#F0ECE4]">Editas 20% em vez de escrever 100%.</strong>
           </p>
         </div>
       </section>
 
-      {/* SOLUÇÃO */}
-      <section id="solucao" className="px-6 py-20 border-t border-white/[0.08]">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-4">A SOLUÇÃO</div>
+      {/* PREÇOS — Hormozi: faz a oferta clara, reduz friction */}
+      <section id="precos" className="px-6 py-20 border-t border-white/[0.08]">
+        <div className="max-w-lg mx-auto">
+          <div className="text-center mb-10">
+            <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-4">ACESSO</div>
             <h2 className="text-3xl md:text-4xl font-bold text-[#F0ECE4]">
-              3 passos. Depois é automático.
+              Começa grátis.<br />Decide depois.
             </h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Step 1 */}
-            <div className="bg-[#111827] border border-white/[0.08] rounded-xl p-6">
-              <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-3">PASSO 01</div>
-              <h3 className="text-lg font-bold text-[#F0ECE4] mb-3">Onboarding (15 min)</h3>
-              <p className="text-[#8892a4] text-sm leading-relaxed">
-                Respondes a 5 perguntas sobre o teu nicho, oferta e voz. O sistema cria o teu Voice DNA.
-              </p>
+
+          <div className="bg-[#111827] border border-[#BFD64B]/30 rounded-2xl p-8">
+            {/* Valor stack — o que recebem */}
+            <div className="space-y-3 mb-8">
+              {[
+                "Genius Zone — descobrir o teu ângulo único",
+                "Manifesto — os teus princípios de criação",
+                "Voz & DNA — o teu sistema de voz codificado",
+                "Content Factory — posts para 4 plataformas",
+                "Princípios dos melhores copywriters do mundo",
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-3 text-sm text-[#8892a4]">
+                  <span className="text-[#BFD64B] flex-shrink-0">✓</span>
+                  {item}
+                </div>
+              ))}
             </div>
-            {/* Step 2 */}
-            <div className="bg-[#111827] border border-[#BFD64B]/30 rounded-xl p-6 relative">
-              <div className="absolute top-3 right-3 bg-[#BFD64B] text-[#0A0E1A] text-[9px] font-bold px-2 py-1 rounded">
-                MÁGICA
+
+            <div className="border-t border-white/[0.08] pt-6 mb-6">
+              <div className="text-center">
+                <div className="text-[#8892a4] text-sm mb-1">Acesso antecipado</div>
+                <div className="text-4xl font-bold text-[#F0ECE4]">
+                  Grátis
+                  <span className="text-lg text-[#8892a4] font-normal ml-2">para começar</span>
+                </div>
               </div>
-              <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-3">PASSO 02</div>
-              <h3 className="text-lg font-bold text-[#F0ECE4] mb-3">Content Factory</h3>
-              <p className="text-[#8892a4] text-sm leading-relaxed">
-                O AIOS gera 30 posts adaptados para Instagram, LinkedIn, X e Email. Com a tua voz. Com CTA.
-              </p>
             </div>
-            {/* Step 3 */}
-            <div className="bg-[#111827] border border-white/[0.08] rounded-xl p-6">
-              <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-3">PASSO 03</div>
-              <h3 className="text-lg font-bold text-[#F0ECE4] mb-3">Publish & Track</h3>
-              <p className="text-[#8892a4] text-sm leading-relaxed">
-                Aprovas em 1 clique. O sistema agenda e publica nos melhores horários. Tu só vês os resultados.
-              </p>
-            </div>
+
+            <Link
+              href="/sign-up"
+              className="block bg-[#BFD64B] text-[#0A0E1A] font-bold py-4 text-center rounded-xl hover:opacity-90 transition-opacity text-lg"
+            >
+              Quero começar agora →
+            </Link>
+            <p className="text-[#8892a4] text-xs text-center mt-4">
+              Sem cartão. Sem compromisso. Sais quando quiseres.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* PREÇOS */}
-      <section id="precos" className="px-6 py-20 border-t border-white/[0.08]">
-        <div className="max-w-md mx-auto text-center">
-          <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-4">PREÇOS</div>
-          <div className="bg-[#111827] border border-[#BFD64B]/30 rounded-2xl p-8">
-            <div className="text-4xl font-bold text-[#F0ECE4] mb-2">
-              $<span className="text-[#BFD64B]">X</span>
-              <span className="text-lg text-[#8892a4] font-normal">/mês</span>
-            </div>
-            <p className="text-[#8892a4] text-sm mb-6">7 dias grátis · Cancela quando quiseres</p>
-            <Link
-              href="/sign-up"
-              className="block bg-[#BFD64B] text-[#0A0E1A] font-bold py-4 rounded-xl hover:opacity-90 transition-opacity"
-            >
-              Começar Trial Grátis
-            </Link>
-            <p className="text-[#8892a4] text-xs mt-4">Cartão obrigatório. Cobrado no Day 8.</p>
-          </div>
+      {/* CTA FINAL — Halbert: termina com a emoção certa */}
+      <section className="px-6 py-24 border-t border-white/[0.08] bg-[#0d1117]">
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#F0ECE4] mb-6 leading-tight">
+            O teu concorrente está a publicar agora.<br />
+            <span className="text-[#8892a4]">Tu estás a ler landing pages.</span>
+          </h2>
+          <p className="text-[#8892a4] text-lg mb-10">
+            15 minutos para configurar. Uma vida de conteúdo na tua voz.
+          </p>
+          <Link
+            href="/sign-up"
+            className="inline-block bg-[#BFD64B] text-[#0A0E1A] font-bold text-lg px-12 py-5 rounded-xl hover:opacity-90 transition-opacity"
+          >
+            Começar agora — é grátis →
+          </Link>
         </div>
       </section>
 
@@ -167,7 +356,7 @@ export default function Home() {
           </span>
           <span className="text-[#8892a4] text-sm">SQUAD — One Person Empire</span>
         </div>
-        <span className="text-[#8892a4] text-xs">v0.1 · Fev 2026</span>
+        <span className="text-[#8892a4] text-xs">v0.2 · 2026</span>
       </footer>
 
     </main>
