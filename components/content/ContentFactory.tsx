@@ -204,7 +204,7 @@ export default function ContentFactory() {
                   {topicSuggestions.map((s, i) => (
                     <button
                       key={i}
-                      onClick={() => setTopic(voiceDNA.niche ? s.replace("[o meu nicho]", voiceDNA.niche) : s)}
+                      onClick={() => setTopic(s)}
                       className="text-xs text-[#8892a4] border border-[#2a3555] rounded-lg px-3 py-1.5 hover:border-[#BFD64B]/50 hover:text-[#F0ECE4] transition-all"
                     >
                       {s.length > 50 ? s.substring(0, 50) + "..." : s}
