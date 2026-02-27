@@ -2,7 +2,10 @@
 
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const LS_KEY_DNA     = "opesquad_voz_dna";
+const LS_KEY_ANSWERS = "opesquad_voz_dna_answers";
 
 // Entrevista de 8 perguntas que gera o DNA de voz da marca via Claude
 // Passo 3 da sequência: Genius Zone → Manifesto → Voz & DNA → Content
@@ -143,7 +146,7 @@ const progresso: Record<Fase, number> = {
 };
 
 export default function VozDNAAssessment() {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("intro");
   const [respostas, setRespostas] = useState<Respostas>({
@@ -160,6 +163,23 @@ export default function VozDNAAssessment() {
   const [erro, setErro] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [guardado, setGuardado] = useState(false);
+
+  // Ao montar: verifica se já existe DNA guardado no localStorage (sessão anterior)
+  useEffect(() => {
+    try {
+      const dnaGuardado = localStorage.getItem(LS_KEY_DNA);
+      const respostasGuardadas = localStorage.getItem(LS_KEY_ANSWERS);
+      if (dnaGuardado) {
+        setDna(JSON.parse(dnaGuardado));
+        setFase("resultado");
+      }
+      if (respostasGuardadas) {
+        setRespostas(JSON.parse(respostasGuardadas));
+      }
+    } catch {
+      // localStorage indisponível (SSR ou bloqueado) — continua normalmente
+    }
+  }, []);
 
   function handleChange(key: keyof Respostas, value: string) {
     setRespostas((prev) => ({ ...prev, [key]: value }));
@@ -182,6 +202,13 @@ export default function VozDNAAssessment() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Erro desconhecido");
+
+      // Guarda no localStorage imediatamente (backup rápido, sem depender do Clerk)
+      try {
+        localStorage.setItem(LS_KEY_DNA, JSON.stringify(data.dna));
+        localStorage.setItem(LS_KEY_ANSWERS, JSON.stringify(respostas));
+      } catch { /* localStorage pode estar cheio ou bloqueado */ }
+
       setDna(data.dna);
       setFase("resultado");
     } catch (err) {
@@ -191,24 +218,42 @@ export default function VozDNAAssessment() {
   }
 
   async function guardarDNA() {
+    if (!isLoaded) {
+      setErro("A carregar sessão... tenta novamente em segundos.");
+      return;
+    }
     if (!user) {
-      setErro("Sessão não encontrada. Recarrega a página e tenta novamente.");
+      setErro("Sessão expirada. Recarrega a página e tenta novamente.");
       return;
     }
     if (!dna) return;
+
     setGuardando(true);
     setErro(null);
+
     try {
-      // Guarda só o necessário — o DNA completo é grande demais para metadata do Clerk
+      // Clerk metadata: apenas o DNA essencial (sem exemplos, sem respostas cruas)
+      // Tudo o que o Content Factory precisa para gerar conteúdo na voz correcta:
+      // ~1.4KB — bem dentro do limite de 8KB do Clerk
+      const dnaParaClerk = {
+        arquetipo:          dna.arquetipo,
+        descricaoArquetipo: dna.descricaoArquetipo,
+        tomEmTresPalavras:  dna.tomEmTresPalavras,
+        vocabularioActivo:  dna.vocabularioActivo,
+        vocabularioProibido: dna.vocabularioProibido,
+        frasesAssinatura:   dna.frasesAssinatura,
+        regrasEstilo:       dna.regrasEstilo,
+        // exemplos omitidos — são só para display, não para geração de conteúdo
+      };
+
       await user.update({
         unsafeMetadata: {
           ...user.unsafeMetadata,
           vozDNAComplete: true,
-          vozDNAAnswers: respostas,
-          vozDNAArquetipo: dna.arquetipo,
-          vozDNATom: dna.tomEmTresPalavras,
+          vozDNA: dnaParaClerk,
         },
       });
+
       setGuardado(true);
       setTimeout(() => router.push("/content"), 1400);
     } catch (err) {
@@ -264,12 +309,28 @@ export default function VozDNAAssessment() {
             ))}
           </div>
 
-          <button
-            onClick={() => setFase("bloco1")}
-            className="inline-flex items-center gap-3 bg-[#BFD64B] text-[#0A0E1A] font-bold px-10 py-4 rounded-xl text-lg hover:opacity-90 transition-all"
-          >
-            Definir o meu DNA →
-          </button>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button
+              onClick={() => setFase("bloco1")}
+              className="inline-flex items-center gap-3 bg-[#BFD64B] text-[#0A0E1A] font-bold px-10 py-4 rounded-xl text-lg hover:opacity-90 transition-all"
+            >
+              Definir o meu DNA →
+            </button>
+            {/* Botão só aparece se já existe DNA guardado localmente */}
+            {typeof window !== "undefined" && localStorage.getItem(LS_KEY_DNA) && (
+              <button
+                onClick={() => {
+                  try {
+                    const saved = localStorage.getItem(LS_KEY_DNA);
+                    if (saved) { setDna(JSON.parse(saved)); setFase("resultado"); }
+                  } catch { setFase("bloco1"); }
+                }}
+                className="inline-flex items-center gap-2 border border-[#BFD64B]/30 text-[#BFD64B] font-bold px-8 py-4 rounded-xl text-base hover:bg-[#BFD64B]/5 transition-all"
+              >
+                Ver DNA anterior →
+              </button>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -413,11 +474,21 @@ export default function VozDNAAssessment() {
               ) : (
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button
-                    onClick={() => { guardarDNA().catch((err) => { setErro(err instanceof Error ? err.message : "Erro inesperado."); setGuardando(false); }); }}
-                    disabled={guardando}
+                    onClick={() => {
+                      guardarDNA().catch((err) => {
+                        setErro(err instanceof Error ? err.message : "Erro inesperado.");
+                        setGuardando(false);
+                      });
+                    }}
+                    disabled={guardando || !isLoaded}
                     className="inline-flex items-center gap-3 bg-[#BFD64B] text-[#0A0E1A] font-bold px-10 py-4 rounded-xl text-lg hover:opacity-90 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    {guardando ? (
+                    {!isLoaded ? (
+                      <>
+                        <span className="w-5 h-5 border-2 border-[#0A0E1A]/30 border-t-[#0A0E1A] rounded-full animate-spin" />
+                        A carregar sessão...
+                      </>
+                    ) : guardando ? (
                       <>
                         <span className="w-5 h-5 border-2 border-[#0A0E1A]/30 border-t-[#0A0E1A] rounded-full animate-spin" />
                         A activar...
