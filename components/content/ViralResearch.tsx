@@ -141,7 +141,7 @@ export default function ViralResearch({ selectedPlatform, topic, onSelectAngle }
 
                 {/* Hook */}
                 <p className="text-[#F0ECE4] text-sm leading-relaxed mb-2">
-                  "{angle.hook}"
+                  &quot;{angle.hook}&quot;
                 </p>
 
                 {/* Porque único */}
