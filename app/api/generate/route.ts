@@ -3,16 +3,18 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 
-// Tipos para o Voice DNA guardado no Clerk
-interface VoiceDNA {
-  niche?: string;
-  offer?: string;
-  pain?: string;
-  tone?: string;
-  differentiator?: string;
+// Formato do DNA de Voz guardado no Clerk (gerado pelo módulo Voz & DNA)
+interface VozDNA {
+  arquetipo?: string;
+  descricaoArquetipo?: string;
+  tomEmTresPalavras?: string[];
+  vocabularioActivo?: string[];
+  vocabularioProibido?: string[];
+  frasesAssinatura?: string[];
+  regrasEstilo?: string[];
 }
 
-// Tipos para o Genius Profile guardado no Clerk
+// Genius Profile gerado pelo módulo Genius Zone
 interface GeniusProfile {
   hendricksZone?: string;
   wealthProfile?: string;
@@ -20,58 +22,48 @@ interface GeniusProfile {
   fascinationAdvantage?: string;
 }
 
-// Mapeia as plataformas para instruções de formato específicas
+// Instruções de formato por plataforma
 const platformFormats: Record<string, string> = {
   instagram: `
-Formato: Post para Instagram
-- Máximo 2200 caracteres mas mantém conciso (ideal 150-300 palavras)
-- Começa com um hook forte na primeira linha (sem introduções)
-- Usa quebras de linha para facilitar leitura
-- Inclui 3-5 hashtags relevantes no final (separadas por linha)
-- Tom: directo e pessoal, como se fosse um story escrito`,
+FORMATO: Post para Instagram
+- Máximo 2200 caracteres, ideal 150-300 palavras
+- Primeira linha: hook forte que para o scroll (sem introdução, sem "Hoje vou falar de")
+- Quebras de linha generosas para facilitar leitura no mobile
+- 3-5 hashtags relevantes separadas no final
+- Tom: directo e pessoal, como um story escrito`,
 
   linkedin: `
-Formato: Post para LinkedIn
+FORMATO: Post para LinkedIn
 - 150-300 palavras
-- Primeira linha é o hook (aparece antes do "ver mais")
-- Usa espaçamento generoso entre parágrafos
-- Termina com uma pergunta ou call to action
+- Primeira linha: hook que apareça antes do "ver mais" (máx 2 linhas)
+- Espaçamento entre parágrafos — nunca blocos densos
+- Termina com pergunta ou call-to-action
 - Tom: profissional mas humano, primeira pessoa`,
 
   twitter: `
-Formato: Thread para X/Twitter
-- 3-5 tweets encadeados
-- Tweet 1: Hook forte (máximo 280 caracteres)
-- Tweets 2-4: Desenvolvimento do argumento (máximo 280 cada)
+FORMATO: Thread para X/Twitter
+- 4-6 tweets encadeados
+- Tweet 1: Hook irresistível (máx 280 caracteres)
+- Tweets 2-4: Desenvolvimento (máx 280 cada)
 - Tweet final: Conclusão + CTA
-- Formato: numera com (1/5), (2/5), etc.
-- Tom: directo, sem rodeios`,
+- Numera cada tweet: (1/5), (2/5), etc.
+- Tom: directo, sem rodeios, cada tweet tem impacto próprio`,
 
   email: `
-Formato: Email para lista de subscribers
-- Assunto: curto e intrigante (máximo 50 caracteres)
+FORMATO: Email para lista de subscribers
+- Linha de assunto: curta e intrigante (máx 50 caracteres)
 - Corpo: 200-400 palavras
-- Estrutura: Hook → Problema → Solução → CTA
-- Tom: conversa 1:1, como se fosse para um amigo
-- Termina com um único CTA claro`,
-};
-
-// Tom de voz baseado na escolha do utilizador
-const toneInstructions: Record<string, string> = {
-  directo: "Tom directo e sem filtros: vai ao ponto, verdade primeiro, sem rodeios.",
-  inspirador: "Tom inspirador e motivacional: energiza e motiva as pessoas a agir.",
-  educativo: "Tom educativo e detalhado: explica o porquê com dados e exemplos.",
-  casual: "Tom casual como um amigo: conversa como se fosse tomar café.",
+- Estrutura: Hook → Problema → Solução → CTA único
+- Tom: conversa 1:1, como escrita para um amigo
+- Um único CTA claro no final`,
 };
 
 export async function POST(request: NextRequest) {
-  // Verifica autenticação
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
   }
 
-  // Verifica se a API key está configurada
   if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json(
       { error: "ANTHROPIC_API_KEY não configurada no .env.local" },
@@ -79,15 +71,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Lê o body do pedido
-  let body: { platform: string; topic: string; voiceDNA: VoiceDNA };
+  let body: { platform: string; topic: string; vozDNA?: VozDNA };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Body inválido" }, { status: 400 });
   }
 
-  const { platform, topic, voiceDNA } = body;
+  const { platform, topic, vozDNA } = body;
 
   if (!platform || !topic) {
     return NextResponse.json(
@@ -96,12 +87,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Obtém o utilizador para ter o nome e o Genius Profile
   const user = await currentUser();
   const authorName = user?.firstName ?? "Coach";
-  const geniusProfile = user?.unsafeMetadata?.geniusProfile as GeniusProfile | undefined;
 
-  // Secção do Genius Profile (só incluída se existir)
+  // Genius Profile (enriquece o ângulo do conteúdo se existir)
+  const geniusProfile = user?.unsafeMetadata?.geniusProfile as GeniusProfile | undefined;
   const geniusSection = geniusProfile
     ? `
 GENIUS PROFILE DE ${authorName.toUpperCase()}:
@@ -110,37 +100,56 @@ GENIUS PROFILE DE ${authorName.toUpperCase()}:
 - Modo de Acção (Kolbe): ${geniusProfile.kolbeMode ?? "não definido"}
 - Vantagem Fascinante (Hogshead): ${geniusProfile.fascinationAdvantage ?? "não definida"}
 
-Usa o Genius Profile para posicionar o conteúdo no ângulo único desta pessoa:
-- Se o perfil é "star": conteúdo centrado na história pessoal e marca pessoal
-- Se o perfil é "creator": conteúdo focado em inovação e perspectivas únicas
-- Se o perfil é "mechanic": conteúdo sobre sistemas, processos e resultados mensuráveis
-- Se a vantagem é "passion": conteúdo com emoção e conexão humana
-- Se a vantagem é "power": conteúdo directo, sem filtros, com autoridade
-- Adapta o ângulo ao perfil real — não ao perfil genérico.`
+Usa o Genius Profile para posicionar o conteúdo no ângulo único desta pessoa.`
     : "";
 
-  // Constrói o system prompt com Voice DNA + Genius Profile + MaaS
+  // DNA de Voz — o coração do system prompt
+  // Constrói as secções dinamicamente conforme o que existe
+  const vozDNASection = vozDNA
+    ? `
+VOZ & DNA DE ${authorName.toUpperCase()}:
+
+Arquétipo de comunicação: ${vozDNA.arquetipo ?? "Mentor Directo"}
+${vozDNA.descricaoArquetipo ? `Descrição: ${vozDNA.descricaoArquetipo}` : ""}
+
+Tom em 3 palavras: ${vozDNA.tomEmTresPalavras?.join(", ") ?? "Directo, Autêntico, Prático"}
+
+VOCABULÁRIO OBRIGATÓRIO — usa estas palavras e expressões sempre que natural:
+${vozDNA.vocabularioActivo?.map((w) => `• ${w}`).join("\n") ?? "• sistema • prova • consistência • resultados reais"}
+
+VOCABULÁRIO PROIBIDO — nunca usar estas palavras:
+${vozDNA.vocabularioProibido?.map((w) => `• ${w}`).join("\n") ?? "• fácil • rápido • truque • segredo"}
+
+FRASES ASSINATURA — incorpora quando relevante:
+${vozDNA.frasesAssinatura?.map((f) => `• "${f}"`).join("\n") ?? ""}
+
+REGRAS DE ESTILO (seguir rigorosamente):
+${vozDNA.regrasEstilo?.map((r, i) => `${i + 1}. ${r}`).join("\n") ?? "1. Vai directo ao ponto\n2. Usa linguagem acessível\n3. Termina com acção clara"}`
+    : `
+VOZ & DNA DE ${authorName.toUpperCase()}:
+Tom: directo, autêntico, sem filtros corporativos
+Vocabulário proibido: fácil, rápido, truque, segredo, incrível
+Princípio: vai ao ponto, usa a linguagem do leitor, termina com acção`;
+
   const systemPrompt = `És um especialista em criação de conteúdo para ${authorName}, um solopreneur.
 
-VOICE DNA DE ${authorName.toUpperCase()}:
-- Nicho: ${voiceDNA?.niche ?? "solopreneurs e negócios digitais"}
-- Oferta principal: ${voiceDNA?.offer ?? "produto ou serviço digital"}
-- Dor do cliente: ${voiceDNA?.pain ?? "falta de tempo e resultados"}
-- Tom de voz: ${toneInstructions[voiceDNA?.tone ?? "directo"]}
-- Diferencial: ${voiceDNA?.differentiator ?? "abordagem única e prática"}
+O teu único objectivo: gerar conteúdo que soe EXACTAMENTE a ${authorName} — não a um copywriter, não a uma IA, não a um template.
+${vozDNASection}
 ${geniusSection}
 REGRAS ABSOLUTAS:
 1. Escreve NA VOZ de ${authorName} — primeira pessoa, como se ele próprio escrevesse
-2. Usa APENAS o tom definido no Voice DNA — nunca genérico
-3. Referencia a dor e o diferencial quando relevante
-4. Zero jargão sem explicação — linguagem acessível
-5. Cada peça termina com UMA acção clara para o leitor
-6. Nunca inventas resultados, números ou prova social falsa
-7. O conteúdo deve soar autêntico, não a marketing
+2. NUNCA uses as palavras do vocabulário proibido acima
+3. USA as palavras do vocabulário activo de forma natural
+4. As frases assinatura podem aparecer quando encaixam — nunca forçadas
+5. Segue as regras de estilo à risca
+6. Zero jargão sem explicação — linguagem que o cliente ideal entende
+7. Cada peça termina com UMA acção clara para o leitor
+8. NUNCA inventas resultados, números ou prova social — só o que foi dado
+9. O conteúdo deve soar autêntico, não a marketing de agência
 
-PRINCÍPIO MaaS: Cada palavra deve servir para transferir conhecimento ou motivar acção. Elimina tudo o resto.`;
+TESTE FINAL: antes de responder, pergunta-te — "Isto soa a ${authorName} ou a um template genérico?" Se for template, reescreve.`;
 
-  const userPrompt = `Cria conteúdo sobre o seguinte tema:
+  const userPrompt = `Cria conteúdo sobre o seguinte tema para ${authorName}:
 
 TEMA: ${topic}
 
@@ -157,26 +166,17 @@ Escreve o conteúdo completo, pronto a publicar.`;
       model: "claude-sonnet-4-6",
       max_tokens: 1024,
       system: systemPrompt,
-      messages: [
-        {
-          role: "user",
-          content: userPrompt,
-        },
-      ],
+      messages: [{ role: "user", content: userPrompt }],
     });
 
-    // Extrai o texto da resposta
     const content = message.content[0];
     if (content.type !== "text") {
-      return NextResponse.json(
-        { error: "Resposta inesperada da IA" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Resposta inesperada da IA" }, { status: 500 });
     }
 
     const generatedText = content.text;
 
-    // Guarda no Supabase (sem bloquear a resposta se falhar)
+    // Guarda no Supabase (sem bloquear se falhar)
     try {
       const supabase = createServerClient();
       await supabase.from("generated_content").insert({
@@ -186,7 +186,6 @@ Escreve o conteúdo completo, pronto a publicar.`;
         content: generatedText,
       });
     } catch (dbError) {
-      // Log mas não bloqueia — o utilizador recebe o conteúdo mesmo se o save falhar
       console.error("Erro ao guardar no Supabase:", dbError);
     }
 

@@ -25,12 +25,14 @@ const platformLabels: Record<string, string> = {
   email: "✉️ Email",
 };
 
-interface VoiceDNA {
-  niche?: string;
-  offer?: string;
-  pain?: string;
-  tone?: string;
-  differentiator?: string;
+interface VozDNA {
+  arquetipo?: string;
+  descricaoArquetipo?: string;
+  tomEmTresPalavras?: string[];
+  vocabularioActivo?: string[];
+  vocabularioProibido?: string[];
+  frasesAssinatura?: string[];
+  regrasEstilo?: string[];
 }
 
 export default function ContentFactory() {
@@ -46,8 +48,8 @@ export default function ContentFactory() {
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const voiceDNA = (user?.unsafeMetadata?.voiceDNA as VoiceDNA) ?? {};
-  const onboardingComplete = user?.unsafeMetadata?.onboardingComplete as boolean;
+  const vozDNA = (user?.unsafeMetadata?.vozDNA as VozDNA) ?? {};
+  const vozDNAComplete = user?.unsafeMetadata?.vozDNAComplete as boolean;
 
   // Carrega histórico quando o tab muda para history
   const loadHistory = useCallback(async () => {
@@ -77,7 +79,7 @@ export default function ContentFactory() {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ platform: selectedPlatform, topic: topic.trim(), voiceDNA }),
+        body: JSON.stringify({ platform: selectedPlatform, topic: topic.trim(), vozDNA }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error ?? "Erro desconhecido"); return; }
@@ -106,17 +108,17 @@ export default function ContentFactory() {
     });
   }
 
-  if (!onboardingComplete) {
+  if (!vozDNAComplete) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-6">
         <div className="bg-[#111827] border border-[#BFD64B]/30 rounded-xl p-8 max-w-md text-center">
-          <div className="text-4xl mb-4">⚡</div>
-          <h2 className="text-xl font-bold text-[#F0ECE4] mb-3">Voice DNA Necessário</h2>
+          <div className="text-4xl mb-4">🎙️</div>
+          <h2 className="text-xl font-bold text-[#F0ECE4] mb-3">Voz & DNA Necessário</h2>
           <p className="text-[#8892a4] text-sm mb-6">
-            Faz o onboarding primeiro — demora 15 minutos e fazemos uma vez só.
+            Define o teu Voz & DNA primeiro — 8 perguntas que codificam exactamente como a tua marca fala.
           </p>
-          <a href="/onboarding" className="inline-block bg-[#BFD64B] text-[#0A0E1A] font-bold px-6 py-3 rounded-lg hover:opacity-90 transition-opacity">
-            Fazer Onboarding →
+          <a href="/voz-dna" className="inline-block bg-[#BFD64B] text-[#0A0E1A] font-bold px-6 py-3 rounded-lg hover:opacity-90 transition-opacity">
+            Definir Voz & DNA →
           </a>
         </div>
       </div>
@@ -278,31 +280,50 @@ export default function ContentFactory() {
             </div>
           )}
 
-          {/* Voice DNA activo */}
-          {(voiceDNA.niche || voiceDNA.tone) && (
+          {/* Voz & DNA activo */}
+          {vozDNA.arquetipo && (
             <div className="border-t border-[#1a2035] pt-6">
               <div className="text-[#8892a4] text-xs font-bold tracking-widest mb-3">
-                VOICE DNA ACTIVO
+                VOZ & DNA ACTIVO
               </div>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {voiceDNA.niche && (
-                  <div className="bg-[#111827] rounded-lg px-3 py-2">
-                    <div className="text-[#BFD64B] text-[10px] font-bold tracking-widest">NICHO</div>
-                    <div className="text-[#F0ECE4] text-xs mt-0.5 truncate">{voiceDNA.niche}</div>
+              <div className="bg-[#111827] border border-[#1a2035] rounded-xl p-4 space-y-3">
+                {/* Arquétipo + tom */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-[#BFD64B] text-[10px] font-bold tracking-widest mb-0.5">ARQUÉTIPO</div>
+                    <div className="text-[#F0ECE4] text-sm font-bold">{vozDNA.arquetipo}</div>
+                  </div>
+                  {vozDNA.tomEmTresPalavras && (
+                    <div className="flex gap-1.5">
+                      {vozDNA.tomEmTresPalavras.map((p) => (
+                        <span key={p} className="bg-[#BFD64B]/10 text-[#BFD64B] text-[10px] font-bold px-2 py-1 rounded-full border border-[#BFD64B]/20">
+                          {p}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {/* Vocabulário */}
+                {vozDNA.vocabularioActivo && vozDNA.vocabularioActivo.length > 0 && (
+                  <div>
+                    <div className="text-[#4a5568] text-[10px] font-bold tracking-widest mb-1.5">PALAVRAS ACTIVAS</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {vozDNA.vocabularioActivo.slice(0, 8).map((w) => (
+                        <span key={w} className="bg-[#0d1420] text-[#8892a4] text-[10px] px-2 py-0.5 rounded border border-[#1a2035]">
+                          {w}
+                        </span>
+                      ))}
+                      {vozDNA.vocabularioActivo.length > 8 && (
+                        <span className="text-[#4a5568] text-[10px] px-1">+{vozDNA.vocabularioActivo.length - 8}</span>
+                      )}
+                    </div>
                   </div>
                 )}
-                {voiceDNA.tone && (
-                  <div className="bg-[#111827] rounded-lg px-3 py-2">
-                    <div className="text-[#BFD64B] text-[10px] font-bold tracking-widest">TOM</div>
-                    <div className="text-[#F0ECE4] text-xs mt-0.5 capitalize">{voiceDNA.tone}</div>
-                  </div>
-                )}
-                {voiceDNA.differentiator && (
-                  <div className="bg-[#111827] rounded-lg px-3 py-2">
-                    <div className="text-[#BFD64B] text-[10px] font-bold tracking-widest">DIFERENCIAL</div>
-                    <div className="text-[#F0ECE4] text-xs mt-0.5 truncate">{voiceDNA.differentiator}</div>
-                  </div>
-                )}
+                <div className="flex items-center justify-end">
+                  <a href="/voz-dna" className="text-[#4a5568] text-xs hover:text-[#8892a4] transition-colors">
+                    Editar DNA →
+                  </a>
+                </div>
               </div>
             </div>
           )}
