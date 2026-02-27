@@ -201,18 +201,25 @@ export default function ManifestoAssessment() {
   async function aceitarManifesto() {
     if (!user) return;
     setAceitando(true);
+    setErro(null);
     try {
+      // Guarda apenas a flag de conclusão — as respostas são demasiado grandes
+      // para o limite de 8KB do unsafeMetadata do Clerk
       await user.update({
         unsafeMetadata: {
           ...user.unsafeMetadata,
           manifestoComplete: true,
-          manifestoAnswers: respostas,
         },
       });
       setAceito(true);
       setTimeout(() => router.push("/voz-dna"), 1400);
-    } catch {
+    } catch (err) {
       setAceitando(false);
+      setErro(
+        err instanceof Error
+          ? `Erro ao guardar: ${err.message}`
+          : "Erro ao guardar. Tenta novamente."
+      );
     }
   }
 
