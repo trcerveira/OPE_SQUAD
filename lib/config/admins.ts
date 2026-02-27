@@ -12,6 +12,7 @@ export const BETA_USERS: string[] = [
   "miguel.rodrigues@imomaster.com", // Miguel Rodrigues — Beta Tester
   "geral@arm-lda.com",              // Beta Tester
   "cleciofwise@hotmail.com",        // Beta Tester
+  "bruno@pulsifyai.com",            // Beta Tester
 ]
 
 /**
