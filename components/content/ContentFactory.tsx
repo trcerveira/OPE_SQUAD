@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
 import type { GeneratedContent } from "@/lib/supabase/types";
+import ViralResearch from "@/components/content/ViralResearch";
+import ContentDesigner from "@/components/content/ContentDesigner";
 
 // Plataformas disponíveis
 const platforms = [
@@ -184,6 +186,14 @@ export default function ContentFactory() {
             </div>
           </div>
 
+          {/* Pesquisa Viral — aparece depois de seleccionar plataforma */}
+          {selectedPlatform && (
+            <ViralResearch
+              selectedPlatform={selectedPlatform}
+              onSelectInsight={(text) => setTopic(text)}
+            />
+          )}
+
           {/* Passo 2: Tema */}
           {selectedPlatform && (
             <div className="mb-8">
@@ -256,6 +266,9 @@ export default function ContentFactory() {
                   {generatedContent}
                 </pre>
               </div>
+              {/* Designer de imagem para redes sociais */}
+              <ContentDesigner content={generatedContent} platform={selectedPlatform} />
+
               <div className="flex gap-3 mt-4">
                 <button
                   onClick={handleGenerate}
