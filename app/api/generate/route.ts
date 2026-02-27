@@ -26,11 +26,20 @@ interface GeniusProfile {
 // Baseadas nos princípios de Gary Halbert, David Ogilvy, Nicolas Cole, Justin Welsh
 const platformFormats: Record<string, string> = {
   instagram: `
-FORMATO: Post para Instagram
+FORMATO: Post para Instagram (optimizado para o algoritmo 2025)
 
-ESTRUTURA OBRIGATÓRIA:
+━━━ ALGORITMO PRIMEIRO ━━━
+Os 3 sinais que determinam se este post chega a novas pessoas:
+1. WATCH TIME — cada linha tem de ganhar a seguinte. Leitor que sai = alcance perdido.
+2. DM SHARES — o sinal mais poderoso. Cria conteúdo que alguém quer enviar a um amigo específico.
+3. LIKES POR ALCANCE — engagement genuíno, não likes de cortesia.
 
-LINHA 1 — O HOOK (único trabalho: parar o scroll)
+O conteúdo original na voz do criador é premiado. Conteúdo copiado é penalizado.
+
+━━━ ESTRUTURA OBRIGATÓRIA ━━━
+
+LINHA 1 — O HOOK (único trabalho: parar o scroll em 1,7 segundos)
+Para Reels: esta linha vai SOBREPOSTA no vídeo — tem de funcionar SEM SOM.
 Escolhe UMA destas fórmulas:
 • Contradição: "Nunca [coisa óbvia]. Fiz [oposto] e [resultado específico com número]."
 • Número concreto: "[Número] [resultado] em [tempo]. Sem [sacrifício esperado]."
@@ -47,12 +56,16 @@ CORPO — DESENVOLVIMENTO (PAS ou BAB)
 • Especificidade obrigatória: números, cenários concretos, nomes reais — NUNCA vago
 • Cada frase ganha o direito de existir (teste: "e então?" — se não há resposta, corta)
 
-ÚLTIMA LINHA — CTA ESPECÍFICO
-Não "deixa o teu comentário". Uma acção concreta ligada ao benefício.
+ÚLTIMA LINHA — CTA QUE GERA DM SHARES (o mais importante para alcance)
+Fórmulas que fazem alguém enviar por mensagem a um amigo:
+• "Envia isto a alguém que [situação específica do teu nicho]."
+• "Conheces alguém que [problema que este post resolve]? Partilha."
+• "Guarda isto — vais querer relembrar quando [situação específica]."
+NÃO USAR: "deixa o teu comentário", "segue-me", "activa o sino".
 
-3-5 hashtags no final.
+3-5 hashtags no final (relevantes — não quantidade).
 
-COMPRIMENTO: 150-300 palavras ideais.`,
+COMPRIMENTO: 150-250 palavras (mais curto = mais watch time = mais alcance).`,
 
   linkedin: `
 FORMATO: Post para LinkedIn
@@ -185,7 +198,16 @@ NICOLAS COLE / JUSTIN WELSH — "O algoritmo é audiência, mas a audiência é 
 • Linha 1 é 80% do trabalho nas redes sociais — tudo o resto serve para justificá-la
 • Insights contra-intuitivos > conteúdo que confirma o que já sabem
 • Conversacional > formal. Específico > genérico. Curto > longo quando possível.
-• O "big idea": cada peça tem UMA ideia central que alguém consegue repetir num café`;
+• O "big idea": cada peça tem UMA ideia central que alguém consegue repetir num café
+
+ADAM MOSSERI (Head do Instagram) — "Sends são o sinal mais importante de todos"
+• Watch Time é o #1 factor de ranking — cada linha tem de ganhar o direito à seguinte
+• DM Shares valem 3-5x mais que likes para chegar a novas audiências
+• A decisão de ficar ou sair acontece em 1,7 segundos — o hook não é opcional
+• Pergunta de ouro antes de publicar: "Há uma pessoa específica a quem eu enviaria isto por DM?"
+• CTA que gera DMs: "Envia a [tipo de pessoa]" > "Comenta abaixo"
+• Conteúdo original e na voz do criador é premiado pelo algoritmo — conteúdo copiado é penalizado
+• ~50% vê Reels sem som: texto visível na primeira frame é obrigatório`;
 
 export async function POST(request: NextRequest) {
   const { userId } = await auth();
@@ -280,12 +302,14 @@ PROCESSO INTERNO ANTES DE RESPONDER:
 1. Quem é a UMA pessoa que vai ler isto? (não "a audiência" — uma pessoa específica)
 2. Onde está o nível de consciência DESTA pessoa agora?
 3. Qual é a UMA emoção que quero que sinta no final?
-4. O hook vai parar o scroll / abrir o email / gerar o clique?
+4. O hook vai parar o scroll / abrir o email / gerar o clique em 1,7 segundos?
 5. Cada frase passa o teste "e então?" (se não há resposta urgente, corta)
 6. Isto soa a ${authorName} ou a um template de IA? Se for template, reescreve tudo.
 7. Apliquei pelo menos 3 princípios dos masters acima?
+8. (Instagram) Há uma pessoa específica a quem eu enviaria isto por DM? O CTA convida essa partilha?
+9. (Instagram) O conteúdo é 100% original na voz de ${authorName}? Nenhuma frase soa a conteúdo reciclado?
 
-SÓ RESPONDE QUANDO O CONTEÚDO PASSAR TODOS OS 7 PONTOS.`;
+SÓ RESPONDE QUANDO O CONTEÚDO PASSAR TODOS OS 9 PONTOS.`;
 
   const userPrompt = `Cria conteúdo de elite sobre o seguinte tema para ${authorName}:
 
