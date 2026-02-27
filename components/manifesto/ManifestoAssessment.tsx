@@ -218,7 +218,10 @@ export default function ManifestoAssessment() {
 
   function avancar(blocoActual?: "bloco1" | "bloco2" | "bloco3") {
     if (blocoActual === "bloco3") {
-      gerarManifesto();
+      gerarManifesto().catch((err) => {
+        setErro(err instanceof Error ? err.message : "Erro inesperado. Tenta novamente.");
+        setFase("bloco3");
+      });
     } else {
       setFase(proximaFase[fase]);
     }
@@ -359,7 +362,7 @@ export default function ManifestoAssessment() {
               ) : (
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button
-                    onClick={aceitarManifesto}
+                    onClick={() => { aceitarManifesto().catch(() => setAceitando(false)); }}
                     disabled={aceitando}
                     className="inline-flex items-center gap-3 bg-[#BFD64B] text-[#0A0E1A] font-bold px-10 py-4 rounded-xl text-lg hover:opacity-90 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                   >
