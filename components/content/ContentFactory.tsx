@@ -61,9 +61,39 @@ interface VozDNA {
   regrasEstilo?: string[];
 }
 
+interface CalendarioRow {
+  id: string;
+  data: string;
+  formato: string;
+  linhaEditorial: string;
+  tema: string;
+  plataforma: string;
+  logica: string;
+}
+
+// Converte o formato do calendário no formato+subtipo do ContentFactory
+function mapFormato(formato: string): { format: string; subtype: string } {
+  const f = formato.toLowerCase();
+  if (f.includes("viral 7s") || f.includes("viral7s"))          return { format: "reel",      subtype: "viral7s" };
+  if (f.includes("problema") || f.includes("solução"))          return { format: "reel",      subtype: "problemaSolucao" };
+  if (f.includes("infotenimento") && f.includes("reel"))        return { format: "reel",      subtype: "infotenimento" };
+  if (f.includes("utilidade") && f.includes("reel"))            return { format: "reel",      subtype: "utilidade" };
+  if (f.includes("opinião") && f.includes("reel"))              return { format: "reel",      subtype: "opiniao" };
+  if (f.includes("carrossel") && f.includes("utilidade"))       return { format: "carrossel", subtype: "utilidade" };
+  if (f.includes("carrossel") && f.includes("infotenimento"))   return { format: "carrossel", subtype: "infotenimento" };
+  if (f.includes("carrossel") && f.includes("narrativa"))       return { format: "carrossel", subtype: "opiniao" };
+  if (f.includes("carrossel") && f.includes("vendas"))          return { format: "carrossel", subtype: "vendas" };
+  if (f.includes("carrossel"))                                  return { format: "carrossel", subtype: "utilidade" };
+  if (f.includes("threads") || f.includes("/x"))                return { format: "post",      subtype: "twitter" };
+  if (f.includes("story"))                                      return { format: "story",     subtype: "narrativaDensa" };
+  if (f.includes("post"))                                       return { format: "post",      subtype: "instagram" };
+  if (f.includes("reel"))                                       return { format: "reel",      subtype: "viral7s" };
+  return { format: "post", subtype: "instagram" };
+}
+
 export default function ContentFactory() {
   const { user } = useUser();
-  const [tab, setTab] = useState<"generate" | "history">("generate");
+  const [tab, setTab] = useState<"generate" | "calendar" | "history">("generate");
 
   // Selecção de formato
   const [selectedFormat, setSelectedFormat] = useState("");
@@ -83,6 +113,8 @@ export default function ContentFactory() {
 
   const vozDNA = (user?.unsafeMetadata?.vozDNA as VozDNA) ?? {};
   const vozDNAComplete = user?.unsafeMetadata?.vozDNAComplete as boolean;
+  const calendarioRows = (user?.unsafeMetadata?.calendarioRows as CalendarioRow[]) ?? [];
+  const temCalendario = calendarioRows.length > 0;
 
   // Resetar sub-tipo quando o formato muda
   function handleFormatSelect(formatId: string) {
@@ -187,12 +219,13 @@ export default function ContentFactory() {
         <h1 className="text-3xl font-bold text-[#F0ECE4] mb-4">Gera conteúdo na tua voz</h1>
         <div className="flex gap-1 border-b border-[#1a2035]">
           {[
-            { id: "generate", label: "Gerar" },
-            { id: "history", label: `Histórico${history.length > 0 ? ` (${history.length})` : ""}` },
+            { id: "generate",  label: "Gerar" },
+            ...(temCalendario ? [{ id: "calendar", label: `📅 Calendário (${calendarioRows.length})` }] : []),
+            { id: "history",   label: `Histórico${history.length > 0 ? ` (${history.length})` : ""}` },
           ].map((t) => (
             <button
               key={t.id}
-              onClick={() => setTab(t.id as "generate" | "history")}
+              onClick={() => setTab(t.id as "generate" | "calendar" | "history")}
               className={`px-4 py-2 text-sm font-medium transition-all border-b-2 -mb-px ${
                 tab === t.id
                   ? "text-[#BFD64B] border-[#BFD64B]"
@@ -383,6 +416,40 @@ export default function ContentFactory() {
             </div>
           )}
         </>
+      )}
+
+      {/* TAB: Calendário */}
+      {tab === "calendar" && (
+        <div>
+          <p className="text-[#8892a4] text-sm mb-6">
+            Selecciona um post do teu calendário — o formato e o tema ficam pré-preenchidos.
+          </p>
+          <div className="flex flex-col gap-2">
+            {calendarioRows.map((row, i) => (
+              <button
+                key={row.id ?? i}
+                onClick={() => {
+                  const mapeado = mapFormato(row.formato);
+                  handleFormatSelect(mapeado.format);
+                  setSelectedSubtype(mapeado.subtype);
+                  setTopic(row.tema);
+                  setTab("generate");
+                }}
+                className="bg-[#111827] border border-[#2a3555] rounded-xl px-4 py-3 text-left hover:border-[#BFD64B]/50 hover:bg-[#1a2035] transition-all flex items-center gap-4"
+              >
+                <span className="text-[#8892a4] font-mono text-xs shrink-0 w-20">{row.data}</span>
+                <span className="text-[#4a5568] text-xs shrink-0 w-32 truncate">{row.formato}</span>
+                <span className="text-[#F0ECE4] text-sm flex-1 truncate">{row.tema}</span>
+                <span className="text-[#BFD64B] text-xs shrink-0">Usar →</span>
+              </button>
+            ))}
+          </div>
+          <div className="mt-6 text-center">
+            <a href="/calendario" className="text-[#4a5568] text-xs hover:text-[#8892a4] transition-colors">
+              Editar calendário →
+            </a>
+          </div>
+        </div>
       )}
 
       {/* TAB: Histórico */}

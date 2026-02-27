@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 interface EditorialLine {
   numero: string;
@@ -50,7 +51,9 @@ const coresPaleta = [
 
 export default function CalendarioPlanner() {
   const { user } = useUser();
+  const router = useRouter();
   const [fase, setFase] = useState<"form" | "loading" | "tabela">("form");
+  const [guardando, setGuardando] = useState(false);
   const [form, setForm] = useState<FormCalendario>({
     dias: 7,
     formatos: [],
@@ -83,6 +86,22 @@ export default function CalendarioPlanner() {
     setRows((prev) =>
       prev.map((row, i) => (i === index ? { ...row, [field]: value } : row))
     );
+  }
+
+  async function guardarEIr() {
+    setGuardando(true);
+    try {
+      if (user) {
+        await user.update({
+          unsafeMetadata: {
+            ...user.unsafeMetadata,
+            calendarioRows: rows,
+            calendarioComplete: true,
+          },
+        });
+      }
+    } catch { /* se falhar, navega na mesma */ }
+    router.push("/content");
   }
 
   async function gerarCalendario() {
@@ -268,12 +287,16 @@ export default function CalendarioPlanner() {
         </div>
 
         {/* Botão próximo passo */}
-        <div className="flex justify-center mt-10">
-          <a
-            href="/content"
-            className="bg-[#BFD64B] text-[#0A0E1A] font-bold py-4 px-10 rounded-xl text-lg hover:opacity-90 transition-all"
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
+          <button
+            onClick={guardarEIr}
+            disabled={guardando}
+            className="bg-[#BFD64B] text-[#0A0E1A] font-bold py-4 px-10 rounded-xl text-lg hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Gerar Conteúdo →
+            {guardando ? "A guardar..." : "Usar este calendário → Gerar Conteúdo"}
+          </button>
+          <a href="/content" className="text-[#8892a4] text-sm hover:text-[#BFD64B] transition-colors">
+            Ir para conteúdo sem guardar →
           </a>
         </div>
       </div>
@@ -294,6 +317,16 @@ export default function CalendarioPlanner() {
         <p className="text-[#8892a4] leading-relaxed">
           Define as regras. A IA monta o calendário — com temas reais para cada post.
         </p>
+        {/* Opção de saltar */}
+        <div className="mt-5 pt-5 border-t border-[#1a2035]">
+          <p className="text-[#4a5568] text-xs mb-2">Queres criar apenas 1 post agora?</p>
+          <a
+            href="/content"
+            className="text-[#8892a4] text-sm hover:text-[#BFD64B] transition-colors font-medium"
+          >
+            Saltar este passo → Ir para Conteúdo
+          </a>
+        </div>
       </div>
 
       {/* Aviso se não tem editorias */}
