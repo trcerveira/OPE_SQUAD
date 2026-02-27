@@ -7,17 +7,21 @@ import { syncUserProfile } from "@/lib/supabase/user-profiles";
 // Nova sequência: Genius Zone → Manifesto → Voice DNA → Content Factory
 export default async function DashboardPage() {
   const user = await currentUser();
-  const email = user?.emailAddresses?.[0]?.emailAddress ?? null;
+  // Tenta obter email pelo endereço primário ou pelo primeiro da lista
+  const email =
+    user?.primaryEmailAddress?.emailAddress ??
+    user?.emailAddresses?.[0]?.emailAddress ??
+    null;
   const admin = isAdmin(email);
   const geniusComplete    = user?.unsafeMetadata?.geniusComplete    as boolean;
   const manifestoComplete = user?.unsafeMetadata?.manifestoComplete as boolean;
   const vozDNAComplete    = user?.unsafeMetadata?.vozDNAComplete    as boolean;
 
   // Sincroniza o perfil com Supabase sempre que o utilizador abre o dashboard
-  if (user && email) {
+  if (user?.id) {
     await syncUserProfile({
       userId:            user.id,
-      email,
+      email:             email ?? "",
       name:              user.firstName ? `${user.firstName} ${user.lastName ?? ""}`.trim() : null,
       geniusComplete:    geniusComplete    ?? false,
       manifestoComplete: manifestoComplete ?? false,
