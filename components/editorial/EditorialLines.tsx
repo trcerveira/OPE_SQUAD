@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 interface Editoria {
   numero: string;
@@ -31,14 +33,43 @@ const camposVazios: FormData = {
 };
 
 export default function EditorialLines() {
+  const { user } = useUser();
+  const router = useRouter();
   const [form, setForm] = useState<FormData>(camposVazios);
   const [editorias, setEditorias] = useState<Editoria[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(0);
   const [gerado, setGerado] = useState(false);
+  const [guardando, setGuardando] = useState(false);
 
   const preenchido = Object.values(form).every((v) => v.trim().length >= 10);
+
+  async function irParaCalendario() {
+    if (!user || editorias.length === 0) return;
+    setGuardando(true);
+    setError(null);
+    try {
+      // Guarda apenas os dados essenciais das editorias no Clerk
+      const editorialMinimal = editorias.map((ed) => ({
+        numero: ed.numero,
+        nome: ed.nome,
+        temaCentral: ed.temaCentral,
+        tensaoCentral: ed.tensaoCentral,
+      }));
+      await user.update({
+        unsafeMetadata: {
+          ...user.unsafeMetadata,
+          editorialLines: editorialMinimal,
+          editorialComplete: true,
+        },
+      });
+      router.push("/calendario");
+    } catch {
+      setError("Erro ao guardar. Tenta novamente.");
+      setGuardando(false);
+    }
+  }
 
   async function gerarLinhaEditorial() {
     if (!preenchido) return;
@@ -320,10 +351,23 @@ export default function EditorialLines() {
             </div>
           </div>
 
-          <div className="flex justify-center pt-4">
+          {error && (
+            <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-4 text-red-400 text-sm">
+              {error}
+            </div>
+          )}
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
             <button
-              onClick={() => { setGerado(false); setForm(camposVazios); }}
-              className="text-[#8892a4] text-sm hover:text-[#BFD64B] transition-colors"
+              onClick={irParaCalendario}
+              disabled={guardando}
+              className="bg-[#BFD64B] text-[#0A0E1A] font-bold py-4 px-10 rounded-xl text-lg hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 justify-center"
+            >
+              {guardando ? "A guardar..." : "Criar Calendário →"}
+            </button>
+            <button
+              onClick={() => { setGerado(false); setForm(camposVazios); setError(null); }}
+              className="text-[#8892a4] text-sm hover:text-[#BFD64B] transition-colors py-2 px-4"
             >
               ↺ Recomeçar
             </button>

@@ -1,4 +1,4 @@
-// Barra de progresso dos 4 passos — server component
+// Barra de progresso dos passos — server component
 // Lê automaticamente o progresso do Clerk e mostra onde o utilizador está
 
 import { currentUser } from "@clerk/nextjs/server";
@@ -8,11 +8,12 @@ const steps = [
   { number: 2, label: "Manifesto",   icon: "📜" },
   { number: 3, label: "Voz & DNA",   icon: "🎙️" },
   { number: 4, label: "Editorial",   icon: "🏛️" },
-  { number: 5, label: "Conteúdo",    icon: "✍️" },
+  { number: 5, label: "Calendário",  icon: "📅" },
+  { number: 6, label: "Conteúdo",    icon: "✍️" },
 ];
 
 interface StepProgressProps {
-  currentStep: 1 | 2 | 3 | 4 | 5;
+  currentStep: 1 | 2 | 3 | 4 | 5 | 6;
 }
 
 export default async function StepProgress({ currentStep }: StepProgressProps) {
@@ -20,10 +21,11 @@ export default async function StepProgress({ currentStep }: StepProgressProps) {
   const meta = user?.unsafeMetadata ?? {};
 
   const completedSteps: number[] = [];
-  if (meta.geniusComplete)    completedSteps.push(1);
-  if (meta.manifestoComplete) completedSteps.push(2);
-  if (meta.vozDNAComplete)    completedSteps.push(3);
-  if (meta.editorialComplete) completedSteps.push(4);
+  if (meta.geniusComplete)      completedSteps.push(1);
+  if (meta.manifestoComplete)   completedSteps.push(2);
+  if (meta.vozDNAComplete)      completedSteps.push(3);
+  if (meta.editorialComplete)   completedSteps.push(4);
+  if (meta.calendarioComplete)  completedSteps.push(5);
 
   const progressPercent = ((currentStep - 1) / (steps.length - 1)) * 100;
 
