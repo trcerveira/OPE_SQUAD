@@ -3,7 +3,6 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 
-// Formato do DNA de Voz guardado no Clerk (gerado pelo módulo Voz & DNA)
 interface VozDNA {
   arquetipo?: string;
   descricaoArquetipo?: string;
@@ -14,7 +13,6 @@ interface VozDNA {
   regrasEstilo?: string[];
 }
 
-// Genius Profile gerado pelo módulo Genius Zone
 interface GeniusProfile {
   hendricksZone?: string;
   wealthProfile?: string;
@@ -22,192 +20,492 @@ interface GeniusProfile {
   fascinationAdvantage?: string;
 }
 
-// Fórmulas de copywriting por plataforma
-// Baseadas nos princípios de Gary Halbert, David Ogilvy, Nicolas Cole, Justin Welsh
-const platformFormats: Record<string, string> = {
-  instagram: `
+// ─────────────────────────────────────────────
+// PROMPTS POR FORMATO + TIPO
+// Baseados nos melhores GPTs de conteúdo do mercado brasileiro
+// ─────────────────────────────────────────────
+
+const formatPrompts: Record<string, Record<string, string>> = {
+
+  // ── REELS ────────────────────────────────────────────────────────────────
+  reel: {
+    viral7s: `
+FORMATO: Roteiro de Reel Viral — Método 7 Cenas de 7 Segundos
+
+Cria um roteiro de Reel com exactamente 7 cenas, cada uma com 7 segundos de duração.
+Cada cena deve ter:
+- CENA [N] (7s)
+- O que aparece no ECRÃ (texto sobreposto, obrigatório — funciona sem som)
+- O que o CRIADOR diz/faz
+- A EMOÇÃO que a cena deve gerar
+
+ESTRUTURA DAS 7 CENAS:
+CENA 1 — GANCHO (7s): Para o scroll nos primeiros 2 segundos. Texto sobreposto obrigatório. Cria curiosidade ou contradição imediata.
+CENA 2 — AGITAÇÃO (7s): Identifica a dor/problema com precisão cirúrgica. O espectador pensa "isto é sobre mim".
+CENA 3 — PROMESSA (7s): Anuncia o que vai aprender/descobrir. Cria antecipação para continuar a ver.
+CENA 4 — DESENVOLVIMENTO 1 (7s): Primeiro insight concreto. Específico, accionável, surpreendente.
+CENA 5 — DESENVOLVIMENTO 2 (7s): Segundo insight que aprofunda o anterior. Mais profundo.
+CENA 6 — VIRADA (7s): O insight mais valioso. O "golden nugget" que o espectador vai partilhar.
+CENA 7 — CTA (7s): Acção clara. Não "segue-me" — "guarda este vídeo quando [situação específica]" ou "envia a [tipo de pessoa]".
+
+REGRAS DE RETENÇÃO:
+- Cada cena termina com uma "micro-tensão" que puxa para a próxima
+- NUNCA revelas tudo antes da cena 6
+- Texto sobreposto em cada cena (50% dos espectadores não tem som)
+- Ritmo: cenas 1-3 rápidas, cenas 4-6 mais lentas (o conteúdo valioso), cena 7 rápida
+
+ENTREGA: Roteiro completo com as 7 cenas, texto de ecrã e fala de cada cena.`,
+
+    utilidade: `
+FORMATO: Roteiro de Reel de Utilidade
+
+Cria um roteiro de Reel que ensina algo concreto e accionável.
+O espectador deve aprender UMA coisa que pode aplicar hoje.
+
+ESTRUTURA:
+CENA 1 — GANCHO (5-7s): "Vou mostrar-te como [resultado específico e desejado]"
+CENAS 2-5 — ENSINAMENTO PASSO A PASSO: Cada cena = um passo concreto (não conceito abstracto)
+CENA FINAL — CTA: "Guarda isto" ou "Experimenta agora e diz-me o resultado"
+
+REGRAS:
+- Linguagem DIRECTA e acessível — zero jargão
+- Cada passo deve ser VISUALMENTE demonstrável ou descrito com clareza
+- Texto sobreposto em todas as cenas (funciona sem som)
+- Tom: mentor que sabe muito e explica de forma simples
+- Máx 60 segundos no total
+- Cada passo tem 1 frase de explicação máximo
+
+ENTREGA: Roteiro completo com falas e texto de ecrã para cada cena.`,
+
+    opiniao: `
+FORMATO: Roteiro de Reel de Opinião/Posicionamento
+
+Cria um roteiro de Reel que planta uma bandeira de posicionamento.
+O criador defende um ponto de vista específico que divide opiniões.
+
+ESTRUTURA:
+CENA 1 — DECLARAÇÃO PROVOCADORA (7s): Uma afirmação que vai CONTRA o senso comum do nicho. Cria fricção imediata.
+CENAS 2-3 — POR QUÊ A MAIORIA ESTÁ ERRADA: Desenvolve o argumento com lógica e exemplos concretos.
+CENAS 4-5 — A PERSPECTIVA ALTERNATIVA: O ponto de vista do criador. Com fundamento, não apenas emoção.
+CENA FINAL — DESAFIO: "Discordas? Comenta." ou "Partilha se acreditas no mesmo."
+
+REGRAS:
+- Tom: confiante, nunca agressivo
+- Defende uma posição ESPECÍFICA — nada genérico
+- O espectador deve pensar "nunca pensei nisso assim"
+- Texto sobreposto com a declaração principal em CADA cena
+- Cria divisão construtiva — não ofende, provoca reflexão
+
+ENTREGA: Roteiro completo com 5-7 cenas, falas e texto de ecrã.`,
+
+    infotenimento: `
+FORMATO: Roteiro de Reel de Infotenimento
+
+Cria um roteiro de Reel que combina informação valiosa com entretenimento.
+O espectador aprende sem perceber que está a aprender.
+
+ESTRUTURA:
+CENA 1 — GANCHO NARRATIVO (7s): Começa uma história no meio da acção. Cria curiosidade imediata.
+CENAS 2-4 — DESENVOLVIMENTO DA HISTÓRIA + INFORMAÇÃO: A história avança e o insight aparece naturalmente dentro dela.
+CENA 5 — VIRADA / REVELAÇÃO: O momento "uau" — a informação mais surpreendente.
+CENA 6 — LIÇÃO EXTRAÍDA: A mensagem clara que o espectador leva. 1 frase.
+CENA 7 — CTA: Relacionado com a história, não com o criador.
+
+REGRAS:
+- Começa sempre no meio da acção — nunca com "hoje vou falar sobre..."
+- A informação cresce organicamente da história — nunca é separada
+- Linguagem conversacional, oralidade extrema
+- Texto sobreposto cria suspense em cada cena
+- Ritmo narrativo — cada cena é um "capítulo" da história
+
+ENTREGA: Roteiro completo com 6-8 cenas, falas e texto de ecrã.`,
+
+    problemaSolucao: `
+FORMATO: Roteiro de Reel Problema/Solução
+
+Cria um roteiro de Reel no padrão clássico "aqui está o problema, aqui está a solução".
+Máximo impacto, mínimo tempo.
+
+ESTRUTURA:
+CENA 1 — O PROBLEMA (gancho): Nomeia o problema de forma tão precisa que o espectador pensa "isto é exactamente o que eu sinto".
+CENA 2 — AMPLIFICAÇÃO DO PROBLEMA: Mostra as consequências de não resolver. Torna a dor mais real.
+CENA 3 — A CAUSA RAIZ: "O problema não é [X]. O problema REAL é [Y]." — contra-intuitivo.
+CENAS 4-5 — A SOLUÇÃO: Passo a passo concreto. Accionável. Não vende produto — resolve o problema.
+CENA FINAL — RESULTADO + CTA: "Faz isto e [resultado específico em tempo real]."
+
+REGRAS:
+- O problema deve ser descrito com as PALAVRAS do leitor — não linguagem de especialista
+- A causa raiz deve ser surpreendente (é isso que gera partilhas)
+- A solução deve ser simples de compreender, não necessariamente fácil de executar
+- Texto sobreposto com o problema/solução em destaque
+
+ENTREGA: Roteiro completo com 6 cenas, falas e texto de ecrã.`,
+  },
+
+  // ── CARROSSÉIS ───────────────────────────────────────────────────────────
+  carrossel: {
+    utilidade: `
+FORMATO: Carrossel de Utilidade — Ensino Directo (10 Cards)
+
+Cria um carrossel de 10 cards que ensina algo concreto e accionável.
+
+REGRAS ABSOLUTAS DE ESTRUTURA:
+CARD 1 (GANCHO): Frase directa de 14-16 palavras exactas. Sem travessão, sem ponto final, só vírgulas permitidas. Gera o sentimento "este criador tem algo que eu preciso".
+CARDS 2-9 (CONTEÚDO): Cada card = 50-70 palavras de texto corrido, sem quebras de linha internas, sem travessões, sem cabeçalhos. Linguagem conversacional com conectores naturais ("e olha", "porque veja bem", "o que acontece é que").
+CARD 10 (CTA): 50-70 palavras. Conecta emocionalmente com o que foi ensinado. CTA natural, não forçado.
+
+REGRAS DE QUALIDADE:
+- Sistema de aplicabilidade progressiva: cada card avança a acção passo a passo
+- Zero contrastes e analogias superficiais ("não é X, é Y")
+- Zero travessões em qualquer card
+- Linguagem conversacional — lê-se como uma pessoa a falar, não a escrever
+- Cada card tem começo, meio e fim mesmo sendo texto corrido
+
+FORMATO DE ENTREGA OBRIGATÓRIO:
+CARD 1 (GANCHO — X palavras, entre 14-16)
+[gancho sem quebras de linha]
+
+CARD 2
+[texto corrido 50-70 palavras]
+
+[...até CARD 10]
+
+Se algum card violar as regras, reescreve antes de entregar.`,
+
+    infotenimento: `
+FORMATO: Carrossel de Infotenimento (10 Cards)
+
+Cria um carrossel que combina informação valiosa com entretenimento.
+Ideal para pautas quentes, artigos, notícias do nicho — com densidade e posicionamento.
+
+ESTILO: INFOEDITORIAL (com SUB-GANCHO e GANCHO)
+- CARD 1A (SUB-GANCHO): 1 linha curta que cria contexto (6-8 palavras)
+- CARD 1B (GANCHO PRINCIPAL): 14-16 palavras exactas
+- CARDS 2-9: 50-70 palavras, texto corrido, conversacional
+- CARD 10: CTA 50-70 palavras
+
+REGRAS DE INFOTENIMENTO:
+- A informação é densa mas acessível
+- Cada card avança a narrativa — não repete o anterior
+- Tom: jornalista inteligente que domina o nicho
+- Conectores narrativos entre cards: "e então", "o que pouca gente sabe", "o que isto significa é"
+- Zero jargão sem explicação
+- Zero travessões, zero quebras de linha dentro dos cards
+
+FORMATO DE ENTREGA:
+CARD 1 (SUB-GANCHO — 6-8 palavras)
+[sub-gancho]
+
+CARD 1 (GANCHO — 14-16 palavras)
+[gancho]
+
+CARD 2-9
+[texto corrido 50-70 palavras]
+
+CARD 10 (CTA)
+[texto corrido 50-70 palavras]`,
+
+    opiniao: `
+FORMATO: Carrossel de Opinião com Storytelling (10 Cards)
+
+Cria um carrossel que conta uma história pessoal ou defende um ponto de vista.
+Ideal para narrativas pessoais e para abordar assuntos sob um ponto de vista único.
+
+ESTRUTURA NARRATIVA:
+CARD 1: GANCHO com 14-16 palavras. Deve prometer uma história ou um ponto de vista provocador.
+CARDS 2-3: MISE EN SCÈNE — cria o contexto da história/situação com detalhes vívidos.
+CARDS 4-6: DESENVOLVIMENTO — a história avança, o conflito cresce, o leitor fica preso.
+CARD 7-8: VIRADA — o momento que muda tudo. O insight central da história.
+CARD 9: LIÇÃO — o que o criador aprendeu e como isso muda a perspectiva do leitor.
+CARD 10: SÍNTESE + CTA — conecta a história à acção. Natural, não forçado.
+
+REGRAS DE STORYTELLING:
+- Começa no meio da acção — nunca com "um dia eu estava..."
+- Detalhes específicos > generalidades (data, lugar, nome — não "numa tarde qualquer")
+- Vulnerabilidade estratégica: mostra o erro/falha, não só o sucesso
+- Cada card tem uma "micro-tensão" que puxa para o seguinte
+- Zero travessões, zero quebras de linha, texto corrido 50-70 palavras por card`,
+
+    vendas: `
+FORMATO: Carrossel de Vendas — 7 Narrativas (10 Cards)
+
+Cria um carrossel que vende um produto/serviço através de narrativa.
+Usa o padrão de narrativa mais adequado ao tema fornecido.
+
+ESCOLHE o padrão narrativo mais adequado ao tema:
+1. Perguntas Desconfortantes — faz o leitor questionar o status quo
+2. Tom Emocional — conecta pela emoção antes de apresentar a lógica
+3. Afirmação Paradoxal — começa com uma afirmação que parece errada mas é verdadeira
+4. Espelho Directo — descreve a situação actual do leitor com precisão brutal
+5. Revelação Progressiva — revela a informação em camadas, cada card abre mais
+6. Contraste Brutal — antes vs depois, sem rodeios
+7. Desconstrução de Crença — destrói a crença limitante que impede a compra
+
+ESTRUTURA (independente do padrão):
+CARD 1: GANCHO 14-16 palavras — provoca a emoção central do padrão escolhido
+CARDS 2-4: Desenvolvimento da narrativa — tensão crescente
+CARDS 5-7: Construção da solução — apresenta sem vender ainda
+CARDS 8-9: A oferta como consequência lógica da narrativa — não como interrupção
+CARD 10: CTA — deve soar inevitável, não desesperado
+
+REGRAS ABSOLUTAS:
+- Indica no início qual padrão escolheste e porquê
+- Cards 2-9: 50-70 palavras, texto corrido, sem travessões, sem quebras
+- Zero linguagem de vendedor: "compra agora", "aproveita", "não percas"
+- A venda é consequência da narrativa — nunca uma interrupção
+- O leitor deve sentir que NÃO agir é a escolha irracional`,
+  },
+
+  // ── STORIES ──────────────────────────────────────────────────────────────
+  story: {
+    narrativaDensa: `
+FORMATO: Sequência de Stories — Narrativas Densas (7 Stories)
+
+Cria uma sequência de 7 stories que transforma conhecimento em narrativa densa.
+Com oralidade extrema, camadas de pensamento empilhadas e flow contínuo.
+
+ESTRUTURA DAS 7 STORIES:
+STORY 1 — DISRUPÇÃO: Uma afirmação ou pergunta que quebra o padrão de pensamento. Curta, directa, provocadora.
+STORY 2 — CONTEXTUALIZAÇÃO VULNERÁVEL: O criador entra na história. Com vulnerabilidade estratégica — mostra a dúvida real, não o sucesso.
+STORY 3 — APROFUNDAMENTO EDUCATIVO: O conhecimento profundo. Teoria ou ciência explicada de forma conversacional.
+STORY 4 — PROTOCOLO APLICÁVEL: "Aqui está o que fazeres com isto." Passo a passo concreto.
+STORY 5 — SÍNTESE TRANSFORMADORA: "O que muda quando aplicas isto." Resultado emocional, não só prático.
+STORY 6 — REFORÇO DE IDENTIDADE: "Quem és quando fazes isto." Conecta ao identity shift.
+STORY 7 — CONVITE: CTA que convida — não exige. Pergunta, continuação, ou acção seguinte.
+
+REGRAS DE ORALIDADE:
+- Cada story: 3-5 frases máximo (lê-se em 5-7 segundos)
+- Linguagem falada, não escrita: conectores orais ("e então", "olha", "porque veja bem")
+- Vocabulário identitário do criador em cada story
+- Flow contínuo: cada story começa onde a anterior terminou emocionalmente
+- Zero bullets, zero listas, texto corrido conversacional
+
+ENTREGA: As 7 stories completas, com indicação do comprimento ideal de cada uma.`,
+
+    posicionamento: `
+FORMATO: Sequência de Stories de Posicionamento (7 Stories)
+
+Cria uma sequência de 7 stories que planta crenças filosóficas profundas.
+Com afirmações provocativas e desenvolvimento reflexivo.
+
+ESTRUTURA DAS 7 STORIES:
+STORY 1 — DECLARAÇÃO DE CRENÇA: Uma tese filosófica directa. "Eu acredito que [afirmação provocadora]."
+STORY 2 — DESENVOLVIMENTO DA TESE: Explica o "porquê" com lógica e experiência pessoal.
+STORY 3 — EXEMPLO QUE SUSTENTA (1): Um caso concreto que prova a tese.
+STORY 4 — EXEMPLO QUE SUSTENTA (2): Outro ângulo que reforça a mesma crença.
+STORY 5 — A CRENÇA OPOSTA: "A maioria acredita em [X]. Aqui está porque isso não funciona."
+STORY 6 — A TRANSFORMAÇÃO: "Quando mudei esta crença, [resultado concreto]."
+STORY 7 — PERGUNTA REFLEXIVA: Uma pergunta que não precisa de resposta imediata. Fica na cabeça do espectador.
+
+REGRAS:
+- Tom: filosófico, directo, confiante — nunca arrogante
+- Cada story: máx 4 frases — curto e denso
+- Zero listas, zero bullets, texto conversacional
+- A pergunta final NUNCA deve ter resposta óbvia — deve provocar reflexão genuína
+- Identidade do criador presente em cada story
+
+ENTREGA: As 7 stories completas, directas, prontas a publicar.`,
+
+    vendas: `
+FORMATO: Sequência de Stories de Vendas (8 Stories)
+
+Cria uma sequência de 8 stories que vende um produto ou serviço.
+Com amplificação progressiva da dor e apresentação da solução como alívio inevitável.
+
+ESTRUTURA DAS 8 STORIES:
+STORY 1 — GANCHO EMOCIONAL: Identifica quem está a ver com precisão cirúrgica. "Se és alguém que [situação específica], fica."
+STORY 2 — AMPLIFICAÇÃO DA DOR: Descreve as consequências de não resolver o problema. Torna a dor mais real e presente.
+STORY 3 — A CAUSA QUE NINGUÉM FALA: "O problema não é [X óbvio]. É [Y surpreendente]." — insight que gera credibilidade.
+STORY 4 — DESTRUIÇÃO DA CRENÇA LIMITANTE: Identifica a crença que impede a acção e destrói-a com lógica.
+STORY 5 — CONSTRUÇÃO DE TENSÃO: "Podes continuar como estás e [consequência negativa], ou..."
+STORY 6 — APRESENTAÇÃO DO PRODUTO (brevemente): "Existe [produto/serviço]. [O que faz em 1 frase]."
+STORY 7 — PROVA/RESULTADO: "Quem passou por isto [resultado real]. Não promessas — prova."
+STORY 8 — CTA COM PALAVRA-CHAVE: "Responde [palavra-chave] nos DMs" ou "Link na bio." Urgência real, não fabricada.
+
+REGRAS:
+- Cada story: máx 5 frases — denso mas rápido de consumir
+- Zero linguagem de vendedor: "promoção", "aproveita", "últimas vagas" (a menos que real)
+- A solução é apresentada como consequência lógica — nunca como interrupção
+- O espectador deve sentir que NÃO agir é a escolha irracional
+- Tom: amigo que sabe mais do que tu, não vendedor
+
+ENTREGA: As 8 stories completas, directas, prontas a publicar.`,
+  },
+
+  // ── POSTS (mantém lógica anterior) ───────────────────────────────────────
+  post: {
+    instagram: `
 FORMATO: Post para Instagram (optimizado para o algoritmo 2025)
 
 ━━━ ALGORITMO PRIMEIRO ━━━
 Os 3 sinais que determinam se este post chega a novas pessoas:
-1. WATCH TIME — cada linha tem de ganhar a seguinte. Leitor que sai = alcance perdido.
-2. DM SHARES — o sinal mais poderoso. Cria conteúdo que alguém quer enviar a um amigo específico.
-3. LIKES POR ALCANCE — engagement genuíno, não likes de cortesia.
-
-O conteúdo original na voz do criador é premiado. Conteúdo copiado é penalizado.
-
-━━━ ESTRUTURA OBRIGATÓRIA ━━━
+1. WATCH TIME — cada linha tem de ganhar a seguinte.
+2. DM SHARES — o sinal mais poderoso. Cria conteúdo que alguém quer enviar a um amigo.
+3. LIKES POR ALCANCE — engagement genuíno.
 
 LINHA 1 — O HOOK (único trabalho: parar o scroll em 1,7 segundos)
-Para Reels: esta linha vai SOBREPOSTA no vídeo — tem de funcionar SEM SOM.
-Escolhe UMA destas fórmulas:
-• Contradição: "Nunca [coisa óbvia]. Fiz [oposto] e [resultado específico com número]."
+• Contradição: "Nunca [coisa óbvia]. Fiz [oposto] e [resultado com número]."
 • Número concreto: "[Número] [resultado] em [tempo]. Sem [sacrifício esperado]."
-• Pergunta incómoda: "[Pergunta que o leitor já pensou mas nunca respondeu honestamente]"
+• Pergunta incómoda: "[Pergunta que o leitor já pensou mas nunca respondeu]"
 • Declaração ousada: "[Afirmação que vai contra o senso comum do nicho]"
-• Segredo revelado: "A maioria das pessoas [erro comum]. Eu faço o contrário."
 
 LINHA 2-3 — AGITAÇÃO DO PROBLEMA
-Identifica exactamente quem está a ler. Descreve a dor com palavras que ELES usariam.
+Identifica exactamente quem está a ler. Descreve a dor com as palavras DELES.
 
-CORPO — DESENVOLVIMENTO (PAS ou BAB)
+CORPO — DESENVOLVIMENTO
 • Parágrafos de máx 2 linhas
-• Linha em branco entre cada parágrafo
-• Especificidade obrigatória: números, cenários concretos, nomes reais — NUNCA vago
-• Cada frase ganha o direito de existir (teste: "e então?" — se não há resposta, corta)
+• Linha em branco entre parágrafos
+• Especificidade obrigatória — NUNCA vago
 
-ÚLTIMA LINHA — CTA QUE GERA DM SHARES (o mais importante para alcance)
-Fórmulas que fazem alguém enviar por mensagem a um amigo:
-• "Envia isto a alguém que [situação específica do teu nicho]."
-• "Conheces alguém que [problema que este post resolve]? Partilha."
-• "Guarda isto — vais querer relembrar quando [situação específica]."
-NÃO USAR: "deixa o teu comentário", "segue-me", "activa o sino".
+ÚLTIMA LINHA — CTA QUE GERA DM SHARES
+• "Envia isto a alguém que [situação específica]."
+• "Guarda isto — vais querer relembrar quando [situação]."
 
-3-5 hashtags no final (relevantes — não quantidade).
+3-5 hashtags no final. Comprimento: 150-250 palavras.`,
 
-COMPRIMENTO: 150-250 palavras (mais curto = mais watch time = mais alcance).`,
-
-  linkedin: `
+    linkedin: `
 FORMATO: Post para LinkedIn
 
-ESTRUTURA OBRIGATÓRIA:
-
-LINHA 1 — HOOK (aparece antes do "ver mais", máx 12 palavras)
-Fórmulas que funcionam no LinkedIn:
+LINHA 1 — HOOK (máx 12 palavras, antes do "ver mais")
 • "[Número] anos a fazer X. O que aprendi em [tempo] mudou tudo:"
-• "Despedi-me de [empresa]. A melhor decisão da minha vida. Aqui está o porquê:"
 • "A maioria das pessoas faz [X] errado. Aqui está o que realmente funciona:"
-• "[Insight contra-intuitivo que o leitor nunca considerou]"
 
-[LINHA EM BRANCO obrigatória após o hook]
+[LINHA EM BRANCO obrigatória]
 
-IDENTIFICAÇÃO
-1-2 frases que fazem o leitor pensar "isto é sobre mim".
+IDENTIFICAÇÃO: 1-2 frases que fazem o leitor pensar "isto é sobre mim".
 
-[LINHA EM BRANCO]
+DESENVOLVIMENTO: Bullet points ou parágrafos de 1-2 linhas. Nunca blocos.
 
-DESENVOLVIMENTO
-• Bullet points ou parágrafos de 1-2 linhas
-• Nunca blocos de texto — algoritmo e leitores detestam
-• Especificidade: "aumentei 47%" > "aumentei muito"
-• Factos > hyperbole (Ogilvy: "testado 10 anos" > "o melhor do mercado")
+FECHO: Insight accionável + pergunta ou CTA.
 
-[LINHA EM BRANCO]
+Comprimento: 150-250 palavras. Tom: profissional mas humano.`,
 
-FECHO
-Insight accionável + pergunta ou CTA que convida interacção.
-
-COMPRIMENTO: 150-250 palavras. Tom: profissional mas humano — falar para um colega, não para um chefe.`,
-
-  twitter: `
+    twitter: `
 FORMATO: Thread para X/Twitter
 
-ESTRUTURA OBRIGATÓRIA:
-
-TWEET 1 — HOOK (o mais importante, determina tudo)
-Fórmulas que param o scroll:
-• "Fiz [X] durante [Y] dias. O que aprendi vai contra tudo o que te ensinaram:"
-• "[Número] verdades sobre [tema] que ninguém diz em voz alta:"
-• "Há [tempo], [situação difícil]. Hoje, [resultado concreto]. O que mudou:"
-Máx 240 caracteres. Termina com ":" para criar antecipação.
-
-TWEETS 2-5 — DESENVOLVIMENTO
-• Um único ponto por tweet
-• Começa cada um com número (2/) ou insight directo
-• Especificidade > generalidade em cada tweet
-• Cada tweet deve conseguir ficar sozinho (Dan Kennedy: "cada palavra paga renda ou sai")
-• Máx 250 caracteres por tweet
-
-TWEET 6 — GOLDEN NUGGET
-O insight mais valioso de toda a thread. O que o leitor vai guardar.
-
-TWEET FINAL — CTA
-Pergunta que convida resposta, ou próxima acção específica.
+TWEET 1 — HOOK (determina tudo, máx 240 caracteres, termina com ":")
+TWEETS 2-5 — DESENVOLVIMENTO (um único ponto por tweet, começa com número)
+TWEET 6 — GOLDEN NUGGET (o insight mais valioso)
+TWEET FINAL — CTA (pergunta ou próxima acção)
 
 Numera todos: (1/7), (2/7), etc.`,
 
-  email: `
+    email: `
 FORMATO: Email para lista de subscribers
 
-ASSUNTO (único trabalho: ser aberto)
-• Máx 45 caracteres
-• Fórmulas: "[Nome], isto muda X" / "A verdade sobre [tema]" / "[Número] [resultado] em [tempo]"
-• Específico > intrigante > genérico
-• NUNCA: "Newsletter #47" ou "Actualização de [mês]"
+ASSUNTO (máx 45 caracteres, específico > intrigante > genérico)
+PRÉ-HEADER (1 frase, complementa sem repetir)
+ABERTURA (começa IN MEDIAS RES — no meio da história, não com "Olá")
+CORPO: Hook → Identificação → Promessa → Prova/História → CTA
+200-400 palavras, parágrafos de 1-3 linhas, escreve para UMA pessoa.
+CTA ÚNICO no final: "Quero [resultado]" > "Comprar agora"`,
+  },
 
-PRÉ-HEADER (complementa, não repete o assunto)
-• 1 frase que cria curiosidade adicional
+  // ── LEGENDAS ─────────────────────────────────────────────────────────────
+  legenda: {
+    storytelling: `
+FORMATO: Legenda com Storytelling para Reel ou Post
 
-ABERTURA (primeira frase é tudo)
-• Não começa com "Olá" ou apresentação
-• Começa IN MEDIAS RES: no meio da história, no meio do problema
-• Fórmula Halbert: coloca o leitor numa cena concreta nos primeiros 2 segundos
+Cria uma legenda que complementa o conteúdo visual com uma narrativa pessoal.
 
-ESTRUTURA DO CORPO (Gary Halbert):
-Hook → Identificação com o problema → Promessa → Prova/História → CTA
+ESTRUTURA:
+LINHA 1 (HOOK): Para o scroll. 1 linha que cria curiosidade ou contradição.
 
-• 200-400 palavras
-• Parágrafos de 1-3 linhas máximo
-• Escreve para UMA pessoa específica — não para uma lista
-• Schwartz: fala para onde o leitor ESTÁ, não para onde queres que ele chegue
-• Bencivenga: cada afirmação precisa de prova — história, número, ou exemplo concreto
+[LINHA EM BRANCO]
 
-CTA ÚNICO (no final)
-• Ligado ao benefício, não ao produto
-• "Quero [resultado]" > "Comprar agora"
-• Uma única acção — dois CTAs matam as conversões`,
+HISTÓRIA (3-5 parágrafos de 1-3 linhas):
+- Começa in medias res — no meio da acção
+- Detalhes específicos (não "uma tarde qualquer" — "terça, 14h, Lisboa")
+- Vulnerabilidade real — não só sucessos
+- Cada parágrafo avança a história
+
+LIÇÃO (1-2 linhas):
+O que o espectador leva para a vida.
+
+CTA:
+- Não "deixa um like"
+- "Envia a alguém que [situação específica]" ou "Guarda para quando [momento]"
+
+2-3 hashtags no máximo.
+Comprimento: 100-200 palavras.`,
+  },
+
+  // ── EMAIL MARKETING ───────────────────────────────────────────────────────
+  email: {
+    boasVindas: `
+FORMATO: Email de Boas-Vindas
+
+Cria o email perfeito de boas-vindas para um novo subscritor.
+
+ESTRUTURA:
+ASSUNTO: Caloroso, específico, promete o que vem a seguir (máx 45 caracteres)
+PRÉ-HEADER: Complementa o assunto com curiosidade adicional
+
+ABERTURA: Começa com uma história — não com "Bem-vindo à newsletter".
+Cria o contexto de QUEM é o criador em 2-3 frases de história real.
+
+CORPO:
+- O que o subscritor vai receber (concreto, não "conteúdo incrível")
+- Por que isto é diferente de tudo o que já receberam
+- Uma coisa imediata para fazer (não tem de ser comprar — pode ser responder a uma pergunta)
+
+CTA: Simples, directo, accionável agora.
+
+Comprimento: 200-300 palavras. Tom: amigo que te escreve uma carta, não empresa.`,
+
+    nutricao: `
+FORMATO: Email de Nutrição de Leads
+
+Cria um email que educa e aquece o lead para uma decisão futura.
+
+ESTRUTURA:
+ASSUNTO: Promete um insight específico e valioso (máx 45 caracteres)
+
+ABERTURA: História curta que apresenta o problema central do email.
+
+CORPO (Gary Halbert):
+- Identifica a dor com precisão
+- Apresenta o insight/aprendizagem de forma inesperada
+- Dá valor REAL — algo que o leitor pode usar hoje mesmo
+- Conecta naturalmente ao próximo passo (sem pressão)
+
+FECHO: "Responde a este email com [X]" ou link para conteúdo aprofundado.
+
+Comprimento: 250-350 palavras. Tom: mentor que partilha, não vendedor.`,
+
+    vendaDireta: `
+FORMATO: Email de Venda Directa
+
+Cria um email que vende directamente um produto ou serviço.
+
+ESTRUTURA (AIDA + Halbert):
+ASSUNTO: Urgência ou curiosidade real — nunca spam (máx 45 caracteres)
+
+ABERTURA: Entra directamente na dor. Sem apresentação.
+
+CORPO:
+1. IDENTIFICAÇÃO: Descreve a situação actual do leitor com precisão cirúrgica
+2. AGITAÇÃO: Mostra as consequências de não agir (sem drama falso)
+3. SOLUÇÃO: Apresenta o produto como consequência lógica — não como interrupção
+4. PROVA: 1 resultado real, específico, verificável
+5. OFERTA: Clara, directa, sem linguagem de "promoção"
+
+CTA: 1 único CTA no final. "Quero [resultado específico] →"
+
+Comprimento: 300-400 palavras. Zero fluff. Cada frase ganha o direito de existir.`,
+  },
 };
 
-// Princípios dos melhores copywriters do mundo
-// Aplicados no system prompt para elevar a qualidade de cada peça gerada
+// Princípios dos melhores copywriters
 const copywritingMasters = `
-PRINCÍPIOS DOS MELHORES COPYWRITERS DO MUNDO — APLICA EM TUDO:
-
-GARY HALBERT — "O único trabalho do headline é fazer ler a segunda linha"
-• Especificidade vence generalidade sempre: "perdeu 8kg em 6 semanas" > "perdeu peso"
-• Teste "e então?": após cada frase, pergunta "e então?" — se não há resposta urgente, corta
-• Histórias que vendem: começa no meio da acção, não no início
-• A lista (audiência) é o activo mais importante — fala para UMA pessoa real
-
-DAVID OGILVY — "Em média, 5× mais pessoas lêem o headline que o corpo"
-• O headline deve prometer um benefício claro e mensurável
-• Factos batem hyperbole: "usado por 10.000 coaches" > "o melhor sistema do mundo"
-• Imagens mentais concretas > conceitos abstractos
-• Nunca sejas inteligente à custa de ser claro
-
-EUGENE SCHWARTZ — "O copywriter não cria o desejo. Canaliza o que já existe"
-• Fala para o nível de consciência ACTUAL do leitor, não onde queres que ele chegue
-• Os melhores headlines espelham um pensamento que o leitor JÁ TINHA
-• Cria mass desire, não um novo desejo
-
-DAN KENNEDY — "Cada palavra paga renda ou sai"
-• Zero fluff. Zero enchimento. Cada frase ganha o direito de existir.
-• CTA específico e urgente: "Clica aqui" mata. "Quero [resultado específico] agora" converte.
-• Direct response: cada peça tem UMA métrica — clique, resposta, ou acção
-
-GARY BENCIVENGA — "Prova é o elemento mais poderoso do copy"
-• Uma afirmação sem prova é ruído. Com prova específica é persuasão.
-• Bullets: curiosidade + benefício específico + implica prova — em cada um
-
-ALEX HORMOZI — "Faz a oferta tão boa que o leitor sente-se estúpido por dizer não"
-• Value equation: (Resultado sonhado × Probabilidade percebida) / (Tempo × Esforço)
-• Reduz risco percebido. Aumenta valor percebido. Simplifica a decisão.
-• Specificity of result: não "ficar em forma" mas "perder 8kg em 8 semanas sem ginásio"
-
-NICOLAS COLE / JUSTIN WELSH — "O algoritmo é audiência, mas a audiência é humana"
-• Linha 1 é 80% do trabalho nas redes sociais — tudo o resto serve para justificá-la
-• Insights contra-intuitivos > conteúdo que confirma o que já sabem
-• Conversacional > formal. Específico > genérico. Curto > longo quando possível.
-• O "big idea": cada peça tem UMA ideia central que alguém consegue repetir num café
-
-ADAM MOSSERI (Head do Instagram) — "Sends são o sinal mais importante de todos"
-• Watch Time é o #1 factor de ranking — cada linha tem de ganhar o direito à seguinte
-• DM Shares valem 3-5x mais que likes para chegar a novas audiências
-• A decisão de ficar ou sair acontece em 1,7 segundos — o hook não é opcional
-• Pergunta de ouro antes de publicar: "Há uma pessoa específica a quem eu enviaria isto por DM?"
-• CTA que gera DMs: "Envia a [tipo de pessoa]" > "Comenta abaixo"
-• Conteúdo original e na voz do criador é premiado pelo algoritmo — conteúdo copiado é penalizado
-• ~50% vê Reels sem som: texto visível na primeira frame é obrigatório`;
+PRINCÍPIOS DOS MELHORES COPYWRITERS — APLICA EM TUDO:
+• GARY HALBERT: Especificidade vence generalidade. Histórias que vendem. Teste "e então?".
+• DAVID OGILVY: O headline promete benefício claro. Factos batem hyperbole.
+• EUGENE SCHWARTZ: Fala para o nível de consciência ACTUAL do leitor.
+• DAN KENNEDY: Cada palavra paga renda ou sai. Zero fluff.
+• ALEX HORMOZI: Especificidade de resultado. "Perder 8kg em 8 semanas" > "ficar em forma".
+• NICOLAS COLE: Linha 1 é 80% do trabalho. Insights contra-intuitivos > confirmar o que já sabem.
+• MOSSERI (Instagram): DM Shares valem 3-5x mais que likes. Watch Time é o sinal #1.`;
 
 export async function POST(request: NextRequest) {
   const { userId } = await auth();
@@ -216,113 +514,81 @@ export async function POST(request: NextRequest) {
   }
 
   if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY não configurada no .env.local" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "ANTHROPIC_API_KEY não configurada" }, { status: 500 });
   }
 
-  let body: { platform: string; topic: string; vozDNA?: VozDNA };
+  let body: {
+    format?: string;
+    subtype?: string;
+    platform?: string; // retrocompatibilidade
+    topic: string;
+    vozDNA?: VozDNA;
+  };
+
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Body inválido" }, { status: 400 });
   }
 
-  const { platform, topic, vozDNA } = body;
+  const { topic, vozDNA } = body;
 
-  if (!platform || !topic) {
-    return NextResponse.json(
-      { error: "platform e topic são obrigatórios" },
-      { status: 400 }
-    );
+  // Suporta tanto o novo sistema (format+subtype) como o antigo (platform)
+  const format = body.format ?? (body.platform ? "post" : "post");
+  const subtype = body.subtype ?? body.platform ?? "instagram";
+
+  if (!topic) {
+    return NextResponse.json({ error: "topic é obrigatório" }, { status: 400 });
   }
 
   const user = await currentUser();
   const authorName = user?.firstName ?? "Coach";
 
-  // Genius Profile (enriquece o ângulo do conteúdo se existir)
   const geniusProfile = user?.unsafeMetadata?.geniusProfile as GeniusProfile | undefined;
   const geniusSection = geniusProfile
-    ? `
-GENIUS PROFILE DE ${authorName.toUpperCase()} — USA PARA POSICIONAR O ÂNGULO ÚNICO:
-• Zona de Genialidade (Hendricks): ${geniusProfile.hendricksZone ?? "não definida"}
-• Perfil de Riqueza (Wealth Dynamics): ${geniusProfile.wealthProfile ?? "não definido"}
-• Modo de Acção (Kolbe): ${geniusProfile.kolbeMode ?? "não definido"}
-• Vantagem Fascinante (Hogshead): ${geniusProfile.fascinationAdvantage ?? "não definida"}
-
-O Genius Profile define o ângulo que só ${authorName} consegue tomar — usa-o para diferenciar o conteúdo de tudo o que existe.`
+    ? `\nGENIUS PROFILE DE ${authorName.toUpperCase()}:\n• Zona de Genialidade: ${geniusProfile.hendricksZone ?? "—"}\n• Perfil de Riqueza: ${geniusProfile.wealthProfile ?? "—"}\n• Modo de Acção: ${geniusProfile.kolbeMode ?? "—"}\n• Vantagem Fascinante: ${geniusProfile.fascinationAdvantage ?? "—"}\n`
     : "";
 
-  // DNA de Voz — o coração do system prompt
   const vozDNASection = vozDNA
     ? `
 VOZ & DNA DE ${authorName.toUpperCase()}:
-
-Arquétipo de comunicação: ${vozDNA.arquetipo ?? "Mentor Directo"}
+Arquétipo: ${vozDNA.arquetipo ?? "Mentor Directo"}
 ${vozDNA.descricaoArquetipo ? `Descrição: ${vozDNA.descricaoArquetipo}` : ""}
-
 Tom em 3 palavras: ${vozDNA.tomEmTresPalavras?.join(", ") ?? "Directo, Autêntico, Prático"}
+VOCABULÁRIO OBRIGATÓRIO: ${vozDNA.vocabularioActivo?.join(", ") ?? "sistema, prova, consistência"}
+VOCABULÁRIO PROIBIDO: ${vozDNA.vocabularioProibido?.join(", ") ?? "fácil, rápido, truque"}
+FRASES ASSINATURA: ${vozDNA.frasesAssinatura?.join(" | ") ?? "—"}
+REGRAS DE ESTILO: ${vozDNA.regrasEstilo?.join(" | ") ?? "Vai directo ao ponto"}`
+    : `VOZ & DNA: directa, autêntica, sem filtros corporativos. Proibido: fácil, rápido, truque.`;
 
-VOCABULÁRIO OBRIGATÓRIO — usa de forma natural, nunca forçada:
-${vozDNA.vocabularioActivo?.map((w) => `• ${w}`).join("\n") ?? "• sistema • prova • consistência • resultados reais"}
+  // Busca o prompt do formato+tipo
+  const formatTemplate = formatPrompts[format]?.[subtype]
+    ?? formatPrompts.post.instagram;
 
-VOCABULÁRIO PROIBIDO — banido de toda a peça:
-${vozDNA.vocabularioProibido?.map((w) => `• ${w}`).join("\n") ?? "• fácil • rápido • truque • segredo"}
+  const systemPrompt = `És o melhor criador de conteúdo do mundo para solopreneurs e criadores de marca pessoal.
 
-FRASES ASSINATURA — incorpora quando encaixam naturalmente:
-${vozDNA.frasesAssinatura?.map((f) => `• "${f}"`).join("\n") ?? ""}
-
-REGRAS DE ESTILO (lei — não sugestão):
-${vozDNA.regrasEstilo?.map((r, i) => `${i + 1}. ${r}`).join("\n") ?? "1. Vai directo ao ponto\n2. Usa linguagem acessível\n3. Termina com acção clara"}`
-    : `
-VOZ & DNA DE ${authorName.toUpperCase()}:
-Tom: directo, autêntico, sem filtros corporativos
-Vocabulário proibido: fácil, rápido, truque, segredo, incrível, simplesmente
-Princípio: vai ao ponto, usa a linguagem do leitor, termina com acção`;
-
-  const systemPrompt = `És o melhor criador de conteúdo do mundo para solopreneurs. Combinás a voz autêntica de ${authorName} com os princípios dos maiores copywriters de todos os tempos.
-
-MISSÃO: Gerar conteúdo que soe EXACTAMENTE a ${authorName} E aplique os princípios dos melhores copywriters do mundo. Não é um nem outro — é os dois em simultâneo.
+MISSÃO: Gerar conteúdo que soe EXACTAMENTE a ${authorName} E aplique os princípios dos melhores copywriters do mundo.
 ${vozDNASection}
 ${geniusSection}
 ${copywritingMasters}
 
-REGRAS ABSOLUTAS DE ${authorName.toUpperCase()}:
-1. Escreve NA VOZ de ${authorName} — primeira pessoa, como se ele próprio escrevesse agora
-2. NUNCA uses as palavras do vocabulário proibido
-3. USA as palavras do vocabulário activo de forma natural — nunca forçada
-4. As frases assinatura aparecem quando encaixam — nunca decorativas
-5. Segue as regras de estilo como lei
-6. NUNCA inventas resultados, números, prova social, testemunhos ou factos — só o que foi dado
-7. Zero jargão sem explicação — a linguagem que o cliente ideal usa no dia-a-dia
-8. Uma única ideia central por peça — o leitor consegue resumir em 1 frase
+REGRAS ABSOLUTAS:
+1. Escreve NA VOZ de ${authorName} — primeira pessoa
+2. NUNCA uses vocabulário proibido
+3. NUNCA inventas resultados, números, prova social ou factos não fornecidos
+4. Uma única ideia central por peça
+5. Soa a ${authorName}, não a template de IA — se soar a template, reescreve`;
 
-PROCESSO INTERNO ANTES DE RESPONDER:
-1. Quem é a UMA pessoa que vai ler isto? (não "a audiência" — uma pessoa específica)
-2. Onde está o nível de consciência DESTA pessoa agora?
-3. Qual é a UMA emoção que quero que sinta no final?
-4. O hook vai parar o scroll / abrir o email / gerar o clique em 1,7 segundos?
-5. Cada frase passa o teste "e então?" (se não há resposta urgente, corta)
-6. Isto soa a ${authorName} ou a um template de IA? Se for template, reescreve tudo.
-7. Apliquei pelo menos 3 princípios dos masters acima?
-8. (Instagram) Há uma pessoa específica a quem eu enviaria isto por DM? O CTA convida essa partilha?
-9. (Instagram) O conteúdo é 100% original na voz de ${authorName}? Nenhuma frase soa a conteúdo reciclado?
-
-SÓ RESPONDE QUANDO O CONTEÚDO PASSAR TODOS OS 9 PONTOS.`;
-
-  const userPrompt = `Cria conteúdo de elite sobre o seguinte tema para ${authorName}:
+  const userPrompt = `Cria conteúdo sobre o seguinte tema para ${authorName}:
 
 TEMA: ${topic}
 
-${platformFormats[platform] ?? platformFormats.instagram}
+${formatTemplate}
 
 Escreve o conteúdo completo, pronto a publicar. Sem introduções, sem explicações — só o conteúdo.`;
 
   try {
-    const anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY,
-    });
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
@@ -338,12 +604,12 @@ Escreve o conteúdo completo, pronto a publicar. Sem introduções, sem explica�
 
     const generatedText = content.text;
 
-    // Guarda no Supabase (sem bloquear se falhar)
+    // Guarda no Supabase
     try {
       const supabase = createServerClient();
       await supabase.from("generated_content").insert({
         user_id: userId,
-        platform,
+        platform: `${format}/${subtype}`,
         topic,
         content: generatedText,
       });
@@ -353,15 +619,13 @@ Escreve o conteúdo completo, pronto a publicar. Sem introduções, sem explica�
 
     return NextResponse.json({
       content: generatedText,
-      platform,
+      format,
+      subtype,
       topic,
       tokens: message.usage.input_tokens + message.usage.output_tokens,
     });
   } catch (error) {
     console.error("Erro ao chamar Claude API:", error);
-    return NextResponse.json(
-      { error: "Erro ao gerar conteúdo. Verifica a API key." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Erro ao gerar conteúdo." }, { status: 500 });
   }
 }

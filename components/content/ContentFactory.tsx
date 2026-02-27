@@ -4,27 +4,51 @@ import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
 import type { GeneratedContent } from "@/lib/supabase/types";
 import ViralResearch from "@/components/content/ViralResearch";
-import ContentDesigner from "@/components/content/ContentDesigner";
 
-// Plataformas disponíveis
-const platforms = [
-  { id: "instagram", label: "Instagram", icon: "📸", desc: "Post feed" },
-  { id: "linkedin",  label: "LinkedIn",  icon: "💼", desc: "Post profissional" },
-  { id: "twitter",   label: "X / Twitter", icon: "🐦", desc: "Thread" },
-  { id: "email",     label: "Email",     icon: "✉️", desc: "Newsletter" },
+// Formatos disponíveis
+const formats = [
+  { id: "reel",     label: "Reel",      icon: "🎬", desc: "Roteiro para vídeo curto" },
+  { id: "carrossel",label: "Carrossel", icon: "📱", desc: "Sequência de cards" },
+  { id: "story",    label: "Story",     icon: "💭", desc: "Sequência de stories" },
+  { id: "post",     label: "Post",      icon: "✍️", desc: "Post para redes sociais" },
+  { id: "legenda",  label: "Legenda",   icon: "📝", desc: "Legenda com storytelling" },
+  { id: "email",    label: "Email",     icon: "✉️", desc: "Email marketing" },
 ];
 
-const topicSuggestions = [
-  "A maior lição que aprendi ao tentar (e falhar) no meu negócio",
-  "Por que a maioria das pessoas nunca começa — e como eu ultrapassei isso",
-  "O erro que quase me fez desistir (e o que mudou tudo)",
-];
-
-const platformLabels: Record<string, string> = {
-  instagram: "📸 Instagram",
-  linkedin: "💼 LinkedIn",
-  twitter: "🐦 X/Twitter",
-  email: "✉️ Email",
+// Sub-tipos por formato
+const subtypes: Record<string, { id: string; label: string; desc: string }[]> = {
+  reel: [
+    { id: "viral7s",       label: "Viral 7S",         desc: "7 cenas × 7 segundos — máxima retenção" },
+    { id: "utilidade",     label: "Utilidade",         desc: "Ensina algo concreto e accionável" },
+    { id: "opiniao",       label: "Opinião",           desc: "Planta uma bandeira de posicionamento" },
+    { id: "infotenimento", label: "Infotenimento",     desc: "Informa + entretém ao mesmo tempo" },
+    { id: "problemaSolucao", label: "Problema/Solução", desc: "Identifica dor e apresenta solução" },
+  ],
+  carrossel: [
+    { id: "utilidade",     label: "Utilidade",     desc: "Ensino directo — 10 cards educativos" },
+    { id: "infotenimento", label: "Infotenimento", desc: "Pautas quentes com densidade" },
+    { id: "opiniao",       label: "Opinião",       desc: "Storytelling + ponto de vista pessoal" },
+    { id: "vendas",        label: "Vendas",        desc: "7 narrativas para vender produto/serviço" },
+  ],
+  story: [
+    { id: "narrativaDensa", label: "Narrativa Densa",  desc: "Conhecimento em narrativa com oralidade extrema" },
+    { id: "posicionamento", label: "Posicionamento",   desc: "Teses filosóficas que plantam crenças" },
+    { id: "vendas",         label: "Vendas",           desc: "Amplifica dor e apresenta solução como alívio" },
+  ],
+  post: [
+    { id: "instagram", label: "Instagram", desc: "Post feed optimizado para algoritmo 2025" },
+    { id: "linkedin",  label: "LinkedIn",  desc: "Post profissional com hook forte" },
+    { id: "twitter",   label: "X/Twitter", desc: "Thread com golden nugget" },
+    { id: "email",     label: "Email",     desc: "Newsletter para subscribers" },
+  ],
+  legenda: [
+    { id: "storytelling", label: "Storytelling", desc: "Legenda com narrativa pessoal e CTA de partilha" },
+  ],
+  email: [
+    { id: "boasVindas",  label: "Boas-Vindas",      desc: "Primeiro email para novo subscritor" },
+    { id: "nutricao",    label: "Nutrição de Lead",  desc: "Educa e aquece para decisão futura" },
+    { id: "vendaDireta", label: "Venda Directa",     desc: "Vende directamente com AIDA + Halbert" },
+  ],
 };
 
 interface VozDNA {
@@ -40,12 +64,19 @@ interface VozDNA {
 export default function ContentFactory() {
   const { user } = useUser();
   const [tab, setTab] = useState<"generate" | "history">("generate");
-  const [selectedPlatform, setSelectedPlatform] = useState("");
+
+  // Selecção de formato
+  const [selectedFormat, setSelectedFormat] = useState("");
+  const [selectedSubtype, setSelectedSubtype] = useState("");
   const [topic, setTopic] = useState("");
+
+  // Estado de geração
   const [generatedContent, setGeneratedContent] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+
+  // Histórico
   const [history, setHistory] = useState<GeneratedContent[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -53,18 +84,22 @@ export default function ContentFactory() {
   const vozDNA = (user?.unsafeMetadata?.vozDNA as VozDNA) ?? {};
   const vozDNAComplete = user?.unsafeMetadata?.vozDNAComplete as boolean;
 
-  // Carrega histórico quando o tab muda para history
+  // Resetar sub-tipo quando o formato muda
+  function handleFormatSelect(formatId: string) {
+    setSelectedFormat(formatId);
+    setSelectedSubtype("");
+    setGeneratedContent("");
+    setError("");
+  }
+
   const loadHistory = useCallback(async () => {
     setIsLoadingHistory(true);
     try {
       const res = await fetch("/api/content");
       const data = await res.json();
       if (res.ok) setHistory(data.content ?? []);
-    } catch {
-      // silencioso — histórico não é crítico
-    } finally {
-      setIsLoadingHistory(false);
-    }
+    } catch { /* silencioso */ }
+    finally { setIsLoadingHistory(false); }
   }, []);
 
   useEffect(() => {
@@ -72,7 +107,7 @@ export default function ContentFactory() {
   }, [tab, loadHistory]);
 
   async function handleGenerate() {
-    if (!selectedPlatform || !topic.trim()) return;
+    if (!selectedFormat || !selectedSubtype || !topic.trim()) return;
     setIsGenerating(true);
     setError("");
     setGeneratedContent("");
@@ -81,7 +116,12 @@ export default function ContentFactory() {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ platform: selectedPlatform, topic: topic.trim(), vozDNA }),
+        body: JSON.stringify({
+          format: selectedFormat,
+          subtype: selectedSubtype,
+          topic: topic.trim(),
+          vozDNA,
+        }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error ?? "Erro desconhecido"); return; }
@@ -110,6 +150,15 @@ export default function ContentFactory() {
     });
   }
 
+  // Etiqueta legível para o histórico
+  const formatLabel = (platform: string) => {
+    const [f, s] = platform.split("/");
+    const fmt = formats.find((x) => x.id === f);
+    const sub = subtypes[f]?.find((x) => x.id === s);
+    if (fmt && sub) return `${fmt.icon} ${fmt.label} — ${sub.label}`;
+    return platform;
+  };
+
   if (!vozDNAComplete) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-6">
@@ -135,14 +184,11 @@ export default function ContentFactory() {
         <div className="inline-flex items-center gap-2 bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] text-xs font-bold tracking-widest px-4 py-2 rounded-full mb-4">
           ⚡ CONTENT FACTORY
         </div>
-        <div className="flex items-center justify-between mb-2">
-          <h1 className="text-3xl font-bold text-[#F0ECE4]">Gera conteúdo na tua voz</h1>
-        </div>
-        {/* Tabs */}
-        <div className="flex gap-1 mt-4 border-b border-[#1a2035]">
+        <h1 className="text-3xl font-bold text-[#F0ECE4] mb-4">Gera conteúdo na tua voz</h1>
+        <div className="flex gap-1 border-b border-[#1a2035]">
           {[
             { id: "generate", label: "Gerar" },
-            { id: "history",  label: `Histórico${history.length > 0 ? ` (${history.length})` : ""}` },
+            { id: "history", label: `Histórico${history.length > 0 ? ` (${history.length})` : ""}` },
           ].map((t) => (
             <button
               key={t.id}
@@ -162,67 +208,83 @@ export default function ContentFactory() {
       {/* TAB: Gerar */}
       {tab === "generate" && (
         <>
-          {/* Passo 1: Plataforma */}
+          {/* PASSO 1 — Formato */}
           <div className="mb-8">
             <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-3">
-              PASSO 1 — ONDE VAIS PUBLICAR?
+              PASSO 1 — QUE TIPO DE CONTEÚDO?
             </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {platforms.map((p) => (
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+              {formats.map((f) => (
                 <button
-                  key={p.id}
-                  onClick={() => setSelectedPlatform(p.id)}
-                  className={`p-4 rounded-xl border text-left transition-all ${
-                    selectedPlatform === p.id
+                  key={f.id}
+                  onClick={() => handleFormatSelect(f.id)}
+                  className={`p-3 rounded-xl border text-left transition-all ${
+                    selectedFormat === f.id
                       ? "border-[#BFD64B] bg-[#BFD64B]/10"
                       : "border-[#2a3555] bg-[#111827] hover:border-[#BFD64B]/50"
                   }`}
                 >
-                  <div className="text-2xl mb-2">{p.icon}</div>
-                  <div className="font-bold text-[#F0ECE4] text-sm">{p.label}</div>
-                  <div className="text-[#8892a4] text-xs mt-0.5">{p.desc}</div>
+                  <div className="text-xl mb-1">{f.icon}</div>
+                  <div className="font-bold text-[#F0ECE4] text-xs">{f.label}</div>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Passo 2: Tema */}
-          {selectedPlatform && (
+          {/* PASSO 2 — Sub-tipo */}
+          {selectedFormat && (
             <div className="mb-8">
               <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-3">
-                PASSO 2 — SOBRE O QUE QUERES ESCREVER?
+                PASSO 2 — QUE ESTILO?
+              </div>
+              <div className="flex flex-col gap-2">
+                {subtypes[selectedFormat]?.map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => setSelectedSubtype(s.id)}
+                    className={`flex items-center gap-4 p-4 rounded-xl border text-left transition-all ${
+                      selectedSubtype === s.id
+                        ? "border-[#BFD64B] bg-[#BFD64B]/10"
+                        : "border-[#2a3555] bg-[#111827] hover:border-[#BFD64B]/50"
+                    }`}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-[#F0ECE4] text-sm">{s.label}</div>
+                      <div className="text-[#8892a4] text-xs mt-0.5">{s.desc}</div>
+                    </div>
+                    {selectedSubtype === s.id && (
+                      <span className="text-[#BFD64B] text-xs font-bold shrink-0">✓ Seleccionado</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* PASSO 3 — Tema */}
+          {selectedFormat && selectedSubtype && (
+            <div className="mb-8">
+              <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-3">
+                PASSO 3 — QUAL É O TEMA?
               </div>
               <textarea
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
-                placeholder="Ex: Por que 25 minutos de treino são suficientes para transformar o corpo..."
+                placeholder="Descreve o tema ou a ideia que queres desenvolver..."
                 rows={3}
                 autoFocus
                 className="w-full bg-[#111827] border border-[#2a3555] rounded-xl px-5 py-4 text-[#F0ECE4] placeholder-[#4a5568] text-base focus:outline-none focus:border-[#BFD64B] transition-colors resize-none"
               />
-              <div className="mt-3">
-                <div className="text-[#8892a4] text-xs mb-2">Sugestões:</div>
-                <div className="flex flex-wrap gap-2">
-                  {topicSuggestions.map((s, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setTopic(s)}
-                      className="text-xs text-[#8892a4] border border-[#2a3555] rounded-lg px-3 py-1.5 hover:border-[#BFD64B]/50 hover:text-[#F0ECE4] transition-all"
-                    >
-                      {s.length > 50 ? s.substring(0, 50) + "..." : s}
-                    </button>
-                  ))}
-                </div>
-              </div>
 
-              {/* Ângulos Únicos — aparece quando o utilizador já escreveu o tema */}
+              {/* Ângulos Únicos */}
               {topic.trim().length > 5 && (
                 <ViralResearch
-                  selectedPlatform={selectedPlatform}
+                  selectedPlatform={selectedFormat}
                   topic={topic}
                   onSelectAngle={(hook) => setTopic(hook)}
                 />
               )}
+
               <div className="mt-5">
                 <button
                   onClick={handleGenerate}
@@ -267,14 +329,8 @@ export default function ContentFactory() {
                   {generatedContent}
                 </pre>
               </div>
-              {/* Designer de imagem para redes sociais */}
-              <ContentDesigner
-                content={generatedContent}
-                platform={selectedPlatform}
-                niche={(user?.unsafeMetadata?.niche as string) || ""}
-              />
 
-              <div className="flex gap-3 mt-4">
+              <div className="flex gap-3 mt-4 flex-wrap">
                 <button
                   onClick={handleGenerate}
                   disabled={isGenerating}
@@ -283,7 +339,7 @@ export default function ContentFactory() {
                   Regenerar
                 </button>
                 <button
-                  onClick={() => { setGeneratedContent(""); setTopic(""); setSelectedPlatform(""); }}
+                  onClick={() => { setGeneratedContent(""); setTopic(""); setSelectedFormat(""); setSelectedSubtype(""); }}
                   className="text-sm text-[#8892a4] hover:text-[#F0ECE4] transition-colors px-4 py-2"
                 >
                   Novo conteúdo
@@ -301,18 +357,15 @@ export default function ContentFactory() {
           {/* Voz & DNA activo */}
           {vozDNA.arquetipo && (
             <div className="border-t border-[#1a2035] pt-6">
-              <div className="text-[#8892a4] text-xs font-bold tracking-widest mb-3">
-                VOZ & DNA ACTIVO
-              </div>
+              <div className="text-[#8892a4] text-xs font-bold tracking-widest mb-3">VOZ & DNA ACTIVO</div>
               <div className="bg-[#111827] border border-[#1a2035] rounded-xl p-4 space-y-3">
-                {/* Arquétipo + tom */}
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-[#BFD64B] text-[10px] font-bold tracking-widest mb-0.5">ARQUÉTIPO</div>
                     <div className="text-[#F0ECE4] text-sm font-bold">{vozDNA.arquetipo}</div>
                   </div>
                   {vozDNA.tomEmTresPalavras && (
-                    <div className="flex gap-1.5">
+                    <div className="flex gap-1.5 flex-wrap justify-end">
                       {vozDNA.tomEmTresPalavras.map((p) => (
                         <span key={p} className="bg-[#BFD64B]/10 text-[#BFD64B] text-[10px] font-bold px-2 py-1 rounded-full border border-[#BFD64B]/20">
                           {p}
@@ -321,22 +374,6 @@ export default function ContentFactory() {
                     </div>
                   )}
                 </div>
-                {/* Vocabulário */}
-                {vozDNA.vocabularioActivo && vozDNA.vocabularioActivo.length > 0 && (
-                  <div>
-                    <div className="text-[#4a5568] text-[10px] font-bold tracking-widest mb-1.5">PALAVRAS ACTIVAS</div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {vozDNA.vocabularioActivo.slice(0, 8).map((w) => (
-                        <span key={w} className="bg-[#0d1420] text-[#8892a4] text-[10px] px-2 py-0.5 rounded border border-[#1a2035]">
-                          {w}
-                        </span>
-                      ))}
-                      {vozDNA.vocabularioActivo.length > 8 && (
-                        <span className="text-[#4a5568] text-[10px] px-1">+{vozDNA.vocabularioActivo.length - 8}</span>
-                      )}
-                    </div>
-                  </div>
-                )}
                 <div className="flex items-center justify-end">
                   <a href="/voz-dna" className="text-[#4a5568] text-xs hover:text-[#8892a4] transition-colors">
                     Editar DNA →
@@ -359,40 +396,27 @@ export default function ContentFactory() {
             <div className="text-center py-16">
               <div className="text-4xl mb-4">✍️</div>
               <p className="text-[#8892a4]">Ainda não geraste nenhum conteúdo.</p>
-              <button
-                onClick={() => setTab("generate")}
-                className="mt-4 text-[#BFD64B] text-sm hover:opacity-80 transition-opacity"
-              >
+              <button onClick={() => setTab("generate")} className="mt-4 text-[#BFD64B] text-sm hover:opacity-80 transition-opacity">
                 Gerar agora →
               </button>
             </div>
           ) : (
             <div className="flex flex-col gap-3">
               {history.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-[#111827] border border-[#2a3555] rounded-xl overflow-hidden"
-                >
-                  {/* Cabeçalho do card */}
+                <div key={item.id} className="bg-[#111827] border border-[#2a3555] rounded-xl overflow-hidden">
                   <div
                     className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-[#1a2035] transition-colors"
                     onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <span className="text-sm shrink-0">
-                        {platformLabels[item.platform] ?? item.platform}
-                      </span>
+                      <span className="text-sm shrink-0">{formatLabel(item.platform)}</span>
                       <span className="text-[#8892a4] text-sm truncate">{item.topic}</span>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
                       <span className="text-[#4a5568] text-xs">{formatDate(item.created_at)}</span>
-                      <span className="text-[#8892a4] text-xs">
-                        {expandedId === item.id ? "▲" : "▼"}
-                      </span>
+                      <span className="text-[#8892a4] text-xs">{expandedId === item.id ? "▲" : "▼"}</span>
                     </div>
                   </div>
-
-                  {/* Conteúdo expandido */}
                   {expandedId === item.id && (
                     <div className="px-4 pb-4">
                       <pre className="text-[#F0ECE4] text-sm leading-relaxed whitespace-pre-wrap font-sans bg-[#0d1420] rounded-lg p-4 mb-3">
