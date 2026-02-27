@@ -1,9 +1,10 @@
-// Landing page OPE_SQUAD — V2
+// Landing page OPB Crew — V2
 // Copy de elite: Schwartz (nível de consciência), Halbert (especificidade),
 // Ogilvy (headline com promessa mensurável), Kennedy (cada palavra paga renda),
 // Hormozi (value stack), Nicolas Cole (insight contra-intuitivo)
 
 import Link from "next/link";
+import BetaWaitlist from "@/components/landing/BetaWaitlist";
 
 export default function Home() {
   return (
@@ -13,9 +14,9 @@ export default function Home() {
       <nav className="flex items-center justify-between px-8 py-5 border-b border-white/[0.08]">
         <div className="flex items-center gap-3">
           <span className="bg-[#BFD64B] text-[#0A0E1A] text-[10px] font-bold tracking-widest px-2 py-1 rounded">
-            OPE
+            OPB
           </span>
-          <span className="font-bold text-[#F0ECE4] text-sm">SQUAD</span>
+          <span className="font-bold text-[#F0ECE4] text-sm">CREW</span>
         </div>
         <div className="flex items-center gap-6">
           <a href="#problema" className="text-[#8892a4] text-sm hover:text-[#F0ECE4] transition-colors hidden md:block">
@@ -55,7 +56,7 @@ export default function Home() {
 
         {/* Sub-headline — Ogilvy: promessa específica e mensurável */}
         <p className="text-[#8892a4] text-lg md:text-xl mb-10 max-w-2xl leading-relaxed">
-          O OPE_SQUAD aprende a tua voz, o teu estilo e o teu ângulo único —
+          O OPB Crew aprende a tua voz, o teu estilo e o teu ângulo único —
           e gera posts para Instagram, LinkedIn, X e Email{" "}
           <strong className="text-[#F0ECE4]">que soam a ti, não a uma IA.</strong>
         </p>
@@ -138,7 +139,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* MECANISMO — porque o OPE_SQUAD é diferente (Hormozi: mecanismo único) */}
+      {/* MECANISMO — porque o OPB Crew é diferente (Hormozi: mecanismo único) */}
       <section className="px-6 py-20 border-t border-white/[0.08] bg-[#0d1117]">
         <div className="max-w-3xl mx-auto text-center">
           <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-6">O QUE NOS TORNA DIFERENTES</div>
@@ -165,7 +166,7 @@ export default function Home() {
               </ul>
             </div>
             <div className="bg-[#111827] border border-[#BFD64B]/30 rounded-xl p-6">
-              <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-4">OPE_SQUAD</div>
+              <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-4">OPB CREW</div>
               <ul className="space-y-3 text-[#8892a4] text-sm">
                 <li className="flex gap-2"><span className="text-[#BFD64B] flex-shrink-0">✓</span> DNA da tua voz treinado antes do 1.º post</li>
                 <li className="flex gap-2"><span className="text-[#BFD64B] flex-shrink-0">✓</span> Vocabulário, frases e tom únicos teus</li>
@@ -267,7 +268,7 @@ export default function Home() {
           </p>
           <p className="text-[#8892a4] text-lg leading-relaxed mb-6">
             A maioria das ferramentas usa prompts genéricos. O output é previsível porque o input é previsível.
-            O OPE_SQUAD usa as tuas respostas literalmente — o teu vocabulário específico,
+            O OPB Crew usa as tuas respostas literalmente — o teu vocabulário específico,
             as tuas frases, as palavras que nunca dizes. A IA é treinada
             para imitar a tua voz, não para substituí-la.
           </p>
@@ -348,13 +349,30 @@ export default function Home() {
         </div>
       </section>
 
+      {/* BETA WAITLIST */}
+      <section id="beta" className="px-6 py-20 border-t border-white/[0.08] bg-[#0d1117]">
+        <div className="max-w-xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] text-xs font-bold tracking-widest px-4 py-2 rounded-full mb-8">
+            ⚡ BETA FECHADO — CANDIDATA-TE
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#F0ECE4] mb-4 leading-tight">
+            Queres ser beta tester?
+          </h2>
+          <p className="text-[#8892a4] text-lg mb-10 leading-relaxed">
+            Estamos a seleccionar os primeiros utilizadores a testar o OPB Crew.
+            Deixa o teu email — avisamos-te quando a tua vaga abrir.
+          </p>
+          <BetaWaitlist />
+        </div>
+      </section>
+
       {/* FOOTER */}
       <footer className="px-8 py-8 border-t border-white/[0.08] flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="bg-[#BFD64B] text-[#0A0E1A] text-[10px] font-bold tracking-widest px-2 py-1 rounded">
-            OPE
+            OPB
           </span>
-          <span className="text-[#8892a4] text-sm">SQUAD — One Person Empire</span>
+          <span className="text-[#8892a4] text-sm">CREW — One Person Business</span>
         </div>
         <span className="text-[#8892a4] text-xs">v0.2 · 2026</span>
       </footer>
