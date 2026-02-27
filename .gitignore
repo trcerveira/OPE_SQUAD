@@ -28,3 +28,10 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# TypeScript build info
+tsconfig.tsbuildinfo
+
+# Docs — screenshots e scripts de debug (ficheiros temporários)
+docs/*.png
+docs/*.ps1
