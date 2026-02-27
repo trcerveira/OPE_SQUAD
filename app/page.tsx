@@ -1,9 +1,7 @@
-// Landing page OPB Crew — V2
-// Copy de elite: Schwartz (nível de consciência), Halbert (especificidade),
-// Ogilvy (headline com promessa mensurável), Kennedy (cada palavra paga renda),
-// Hormozi (value stack), Nicolas Cole (insight contra-intuitivo)
+// Landing page OPB Crew — V3
+// Copy de elite: Schwartz, Halbert, Ogilvy, Kennedy, Hormozi, Nicolas Cole
+// Posicionamento: algoritmo 2025, conteúdo original, multiplataforma
 
-import Link from "next/link";
 import BetaWaitlist from "@/components/landing/BetaWaitlist";
 
 export default function Home() {
@@ -37,15 +35,13 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* HERO — Schwartz: espelha o pensamento que o leitor JÁ TEM */}
+      {/* HERO */}
       <section className="flex flex-col items-center justify-center text-center px-6 py-24 md:py-32">
 
-        {/* Badge de acesso antecipado — credibilidade real sem inventar números */}
         <div className="inline-flex items-center gap-2 bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] text-xs font-bold tracking-widest px-4 py-2 rounded-full mb-10">
-          🚀 EM BREVE — LISTA DE ESPERA ABERTA
+          🚀 CONSTRUÍDO PARA O ALGORITMO DE 2025
         </div>
 
-        {/* Headline — Schwartz: espelha o pensamento que eles já têm toda a semana */}
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-[#F0ECE4] leading-[1.1] mb-6 max-w-4xl">
           Toda a semana decides{" "}
           <span className="text-[#BFD64B]">o que publicar.</span>
@@ -54,14 +50,12 @@ export default function Home() {
           <span className="italic text-[#8892a4]">não publicas nada.</span>
         </h1>
 
-        {/* Sub-headline — Ogilvy: promessa específica e mensurável */}
         <p className="text-[#8892a4] text-lg md:text-xl mb-10 max-w-2xl leading-relaxed">
           O OPB Crew aprende a tua voz, o teu estilo e o teu ângulo único —
           e gera posts para Instagram, LinkedIn, X e Email{" "}
           <strong className="text-[#F0ECE4]">que soam a ti, não a uma IA.</strong>
         </p>
 
-        {/* CTA Principal — Kennedy: específico, sem ambiguidade */}
         <div className="flex flex-col sm:flex-row items-center gap-4" id="trial">
           <a
             href="#waitlist"
@@ -74,7 +68,6 @@ export default function Home() {
           </span>
         </div>
 
-        {/* Especificidade (Halbert) — números reais, não inventados */}
         <div className="mt-14 flex flex-wrap justify-center items-center gap-10 text-sm">
           <div className="flex flex-col items-center gap-1">
             <span className="text-2xl font-bold text-[#BFD64B]">4</span>
@@ -87,24 +80,23 @@ export default function Home() {
           </div>
           <div className="w-px h-8 bg-white/10 hidden sm:block" />
           <div className="flex flex-col items-center gap-1">
-            <span className="text-2xl font-bold text-[#BFD64B]">0</span>
-            <span className="text-[#8892a4]">posts que soam a template</span>
+            <span className="text-2xl font-bold text-[#BFD64B]">+60%</span>
+            <span className="text-[#8892a4]">mais alcance para conteúdo original*</span>
           </div>
         </div>
+        <p className="text-[#4a5568] text-xs mt-4">
+          *Dados confirmados por Adam Mosseri (Head do Instagram), Dezembro 2025
+        </p>
       </section>
 
-      {/* PROBLEMA — Schwartz: fala para onde o leitor ESTÁ, não onde queres que chegue */}
+      {/* PROBLEMA */}
       <section id="problema" className="px-6 py-20 border-t border-white/[0.08]">
         <div className="max-w-3xl mx-auto">
-
           <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-6">O PROBLEMA REAL</div>
-
-          {/* Halbert: começa no meio da acção */}
           <h2 className="text-3xl md:text-4xl font-bold text-[#F0ECE4] mb-8 leading-tight">
             Não é preguiça.<br />
             <span className="text-[#8892a4]">É falta de sistema.</span>
           </h2>
-
           <div className="space-y-6 text-[#8892a4] text-lg leading-relaxed">
             <p>
               Tens ideias. O problema é que quando te sentas para criar conteúdo,{" "}
@@ -121,8 +113,6 @@ export default function Home() {
               <strong className="text-[#F0ECE4]">têm um sistema que tu não tens.</strong>
             </p>
           </div>
-
-          {/* Agitação específica (Schwartz: espelha os pensamentos deles) */}
           <div className="mt-10 grid md:grid-cols-2 gap-4">
             {[
               "\"Vou publicar amanhã.\" — há 3 semanas",
@@ -139,7 +129,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* MECANISMO — porque o OPB Crew é diferente (Hormozi: mecanismo único) */}
+      {/* MECANISMO */}
       <section className="px-6 py-20 border-t border-white/[0.08] bg-[#0d1117]">
         <div className="max-w-3xl mx-auto text-center">
           <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-6">O QUE NOS TORNA DIFERENTES</div>
@@ -153,8 +143,6 @@ export default function Home() {
             o que nunca dizes. Cada post gerado passa pelo filtro do teu DNA —
             não por um template genérico de copywriter.
           </p>
-
-          {/* Diferença lado a lado */}
           <div className="grid md:grid-cols-2 gap-4 text-left">
             <div className="bg-[#111827] border border-red-500/20 rounded-xl p-6">
               <div className="text-red-400 text-xs font-bold tracking-widest mb-4">OUTRAS FERRAMENTAS</div>
@@ -163,6 +151,7 @@ export default function Home() {
                 <li className="flex gap-2"><span className="text-red-400 flex-shrink-0">✗</span> Soa igual para todos os utilizadores</li>
                 <li className="flex gap-2"><span className="text-red-400 flex-shrink-0">✗</span> Tens de editar 80% do resultado</li>
                 <li className="flex gap-2"><span className="text-red-400 flex-shrink-0">✗</span> Vocabulário proibido aparece sempre</li>
+                <li className="flex gap-2"><span className="text-red-400 flex-shrink-0">✗</span> Conteúdo genérico penalizado pelo algoritmo</li>
               </ul>
             </div>
             <div className="bg-[#111827] border border-[#BFD64B]/30 rounded-xl p-6">
@@ -172,27 +161,91 @@ export default function Home() {
                 <li className="flex gap-2"><span className="text-[#BFD64B] flex-shrink-0">✓</span> Vocabulário, frases e tom únicos teus</li>
                 <li className="flex gap-2"><span className="text-[#BFD64B] flex-shrink-0">✓</span> Pronto a publicar na 1.ª geração</li>
                 <li className="flex gap-2"><span className="text-[#BFD64B] flex-shrink-0">✓</span> Princípios dos melhores copywriters do mundo</li>
+                <li className="flex gap-2"><span className="text-[#BFD64B] flex-shrink-0">✓</span> Optimizado para Watch Time, DM Shares e Alcance</li>
               </ul>
             </div>
           </div>
         </div>
       </section>
 
-      {/* COMO FUNCIONA — Ogilvy: cada passo com benefício claro */}
-      <section id="como-funciona" className="px-6 py-20 border-t border-white/[0.08]">
+      {/* O INSTAGRAM MUDOU AS REGRAS */}
+      <section className="px-6 py-20 border-t border-white/[0.08]">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-6">O INSTAGRAM MUDOU AS REGRAS</div>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#F0ECE4] mb-6 leading-tight">
+            Conteúdo original tem{" "}
+            <span className="text-[#BFD64B]">+60% de alcance.</span>
+            <br />
+            <span className="text-[#8892a4]">Conteúdo copiado perde 80%.</span>
+          </h2>
+          <p className="text-[#8892a4] text-lg leading-relaxed mb-8">
+            Em Dezembro de 2025, Adam Mosseri (Head do Instagram) confirmou a maior mudança
+            algorítmica em anos. A nova regra é simples:{" "}
+            <strong className="text-[#F0ECE4]">
+              o algoritmo premia conteúdo que só tu poderias criar.
+            </strong>
+          </p>
+          <div className="bg-[#111827] border-l-4 border-[#BFD64B] rounded-r-xl px-6 py-5 mb-8">
+            <p className="text-[#F0ECE4] text-lg italic leading-relaxed mb-3">
+              &ldquo;A barra mudou de &lsquo;consegues criar?&rsquo; para &lsquo;consegues criar
+              algo que só tu poderias criar?&rsquo; Esse é o novo critério.&rdquo;
+            </p>
+            <p className="text-[#4a5568] text-sm">
+              — Adam Mosseri, Head do Instagram · Dezembro 2025
+            </p>
+          </div>
+          <div className="text-[#8892a4] text-sm font-bold tracking-widest mb-4">
+            OS 3 FACTORES QUE O ALGORITMO MEDE
+          </div>
+          <div className="grid md:grid-cols-3 gap-4 mb-8">
+            {[
+              {
+                number: "01",
+                title: "Watch Time",
+                desc: "Quanto tempo as pessoas ficam. Cada linha tem de ganhar a seguinte.",
+              },
+              {
+                number: "02",
+                title: "DM Shares",
+                desc: "Quantas vezes o teu post é enviado a um amigo. 3–5× mais peso que likes.",
+              },
+              {
+                number: "03",
+                title: "Likes / Alcance",
+                desc: "A proporção de pessoas que gostam — não o número total.",
+              },
+            ].map((f) => (
+              <div key={f.number} className="bg-[#111827] border border-white/[0.06] rounded-xl p-5">
+                <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-2">{f.number}</div>
+                <div className="font-bold text-[#F0ECE4] mb-1">{f.title}</div>
+                <p className="text-[#8892a4] text-sm leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-[#8892a4] text-lg leading-relaxed">
+            O OPB Crew gera conteúdo com hooks nos primeiros 3 segundos, CTAs que geram
+            partilhas por DM, e ângulos únicos impossíveis de copiar —
+            porque são baseados no teu Voice DNA e Genius Profile.{" "}
+            <strong className="text-[#F0ECE4]">
+              Não é só conteúdo. É conteúdo construído para o algoritmo de 2025.
+            </strong>
+          </p>
+        </div>
+      </section>
+
+      {/* COMO FUNCIONA */}
+      <section id="como-funciona" className="px-6 py-20 border-t border-white/[0.08] bg-[#0d1117]">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-14">
             <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-4">COMO FUNCIONA</div>
             <h2 className="text-3xl md:text-4xl font-bold text-[#F0ECE4]">
-              4 passos. Uma vez. Para sempre.
+              6 passos. Uma vez. Para sempre.
             </h2>
             <p className="text-[#8892a4] mt-4 max-w-xl mx-auto">
-              Fazes o setup uma única vez. O sistema aprende quem és. Depois é só gerar.
+              Fazes o setup uma única vez. O sistema aprende quem és, estrutura o teu plano editorial, e depois é só gerar.
             </p>
           </div>
-
           <div className="space-y-4">
-            {/* Passo 1 */}
             <div className="flex gap-5 items-start bg-[#111827] border border-white/[0.06] rounded-xl p-6">
               <div className="bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] font-bold text-sm w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
                 01
@@ -205,8 +258,6 @@ export default function Home() {
                 </p>
               </div>
             </div>
-
-            {/* Passo 2 */}
             <div className="flex gap-5 items-start bg-[#111827] border border-white/[0.06] rounded-xl p-6">
               <div className="bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] font-bold text-sm w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
                 02
@@ -218,8 +269,6 @@ export default function Home() {
                 </p>
               </div>
             </div>
-
-            {/* Passo 3 */}
             <div className="flex gap-5 items-start bg-[#111827] border border-[#BFD64B]/20 rounded-xl p-6 relative">
               <div className="absolute top-4 right-4 bg-[#BFD64B] text-[#0A0E1A] text-[9px] font-bold px-2 py-1 rounded tracking-wider">
                 O CORAÇÃO DO SISTEMA
@@ -236,8 +285,6 @@ export default function Home() {
                 </p>
               </div>
             </div>
-
-            {/* Passo 4 */}
             <div className="flex gap-5 items-start bg-[#111827] border border-white/[0.06] rounded-xl p-6">
               <div className="bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] font-bold text-sm w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
                 04
@@ -247,7 +294,34 @@ export default function Home() {
                 <p className="text-[#8892a4] text-sm leading-relaxed">
                   Escolhes a plataforma, escreves o tema em 1 frase, clicas Gerar.
                   Em 15 segundos tens um post pronto a copiar —
-                  com hook, estrutura e CTA aplicados pelos princípios dos melhores copywriters do mundo.
+                  com hook nos 3 primeiros segundos, CTA que gera DM shares,
+                  e ângulos únicos que o algoritmo premia.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-5 items-start bg-[#111827] border border-white/[0.06] rounded-xl p-6">
+              <div className="bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] font-bold text-sm w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
+                05
+              </div>
+              <div>
+                <h3 className="font-bold text-[#F0ECE4] mb-1">Linhas Editoriais — o teu plano de conteúdo</h3>
+                <p className="text-[#8892a4] text-sm leading-relaxed">
+                  Define os pilares editoriais da tua marca — os temas que vais dominar,
+                  a frequência por plataforma, e a estrutura que garante consistência
+                  sem teres de reinventar o que publicar cada semana.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-5 items-start bg-[#111827] border border-white/[0.06] rounded-xl p-6">
+              <div className="bg-[#BFD64B]/10 border border-[#BFD64B]/30 text-[#BFD64B] font-bold text-sm w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
+                06
+              </div>
+              <div>
+                <h3 className="font-bold text-[#F0ECE4] mb-1">Calendário de Conteúdos — agenda e tracking</h3>
+                <p className="text-[#8892a4] text-sm leading-relaxed">
+                  Visualiza o que está planeado, o que foi publicado, e o que está pendente.
+                  Nunca mais ficas sem saber o que publicar amanhã —
+                  o sistema gere o pipeline por ti.
                 </p>
               </div>
             </div>
@@ -255,8 +329,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* OBJECÇÃO PRINCIPAL — Kennedy: elimina a dúvida que impede a compra */}
-      <section className="px-6 py-20 border-t border-white/[0.08] bg-[#0d1117]">
+      {/* OBJECÇÃO */}
+      <section className="px-6 py-20 border-t border-white/[0.08]">
         <div className="max-w-2xl mx-auto text-center">
           <div className="text-3xl mb-6">🤔</div>
           <h2 className="text-2xl md:text-3xl font-bold text-[#F0ECE4] mb-6">
@@ -280,8 +354,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* PREÇOS — Hormozi: faz a oferta clara, reduz friction */}
-      <section id="precos" className="px-6 py-20 border-t border-white/[0.08]">
+      {/* PREÇOS */}
+      <section id="precos" className="px-6 py-20 border-t border-white/[0.08] bg-[#0d1117]">
         <div className="max-w-lg mx-auto">
           <div className="text-center mb-10">
             <div className="text-[#BFD64B] text-xs font-bold tracking-widest mb-4">O QUE ESTÁ A SER CONSTRUÍDO</div>
@@ -289,16 +363,16 @@ export default function Home() {
               Tudo o que vais ter<br />quando lançarmos.
             </h2>
           </div>
-
           <div className="bg-[#111827] border border-[#BFD64B]/30 rounded-2xl p-8">
-            {/* Valor stack — o que recebem */}
             <div className="space-y-3 mb-8">
               {[
                 "Genius Zone — descobrir o teu ângulo único",
                 "Manifesto — os teus princípios de criação",
                 "Voz & DNA — o teu sistema de voz codificado",
                 "Content Factory — posts para 4 plataformas",
-                "Princípios dos melhores copywriters do mundo",
+                "Ângulos Únicos — 5 ângulos que só tu podes tomar",
+                "Linhas Editoriais — estrutura editorial por tema e pilar",
+                "Calendário de Conteúdos — agenda e tracking do que publicas",
               ].map((item) => (
                 <div key={item} className="flex items-center gap-3 text-sm text-[#8892a4]">
                   <span className="text-[#BFD64B] flex-shrink-0">✓</span>
@@ -306,7 +380,6 @@ export default function Home() {
                 </div>
               ))}
             </div>
-
             <div className="border-t border-white/[0.08] pt-6 mb-6">
               <div className="text-center">
                 <div className="text-[#8892a4] text-sm mb-1">Preço a anunciar em breve</div>
@@ -316,7 +389,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-
             <a
               href="#waitlist"
               className="block bg-[#BFD64B] text-[#0A0E1A] font-bold py-4 text-center rounded-xl hover:opacity-90 transition-opacity text-lg"
@@ -330,7 +402,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA FINAL — Halbert: termina com a emoção certa */}
+      {/* CTA FINAL */}
       <section className="px-6 py-24 border-t border-white/[0.08] bg-[#0d1117]">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-[#F0ECE4] mb-6 leading-tight">
@@ -374,7 +446,7 @@ export default function Home() {
           </span>
           <span className="text-[#8892a4] text-sm">CREW — One Person Business</span>
         </div>
-        <span className="text-[#8892a4] text-xs">v0.2 · 2026</span>
+        <span className="text-[#8892a4] text-xs">v0.3 · 2026</span>
       </footer>
 
     </main>
