@@ -1,4 +1,4 @@
-// Configuração de administradores do OPE_SQUAD
+// Configuração de administradores do OPB_CREW
 // Para adicionar um novo admin, basta adicionar o email à lista abaixo.
 
 export const SUPER_ADMINS: string[] = [

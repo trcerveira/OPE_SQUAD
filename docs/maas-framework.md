@@ -1,7 +1,7 @@
 # MaaS Framework
 **Methodology as a Service — Teoria da Comunicação Aplicada a Transferência de Conhecimento com IA**
 
-> Documento de referência para o OPE_SQUAD.
+> Documento de referência para o OPB Crew.
 > Autor: Telmo | Versão 1.0 | Fevereiro 2026
 > Fonte: Biblioteca MaaS v3.1 (José Amorim, 2026) + Shannon-Weaver (1949)
 
@@ -13,7 +13,7 @@ O MaaS quantifica a eficiência de transferência de conhecimento e mostra como 
 
 **Premissa:** Toda comunicação perde sinal. A IA funciona como amplificador — aumenta o sinal útil, reduz o ruído.
 
-**No contexto do OPE_SQUAD:** Cada interação com o utilizador é uma tentativa de transferir know-how. Se o Ke (eficiência) for baixo, o utilizador não executa, não tem resultados, e cancela. Se for alto, torna-se evangelista.
+**No contexto do OPB Crew:** Cada interação com o utilizador é uma tentativa de transferir know-how. Se o Ke (eficiência) for baixo, o utilizador não executa, não tem resultados, e cancela. Se for alto, torna-se evangelista.
 
 ---
 
@@ -48,7 +48,7 @@ Ke = (T × A(t) × M × AmpIA × Lcg) / (Lci + Lce) × (1 ± sigma)
 | Workshop Presencial | 41% | Mão na massa |
 | **SaaS com MaaS** | **58%** | IA + UX + Metodologia = 2.4x vs sem MaaS |
 
-**Objectivo do OPE_SQUAD:** Ke entre 40-58%. Escalável como SaaS, eficaz como workshop.
+**Objectivo do OPB Crew:** Ke entre 40-58%. Escalável como SaaS, eficaz como workshop.
 
 ---
 
@@ -59,7 +59,7 @@ Ke = (T × A(t) × M × AmpIA × Lcg) / (Lci + Lce) × (1 ± sigma)
 | Cursos Online | 13% | Genérico, utilizador fica sozinho após ver o vídeo |
 | SaaS Genérico (templates) | 8-10% | Tools sem metodologia |
 | Mentoria/Coaching | 30% | Caro, não escala |
-| **OPE_SQUAD com MaaS** | **40-58%** | IA personalizada + UX limpa + prática forçada |
+| **OPB Crew com MaaS** | **40-58%** | IA personalizada + UX limpa + prática forçada |
 
 ---
 
@@ -99,7 +99,7 @@ HISTÓRICO DE ACÇÕES: {action_history}
 
 ## Anti-Patterns a Evitar
 
-- **ChatGPT wrapper genérico** — OPE_SQUAD não é uma caixa de chat. É um sistema guiado.
+- **ChatGPT wrapper genérico** — OPB Crew não é uma caixa de chat. É um sistema guiado.
 - **Information overload** — Menos conteúdo, mais acção. Cada palavra que não leva a acção é ruído.
 - **Feature creep** — Cada funcionalidade que não aumenta Ke é distracção. Dizer não a 90%.
 - **Copy genérico** — "Construa o seu negócio dos sonhos!" não transfere conhecimento.
@@ -107,7 +107,7 @@ HISTÓRICO DE ACÇÕES: {action_history}
 
 ---
 
-## Métricas MaaS para o OPE_SQUAD
+## Métricas MaaS para o OPB Crew
 
 | Métrica | O Que Mede | Objectivo |
 |---------|-----------|-----------|
@@ -130,7 +130,7 @@ HISTÓRICO DE ACÇÕES: {action_history}
 
 ---
 
-## Stack Técnico (já em uso no OPE_SQUAD)
+## Stack Técnico (já em uso no OPB Crew)
 
 | Componente | Ferramenta |
 |-----------|-----------|
@@ -143,4 +143,4 @@ HISTÓRICO DE ACÇÕES: {action_history}
 
 ---
 
-*MaaS Framework v1.0 — Fevereiro 2026 — Projecto OPE_SQUAD*
+*MaaS Framework v1.0 — Fevereiro 2026 — Projecto OPB Crew*

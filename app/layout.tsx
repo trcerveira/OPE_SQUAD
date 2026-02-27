@@ -3,14 +3,14 @@ import { Space_Grotesk } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
-// Fonte principal OPE_SQUAD
+// Fonte principal OPB_CREW
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-space-grotesk",
 });
 
 export const metadata: Metadata = {
-  title: "OPE_SQUAD — One Person Empire",
+  title: "OPB Crew — One Person Business",
   description: "AI Operating System para Solopreneurs. Sem terminal. Só resultados.",
 };
 

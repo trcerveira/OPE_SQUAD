@@ -17,7 +17,7 @@ export default async function DashboardPage() {
     ? `Pronto para criar, ${user?.firstName ?? "solopreneur"}.`
     : geniusComplete && manifestoComplete
     ? `Quase lá, ${user?.firstName ?? "solopreneur"}.`
-    : `Bem-vindo ao OPE_SQUAD, ${user?.firstName ?? "solopreneur"}.`;
+    : `Bem-vindo ao OPB Crew, ${user?.firstName ?? "solopreneur"}.`;
 
   const subtituloHero = vozDNAComplete
     ? "O teu Voz & DNA está activo. Gera conteúdo para qualquer plataforma na tua voz."

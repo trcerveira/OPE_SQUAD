@@ -1,4 +1,4 @@
-# Supabase — OPE_SQUAD
+# Supabase — OPB_CREW
 
 ## Estrutura
 

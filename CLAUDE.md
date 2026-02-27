@@ -1,17 +1,17 @@
-# OPE_SQUAD — CLAUDE.md
-> One Person Empire | AI Operating System para Solopreneurs
+# OPB Crew — CLAUDE.md
+> One Person Business | AI Operating System para Solopreneurs
 > Fundador: Telmo Cerveira | Início: 2026-02-26
 
 ---
 
 ## 1. O QUE É ESTE PROJECTO
 
-**Nome:** OPE_SQUAD
+**Nome:** OPB Crew
 **Tipo:** SaaS Web Application
 **Missão:** Dar a qualquer solopreneur o poder de uma equipa de 10 pessoas, sem saber programar nem usar o terminal.
 
 ### O Problema que Resolve
-90% dos solopreneurs têm medo do terminal (tela preta). O AIOS + Claude Code tem poder enorme. O OPE_SQUAD é a interface web que torna esse poder acessível.
+90% dos solopreneurs têm medo do terminal (tela preta). O AIOS + Claude Code tem poder enorme. O OPB Crew é a interface web que torna esse poder acessível.
 
 ### Público-Alvo
 Solopreneurs: coaches, consultores, criadores de conteúdo, freelancers. 1 pessoa, muitos chapéus, pouco tempo.
@@ -112,7 +112,7 @@ Poupa $99/mês. Elimina dependência de plataforma terceira.
 ## 5. ESTRUTURA DE FICHEIROS
 
 ```
-OPE_SQUAD/
+OPB Crew/
 ├── app/                      ← Next.js App Router
 │   ├── layout.tsx
 │   ├── page.tsx              ← Landing page
@@ -139,7 +139,7 @@ OPE_SQUAD/
 
 ## 6. AIOS INTEGRATION
 
-O OPE_SQUAD usa AIOS internamente para:
+O OPB Crew usa AIOS internamente para:
 - Gerar conteúdo para utilizadores (Content Engine)
 - Operar o próprio negócio (squads internas)
 
@@ -161,7 +161,7 @@ O OPE_SQUAD usa AIOS internamente para:
 - Sem dependências desnecessárias
 
 ### Git
-- Repositório: https://github.com/trcerveira/OPE_SQUAD
+- Repositório: https://github.com/trcerveira/OPB Crew
 - Branch: `master`
 - Commits: `feat:`, `fix:`, `docs:`, `chore:`
 - Exemplo: `feat: content factory module V1`
@@ -214,7 +214,7 @@ O OPE_SQUAD usa AIOS internamente para:
 
 ## 10. SOBRE O FUNDADOR
 
-**Telmo Cerveira** — solopreneur, fundador do 25 Method + OPE_SQUAD
+**Telmo Cerveira** — solopreneur, fundador do 25 Method + OPB Crew
 - Nível de programação: iniciante (a aprender)
 - Sempre responder em Português
 - Explicações simples antes de implementar
@@ -222,5 +222,5 @@ O OPE_SQUAD usa AIOS internamente para:
 
 ---
 
-*OPE_SQUAD CLAUDE.md v1.0 — Fevereiro 2026*
+*OPB Crew CLAUDE.md v1.0 — Fevereiro 2026*
 *"One person. Full squad power."*
