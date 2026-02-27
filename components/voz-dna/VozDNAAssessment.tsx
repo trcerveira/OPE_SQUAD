@@ -191,20 +191,28 @@ export default function VozDNAAssessment() {
   }
 
   async function guardarDNA() {
-    if (!user || !dna) return;
+    if (!user) {
+      setErro("Sessão não encontrada. Recarrega a página e tenta novamente.");
+      return;
+    }
+    if (!dna) return;
     setGuardando(true);
+    setErro(null);
     try {
+      // Guarda só o necessário — o DNA completo é grande demais para metadata do Clerk
       await user.update({
         unsafeMetadata: {
           ...user.unsafeMetadata,
           vozDNAComplete: true,
           vozDNAAnswers: respostas,
-          vozDNA: dna,
+          vozDNAArquetipo: dna.arquetipo,
+          vozDNATom: dna.tomEmTresPalavras,
         },
       });
       setGuardado(true);
       setTimeout(() => router.push("/content"), 1400);
-    } catch {
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "Erro ao guardar. Tenta novamente.");
       setGuardando(false);
     }
   }
@@ -391,6 +399,12 @@ export default function VozDNAAssessment() {
                 Se sim, activa o teu DNA. A partir deste momento, todo o conteúdo que gerares vai soar exactamente a ti.
               </p>
 
+              {erro && (
+                <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-4 mb-6 text-red-400 text-sm">
+                  {erro}
+                </div>
+              )}
+
               {guardado ? (
                 <div className="flex items-center justify-center gap-3 text-[#BFD64B] font-bold text-lg">
                   <span className="text-2xl">✓</span>
@@ -399,7 +413,7 @@ export default function VozDNAAssessment() {
               ) : (
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button
-                    onClick={() => { guardarDNA().catch(() => setGuardando(false)); }}
+                    onClick={() => { guardarDNA().catch((err) => { setErro(err instanceof Error ? err.message : "Erro inesperado."); setGuardando(false); }); }}
                     disabled={guardando}
                     className="inline-flex items-center gap-3 bg-[#BFD64B] text-[#0A0E1A] font-bold px-10 py-4 rounded-xl text-lg hover:opacity-90 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                   >
