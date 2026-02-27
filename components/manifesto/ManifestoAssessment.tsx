@@ -210,7 +210,7 @@ export default function ManifestoAssessment() {
         },
       });
       setAceito(true);
-      setTimeout(() => router.push("/onboarding"), 1400);
+      setTimeout(() => router.push("/voz-dna"), 1400);
     } catch {
       setAceitando(false);
     }
@@ -351,7 +351,7 @@ export default function ManifestoAssessment() {
                 Este és tu?
               </h3>
               <p className="text-[#8892a4] text-base mb-8 max-w-md mx-auto leading-relaxed">
-                Se sim, aceita o teu manifesto e avança para o próximo passo: definir o teu Voice DNA.
+                Se sim, aceita o teu manifesto e avança para o próximo passo: definir o teu Voz & DNA.
               </p>
 
               {aceito ? (
@@ -388,7 +388,7 @@ export default function ManifestoAssessment() {
               )}
 
               <p className="text-[#4a5568] text-xs mt-6">
-                Próximo passo: Voice DNA — 5 perguntas sobre o teu nicho e voz
+                Próximo passo: Voz & DNA — 8 perguntas que codificam exactamente como a tua marca fala
               </p>
             </div>
           </div>

@@ -7,19 +7,19 @@ export default async function DashboardPage() {
   const user = await currentUser();
   const geniusComplete    = user?.unsafeMetadata?.geniusComplete    as boolean;
   const manifestoComplete = user?.unsafeMetadata?.manifestoComplete as boolean;
-  const onboardingComplete = user?.unsafeMetadata?.onboardingComplete as boolean;
+  const vozDNAComplete    = user?.unsafeMetadata?.vozDNAComplete    as boolean;
 
   // Título dinâmico consoante o progresso
-  const tituloHero = onboardingComplete
+  const tituloHero = vozDNAComplete
     ? `Pronto para criar, ${user?.firstName ?? "solopreneur"}.`
     : geniusComplete && manifestoComplete
     ? `Quase lá, ${user?.firstName ?? "solopreneur"}.`
     : `Bem-vindo ao OPE_SQUAD, ${user?.firstName ?? "solopreneur"}.`;
 
-  const subtituloHero = onboardingComplete
-    ? "O teu Voice DNA está activo. Gera conteúdo para qualquer plataforma na tua voz."
+  const subtituloHero = vozDNAComplete
+    ? "O teu Voz & DNA está activo. Gera conteúdo para qualquer plataforma na tua voz."
     : geniusComplete && manifestoComplete
-    ? "Falta só o Voice DNA para activar o teu motor de conteúdo."
+    ? "Falta só o Voz & DNA para activar o teu motor de conteúdo."
     : "Começa por descobrir a tua Genius Zone. Tudo o resto segue-se.";
 
   return (
@@ -127,17 +127,17 @@ export default async function DashboardPage() {
             )}
           </div>
 
-          {/* Card 3: Voice DNA */}
+          {/* Card 3: Voz & DNA */}
           <div className={`rounded-xl p-6 border transition-all ${
             !manifestoComplete
               ? "bg-[#0d1420] border-[#1a2035] opacity-50"
-              : onboardingComplete
+              : vozDNAComplete
               ? "bg-[#0d1420] border-[#1a2035]"
               : "bg-[#111827] border-[#BFD64B]/30"
           }`}>
             <div className="flex items-center justify-between mb-3">
               <div className={`text-xs font-bold tracking-widest ${
-                onboardingComplete
+                vozDNAComplete
                   ? "text-[#4a5568]"
                   : manifestoComplete
                   ? "text-[#BFD64B]"
@@ -145,56 +145,56 @@ export default async function DashboardPage() {
               }`}>
                 PASSO 3 DE 4
               </div>
-              {onboardingComplete && (
+              {vozDNAComplete && (
                 <span className="text-[#BFD64B] text-xs font-bold">✓ Completo</span>
               )}
             </div>
             <h2 className={`text-xl font-bold mb-2 ${
-              !manifestoComplete || onboardingComplete ? "text-[#4a5568]" : "text-[#F0ECE4]"
+              !manifestoComplete || vozDNAComplete ? "text-[#4a5568]" : "text-[#F0ECE4]"
             }`}>
-              🎙️ Voice DNA
+              🎙️ Voz & DNA
             </h2>
             <p className="text-[#8892a4] text-sm mb-4">
-              5 perguntas sobre o teu nicho, oferta e tom de voz. Define a tua voz única. Uma vez só.
+              8 perguntas que codificam a tua voz única — tom, vocabulário, frases assinatura e estilo. O motor de IA vai usá-las em tudo.
             </p>
-            {manifestoComplete && !onboardingComplete && (
+            {manifestoComplete && !vozDNAComplete && (
               <Link
-                href="/onboarding"
+                href="/voz-dna"
                 className="inline-block bg-[#BFD64B] text-[#0A0E1A] font-bold px-6 py-3 rounded-lg hover:opacity-90 transition-opacity"
               >
-                Definir o meu Voice DNA →
+                Definir o meu Voz & DNA →
               </Link>
             )}
-            {onboardingComplete && manifestoComplete && (
+            {vozDNAComplete && manifestoComplete && (
               <Link
-                href="/onboarding"
+                href="/voz-dna"
                 className="text-[#4a5568] text-sm hover:text-[#8892a4] transition-colors"
               >
-                Editar →
+                Ver DNA →
               </Link>
             )}
           </div>
 
           {/* Card 4: Content Factory */}
           <div className={`rounded-xl p-6 border ${
-            onboardingComplete
+            vozDNAComplete
               ? "bg-[#111827] border-[#BFD64B]/30"
               : "bg-[#0d1420] border-[#1a2035] opacity-50"
           }`}>
             <div className={`text-xs font-bold tracking-widest mb-3 ${
-              onboardingComplete ? "text-[#BFD64B]" : "text-[#4a5568]"
+              vozDNAComplete ? "text-[#BFD64B]" : "text-[#4a5568]"
             }`}>
               PASSO 4 DE 4
             </div>
             <h2 className={`text-xl font-bold mb-2 ${
-              onboardingComplete ? "text-[#F0ECE4]" : "text-[#4a5568]"
+              vozDNAComplete ? "text-[#F0ECE4]" : "text-[#4a5568]"
             }`}>
               ✍️ Content Factory
             </h2>
             <p className="text-[#8892a4] text-sm mb-4">
               Gera posts para Instagram, LinkedIn, X e Email na tua voz em segundos.
             </p>
-            {onboardingComplete && (
+            {vozDNAComplete && (
               <Link
                 href="/content"
                 className="inline-block bg-[#BFD64B] text-[#0A0E1A] font-bold px-6 py-3 rounded-lg hover:opacity-90 transition-opacity"

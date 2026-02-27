@@ -8,6 +8,7 @@ const navLinks = [
   { href: "/dashboard", label: "Dashboard", icon: "⚡" },
   { href: "/genius", label: "Genius Zone", icon: "🧬" },
   { href: "/manifesto", label: "Manifesto", icon: "📜" },
+  { href: "/voz-dna", label: "Voz & DNA", icon: "🎙️" },
   { href: "/content", label: "Content", icon: "✍️" },
   { href: "/publish", label: "Publish", icon: "🚀", disabled: true },
 ];
