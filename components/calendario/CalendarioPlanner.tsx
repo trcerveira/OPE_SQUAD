@@ -139,8 +139,9 @@ export default function CalendarioPlanner() {
           },
         });
       }
-    } catch { /* navega na mesma */ }
-    router.push("/content");
+    } catch { /* abre na mesma */ }
+    window.open("/content", "_blank");
+    setGuardando(false);
   }
 
   // Gera o conteúdo para TODOS os posts do calendário sequencialmente
@@ -523,7 +524,7 @@ export default function CalendarioPlanner() {
               disabled={guardando}
               className="text-[#8892a4] text-sm hover:text-[#BFD64B] transition-colors disabled:opacity-50"
             >
-              {guardando ? "A guardar..." : "Guardar e criar posts um a um →"}
+              {guardando ? "A guardar..." : "Guardar e criar posts um a um ↗"}
             </button>
             <a href="/content" className="text-[#4a5568] text-sm hover:text-[#8892a4] transition-colors">
               Ir para conteúdo sem guardar →
