@@ -36,32 +36,32 @@ export async function POST(request: NextRequest) {
   const nome = user?.firstName ?? "Solopreneur";
 
   const systemPrompt = `És uma especialista em arquitectura editorial para solopreneurs e criadores de marca pessoal.
-O teu trabalho é criar 3 Linhas Editoriais estratégicas — com profundidade real, não resumos superficiais.
+O teu trabalho é criar 3 Linhas Editoriais estratégicas e específicas à marca.
 
-As 3 editorias cobrem os 3 pilares da comunicação de qualquer marca pessoal:
-1. POSICIONAMENTO — quem és e porque és diferente no mercado
-2. MÉTODO/SISTEMA — como resolves o problema, o teu processo único
-3. EXECUÇÃO/RESULTADO — como o cliente aplica e obtém resultado concreto
+As 3 editorias cobrem os 3 pilares:
+1. POSICIONAMENTO — quem és e porque és diferente
+2. MÉTODO/SISTEMA — como resolves o problema, o teu processo
+3. EXECUÇÃO/RESULTADO — como o cliente aplica e obtém resultado
 
-ESTRUTURA OBRIGATÓRIA DE CADA EDITORIA:
+ESTRUTURA DE CADA EDITORIA (sê conciso e específico):
 - numero: "01", "02" ou "03"
-- nome: nome da editoria em maiúsculas (3-4 palavras, específico à marca)
-- temaCentral: 4-6 frases densas — o que esta editoria comunica, a sua função no ecossistema de conteúdo
-- perspectivaUnica: o ângulo único, o contra-posicionamento, o que te distingue neste pilar (3-4 frases)
-- tomDeVoz: como comunicar nesta editoria — adjectivos do tom, o que fazer e não fazer (3-4 frases)
-- expressoes: exactamente 5 frases características desta editoria (curtas, directas, memoráveis, na voz da marca)
-- vocabulario: exactamente 12 palavras-chave desta editoria
-- elementosObrigatorios: exactamente 6 elementos que cada peça desta editoria deve conter
-- publicoAlvo: exactamente 5 características específicas do leitor desta editoria
-- tensaoCentral: a frase de tensão interna do leitor (1 frase, na primeira pessoa do leitor)
-- temasEPautas: exactamente 8 temas/pautas específicos e accionáveis para esta editoria
+- nome: nome em maiúsculas (3-4 palavras, específico à marca)
+- temaCentral: 2-3 frases — o que esta editoria comunica e a sua função
+- perspectivaUnica: 2 frases — o ângulo único, o que te distingue neste pilar
+- tomDeVoz: 2 frases — como comunicar nesta editoria
+- expressoes: exactamente 4 frases curtas e memoráveis na voz da marca
+- vocabulario: exactamente 8 palavras-chave desta editoria
+- elementosObrigatorios: exactamente 5 elementos que cada peça deve ter
+- publicoAlvo: exactamente 4 características do leitor desta editoria
+- tensaoCentral: 1 frase na primeira pessoa do leitor (o que sente/teme)
+- temasEPautas: exactamente 6 temas específicos e accionáveis
 
-REGRAS ABSOLUTAS:
+REGRAS:
 - Português europeu (não brasileiro)
-- As editorias soam à marca de ${nome} — usa as suas palavras e o seu posicionamento exacto
-- Cada editoria cobre território diferente — sem sobreposição entre as 3
-- Os temas/pautas são específicos e accionáveis — não genéricos
-- Nunca inventas — baseia-te APENAS no que está nas respostas
+- Soa à marca de ${nome} — usa as suas palavras e posicionamento
+- Cada editoria cobre território diferente — sem sobreposição
+- Temas específicos e accionáveis, não genéricos
+- Nunca inventas — baseia-te APENAS nas respostas dadas
 
 Responde APENAS com JSON válido, sem texto antes ou depois:
 {
@@ -72,12 +72,12 @@ Responde APENAS com JSON válido, sem texto antes ou depois:
       "temaCentral": "...",
       "perspectivaUnica": "...",
       "tomDeVoz": "...",
-      "expressoes": ["...", "...", "...", "...", "..."],
-      "vocabulario": ["...", "...", "...", "...", "...", "...", "...", "...", "...", "...", "...", "..."],
-      "elementosObrigatorios": ["...", "...", "...", "...", "...", "..."],
-      "publicoAlvo": ["...", "...", "...", "...", "..."],
+      "expressoes": ["...", "...", "...", "..."],
+      "vocabulario": ["...", "...", "...", "...", "...", "...", "...", "..."],
+      "elementosObrigatorios": ["...", "...", "...", "...", "..."],
+      "publicoAlvo": ["...", "...", "...", "..."],
       "tensaoCentral": "...",
-      "temasEPautas": ["...", "...", "...", "...", "...", "...", "...", "..."]
+      "temasEPautas": ["...", "...", "...", "...", "...", "..."]
     },
     { "numero": "02", "nome": "...", "temaCentral": "...", "perspectivaUnica": "...", "tomDeVoz": "...", "expressoes": [], "vocabulario": [], "elementosObrigatorios": [], "publicoAlvo": [], "tensaoCentral": "...", "temasEPautas": [] },
     { "numero": "03", "nome": "...", "temaCentral": "...", "perspectivaUnica": "...", "tomDeVoz": "...", "expressoes": [], "vocabulario": [], "elementosObrigatorios": [], "publicoAlvo": [], "tensaoCentral": "...", "temasEPautas": [] }
@@ -105,7 +105,7 @@ Cria agora as 3 Linhas Editoriais em JSON. Cada uma com profundidade real. Usa a
 
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 3000,
+      max_tokens: 4096,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
     });
