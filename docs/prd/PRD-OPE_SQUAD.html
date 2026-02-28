@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRD — OPE_SQUAD</title>
+  <style>
+    :root {
+      --bg: #0B0F17;
+      --surface: #141923;
+      --border: #1e2736;
+      --text: #F0ECE4;
+      --muted: #8892a4;
+      --accent: #BFD64B;
+      --green: #4ade80;
+      --yellow: #facc15;
+      --red: #f87171;
+      --blue: #60a5fa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      font-size: 14px;
+      line-height: 1.7;
+      padding: 0;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 40px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .badge {
+      background: var(--accent);
+      color: var(--bg);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .header h1 { font-size: 16px; font-weight: 700; }
+    .header-meta { font-size: 12px; color: var(--muted); }
+
+    /* ── Layout ── */
+    .container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* ── TOC ── */
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 40px;
+    }
+    .toc h2 { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+    .toc ol { padding-left: 20px; }
+    .toc li { margin: 4px 0; }
+    .toc a { color: var(--accent); text-decoration: none; font-size: 13px; }
+    .toc a:hover { text-decoration: underline; }
+
+    /* ── Sections ── */
+    .section { margin-bottom: 48px; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      background: var(--accent);
+      color: var(--bg);
+      font-size: 11px;
+      font-weight: 800;
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .section-header h2 { font-size: 18px; font-weight: 700; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .card h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--accent); }
+    .card p { color: var(--muted); font-size: 13px; }
+
+    /* ── Tables ── */
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+    th {
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,.02); }
+
+    /* ── Status badges ── */
+    .status { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+    .status-done { background: rgba(74,222,128,.15); color: var(--green); }
+    .status-wip  { background: rgba(250,204,21,.15); color: var(--yellow); }
+    .status-todo { background: rgba(248,113,113,.15); color: var(--red); }
+
+    /* ── Priority badges ── */
+    .priority { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+    .priority-high   { background: rgba(248,113,113,.15); color: var(--red); }
+    .priority-medium { background: rgba(250,204,21,.15); color: var(--yellow); }
+    .priority-low    { background: rgba(96,165,250,.15); color: var(--blue); }
+
+    /* ── Metric cards ── */
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+    .metric-value { font-size: 24px; font-weight: 800; color: var(--accent); }
+    .metric-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* ── Pipeline ── */
+    .pipeline { display: flex; gap: 0; margin: 16px 0; overflow-x: auto; }
+    .pipeline-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0;
+      padding: 14px 18px;
+      flex-shrink: 0;
+      position: relative;
+      min-width: 120px;
+      text-align: center;
+    }
+    .pipeline-step:first-child { border-radius: 10px 0 0 10px; }
+    .pipeline-step:last-child { border-radius: 0 10px 10px 0; }
+    .pipeline-step.active { background: rgba(191,214,75,.1); border-color: var(--accent); }
+    .pipeline-step .step-icon { font-size: 20px; margin-bottom: 4px; }
+    .pipeline-step .step-label { font-size: 11px; font-weight: 700; }
+    .pipeline-step .step-sub { font-size: 10px; color: var(--muted); }
+    .pipeline-arrow { display: flex; align-items: center; color: var(--accent); font-size: 18px; padding: 0 4px; }
+
+    /* ── Quote ── */
+    .quote {
+      border-left: 3px solid var(--accent);
+      padding: 12px 20px;
+      margin: 16px 0;
+      background: rgba(191,214,75,.05);
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    /* ── Code ── */
+    code {
+      background: var(--surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: monospace;
+      color: var(--accent);
+    }
+
+    /* ── Epic list ── */
+    .epic {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .epic-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .epic-num {
+      background: var(--accent);
+      color: var(--bg);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .epic-title { font-weight: 700; font-size: 14px; }
+    .story-list { padding: 8px 16px; }
+    .story-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      font-size: 13px;
+    }
+    .story-item:last-child { border-bottom: none; }
+
+    p { margin: 8px 0; color: var(--muted); font-size: 13px; }
+    strong { color: var(--text); }
+    ul { padding-left: 20px; margin: 8px 0; }
+    li { margin: 4px 0; color: var(--muted); font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <span class="badge">PRD</span>
+    <h1>OPE_SQUAD — OPB Crew</h1>
+  </div>
+  <div class="header-meta">v1.0 · 28 Fev 2026 · Status: Draft</div>
+</div>
+
+<div class="container">
+
+  <!-- TOC -->
+  <div class="toc">
+    <h2>Índice</h2>
+    <ol>
+      <li><a href="#visao">Visão do Produto</a></li>
+      <li><a href="#usuarios">Utilizadores-Alvo</a></li>
+      <li><a href="#fr-v1">Funcionalidades V1</a></li>
+      <li><a href="#fr-v2">Roadmap V2</a></li>
+      <li><a href="#nfr">Requisitos Não-Funcionais</a></li>
+      <li><a href="#constraints">Restrições</a></li>
+      <li><a href="#negocio">Modelo de Negócio</a></li>
+      <li><a href="#metricas">Métricas de Sucesso</a></li>
+      <li><a href="#deps">Dependências Técnicas</a></li>
+      <li><a href="#epicos">Estrutura de Épicos</a></li>
+      <li><a href="#riscos">Riscos</a></li>
+      <li><a href="#fora">Fora de Âmbito V1</a></li>
+    </ol>
+  </div>
+
+  <!-- 1. Visão -->
+  <div class="section" id="visao">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <h2>Visão do Produto</h2>
+    </div>
+
+    <div class="quote">
+      "Em menos de 10 minutos, tens 30 posts prontos a publicar — na tua voz, para o teu público, sem esforço."
+    </div>
+
+    <div class="card">
+      <h3>O Problema</h3>
+      <p>O solopreneur sabe o que vende, mas não aparece todos os dias, em todo o lado — sem gastar 4+ horas por dia a criar conteúdo. 90% das ferramentas exigem conhecimento técnico e entregam conteúdo genérico.</p>
+    </div>
+    <div class="card">
+      <h3>A Solução</h3>
+      <p><strong>OPB Crew</strong> é um SaaS que dá a qualquer solopreneur o poder de uma equipa de 10 pessoas. Através de Genius Zone → Voice DNA → Content Factory, o sistema codifica a identidade do utilizador e usa Claude AI para gerar conteúdo genuinamente seu.</p>
+    </div>
+
+    <table>
+      <thead><tr><th>Método</th><th>Eficiência (MaaS)</th></tr></thead>
+      <tbody>
+        <tr><td>Cursos online</td><td>13%</td></tr>
+        <tr><td>SaaS genérico</td><td>8–10%</td></tr>
+        <tr><td><strong>OPB Crew</strong></td><td><strong style="color:var(--accent)">40–58%</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 2. Utilizadores -->
+  <div class="section" id="usuarios">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <h2>Utilizadores-Alvo</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="card">
+        <h3>Persona Principal — O Solopreneur Ocupado</h3>
+        <table>
+          <tbody>
+            <tr><td><strong>Quem</strong></td><td>Coach, consultor, freelancer, criador</td></tr>
+            <tr><td><strong>Negócio</strong></td><td>1 pessoa, múltiplos papéis</td></tr>
+            <tr><td><strong>Dor</strong></td><td>Falta de presença online consistente</td></tr>
+            <tr><td><strong>Técnico</strong></td><td>Básico — usa smartphone e browser</td></tr>
+            <tr><td><strong>Tempo</strong></td><td>&lt;30 min/dia para conteúdo</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Persona Secundária — O Early Adopter</h3>
+        <table>
+          <tbody>
+            <tr><td><strong>Quem</strong></td><td>Fundador startup, marketer, creator</td></tr>
+            <tr><td><strong>Necessidade</strong></td><td>Automação e escala de conteúdo</td></tr>
+            <tr><td><strong>Valor extra</strong></td><td>API access, integrações avançadas</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. FR V1 -->
+  <div class="section" id="fr-v1">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <h2>Funcionalidades V1 (Estado Actual)</h2>
+    </div>
+
+    <p style="margin-bottom:16px"><strong>Pipeline sequencial:</strong></p>
+    <div class="pipeline">
+      <div class="pipeline-step active"><div class="step-icon">🧬</div><div class="step-label">Genius Zone</div><div class="step-sub">24 perguntas</div></div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step active"><div class="step-icon">📜</div><div class="step-label">Manifesto</div><div class="step-sub">10 princípios</div></div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step active"><div class="step-icon">🎙️</div><div class="step-label">Voice DNA</div><div class="step-sub">8 perguntas</div></div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step active"><div class="step-icon">✍️</div><div class="step-label">Content Factory</div><div class="step-sub">Uso diário</div></div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step"><div class="step-icon">⚙️</div><div class="step-label">Design Machine</div><div class="step-sub">Carrosséis</div></div>
+    </div>
+
+    <table style="margin-top:20px">
+      <thead><tr><th>Código</th><th>Feature</th><th>Rota</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td><code>FR-01</code></td><td>Genius Zone (24 perguntas, 7 frameworks)</td><td><code>/genius</code></td><td><span class="status status-done">✅ Completo</span></td></tr>
+        <tr><td><code>FR-02</code></td><td>Manifesto (10 princípios)</td><td><code>/manifesto</code></td><td><span class="status status-done">✅ Completo</span></td></tr>
+        <tr><td><code>FR-03</code></td><td>Voice DNA (8 perguntas)</td><td><code>/voz-dna</code></td><td><span class="status status-done">✅ Completo</span></td></tr>
+        <tr><td><code>FR-04</code></td><td>Content Factory (Claude + Tavily)</td><td><code>/content</code></td><td><span class="status status-done">✅ Completo</span></td></tr>
+        <tr><td><code>FR-05</code></td><td>Editorial Calendar + Agendamento</td><td><code>/editorial</code></td><td><span class="status status-wip">⏳ Em progresso</span></td></tr>
+        <tr><td><code>FR-06</code></td><td>Design Machine (9 slides 1080×1350px)</td><td><code>/machine</code></td><td><span class="status status-done">✅ V1 Completo</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 4. FR V2 -->
+  <div class="section" id="fr-v2">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <h2>Roadmap V2</h2>
+    </div>
+    <table>
+      <thead><tr><th>Código</th><th>Feature</th><th>Prioridade</th></tr></thead>
+      <tbody>
+        <tr><td><code>FR-07</code></td><td>Geração de textos com IA na Design Machine</td><td><span class="priority priority-high">Alta</span></td></tr>
+        <tr><td><code>FR-08</code></td><td>Nome de marca personalizável nos slides</td><td><span class="priority priority-high">Alta</span></td></tr>
+        <tr><td><code>FR-09</code></td><td>Export pixelRatio 2× (2160×2700px)</td><td><span class="priority priority-high">Alta</span></td></tr>
+        <tr><td><code>FR-10</code></td><td>Zoom/Modal no slide preview</td><td><span class="priority priority-high">Alta</span></td></tr>
+        <tr><td><code>FR-11</code></td><td>Guardar trabalho em progresso (localStorage)</td><td><span class="priority priority-medium">Média</span></td></tr>
+        <tr><td><code>FR-12</code></td><td>Templates adicionais (Futurista, Autoral 2.0, Twitter)</td><td><span class="priority priority-medium">Média</span></td></tr>
+        <tr><td><code>FR-13</code></td><td>Edição directa de texto por slide</td><td><span class="priority priority-medium">Média</span></td></tr>
+        <tr><td><code>FR-14</code></td><td>Auto-publish (Instagram, LinkedIn, X)</td><td><span class="priority priority-low">V3</span></td></tr>
+        <tr><td><code>FR-15</code></td><td>Analytics nativo (engagement, alcance)</td><td><span class="priority priority-low">V3</span></td></tr>
+        <tr><td><code>FR-16</code></td><td>Afiliados nativo (substituir Rewardful)</td><td><span class="priority priority-low">V3</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 5. NFR -->
+  <div class="section" id="nfr">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <h2>Requisitos Não-Funcionais</h2>
+    </div>
+    <table>
+      <thead><tr><th>Código</th><th>Requisito</th><th>Target</th></tr></thead>
+      <tbody>
+        <tr><td><code>NFR-01</code></td><td>Time to First Value</td><td>&lt; 10 minutos</td></tr>
+        <tr><td><code>NFR-01</code></td><td>Geração de conteúdo</td><td>&lt; 5 segundos/post</td></tr>
+        <tr><td><code>NFR-01</code></td><td>Export carrossel ZIP</td><td>&lt; 30 segundos</td></tr>
+        <tr><td><code>NFR-02</code></td><td>Auth + RLS Supabase</td><td>Todos os endpoints protegidos</td></tr>
+        <tr><td><code>NFR-03</code></td><td>Mobile-first</td><td>100% responsivo</td></tr>
+        <tr><td><code>NFR-04</code></td><td>Mensagens de erro</td><td>Claras e accionáveis</td></tr>
+        <tr><td><code>NFR-05</code></td><td>Escalabilidade</td><td>Supabase Free até 500 users</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 6. Constraints -->
+  <div class="section" id="constraints">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <h2>Restrições</h2>
+    </div>
+    <table>
+      <thead><tr><th>Código</th><th>Restrição</th></tr></thead>
+      <tbody>
+        <tr><td><code>CON-01</code></td><td>Stack fixo: Next.js 15 + Clerk + Supabase + Claude API</td></tr>
+        <tr><td><code>CON-02</code></td><td>Deploy exclusivo na Vercel</td></tr>
+        <tr><td><code>CON-03</code></td><td>Sem publicação automática em redes sociais na V1</td></tr>
+        <tr><td><code>CON-04</code></td><td>Beta fechado — acesso por whitelist até PMF</td></tr>
+        <tr><td><code>CON-05</code></td><td>Sem app móvel nativa na V1</td></tr>
+        <tr><td><code>CON-06</code></td><td>Comentários de código em Português</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 7. Negócio -->
+  <div class="section" id="negocio">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <h2>Modelo de Negócio</h2>
+    </div>
+    <div class="pipeline" style="margin-bottom:20px">
+      <div class="pipeline-step"><div class="step-label">Landing Page</div><div class="step-sub">Pública</div></div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step"><div class="step-label">Free Trial</div><div class="step-sub">7 dias (Stripe)</div></div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step active"><div class="step-label">Auto-cobrança</div><div class="step-sub">Day 8</div></div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step"><div class="step-label">Rewardful</div><div class="step-sub">Afiliados</div></div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step"><div class="step-label">Flywheel</div><div class="step-sub">MRR crescente</div></div>
+    </div>
+    <table>
+      <thead><tr><th>Plano</th><th>Preço</th><th>Features</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Starter</strong></td><td>$29/mês</td><td>Content Factory, Design Machine</td></tr>
+        <tr><td><strong>Pro</strong></td><td>$67/mês</td><td>+ Calendário, Analytics, Suporte prioritário</td></tr>
+        <tr><td><strong>Annual</strong></td><td>$497/ano</td><td>Pro + desconto 40%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 8. Métricas -->
+  <div class="section" id="metricas">
+    <div class="section-header">
+      <div class="section-num">8</div>
+      <h2>Métricas de Sucesso</h2>
+    </div>
+    <div class="quote">North Star: <strong>Posts gerados e publicados por utilizador activo por mês</strong></div>
+    <div class="metrics-grid" style="margin-top:16px">
+      <div class="metric-card"><div class="metric-value">10</div><div class="metric-label">Utilizadores activos — Mês 1</div></div>
+      <div class="metric-card"><div class="metric-value">30+</div><div class="metric-label">Posts gerados/utilizador/mês</div></div>
+      <div class="metric-card"><div class="metric-value">&gt;30%</div><div class="metric-label">Conversão trial → paid</div></div>
+      <div class="metric-card"><div class="metric-value">&gt;50</div><div class="metric-label">NPS</div></div>
+      <div class="metric-card"><div class="metric-value">&lt;10min</div><div class="metric-label">Time to First Value</div></div>
+      <div class="metric-card"><div class="metric-value">&lt;10%</div><div class="metric-label">Churn mensal</div></div>
+    </div>
+  </div>
+
+  <!-- 9. Dependências -->
+  <div class="section" id="deps">
+    <div class="section-header">
+      <div class="section-num">9</div>
+      <h2>Dependências Técnicas</h2>
+    </div>
+    <table>
+      <thead><tr><th>Serviço</th><th>Variável de Ambiente</th><th>Propósito</th></tr></thead>
+      <tbody>
+        <tr><td>Anthropic (Claude)</td><td><code>ANTHROPIC_API_KEY</code></td><td>Geração de conteúdo</td></tr>
+        <tr><td>Clerk</td><td><code>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</code></td><td>Autenticação + metadados</td></tr>
+        <tr><td>Supabase</td><td><code>NEXT_PUBLIC_SUPABASE_URL</code></td><td>Base de dados</td></tr>
+        <tr><td>Tavily</td><td><code>TAVILY_API_KEY</code></td><td>Research viral</td></tr>
+        <tr><td>Unsplash</td><td><code>UNSPLASH_ACCESS_KEY</code></td><td>Imagens para Design Machine</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 10. Épicos -->
+  <div class="section" id="epicos">
+    <div class="section-header">
+      <div class="section-num">10</div>
+      <h2>Estrutura de Épicos</h2>
+    </div>
+
+    <div class="epic">
+      <div class="epic-header"><span class="epic-num">ÉPICO 1</span><span class="epic-title">Core Pipeline (Setup Único)</span></div>
+      <div class="story-list">
+        <div class="story-item"><span class="status status-done">✅</span> Story 1.1 — Genius Zone completo</div>
+        <div class="story-item"><span class="status status-done">✅</span> Story 1.2 — Manifesto completo</div>
+        <div class="story-item"><span class="status status-done">✅</span> Story 1.3 — Voice DNA completo</div>
+      </div>
+    </div>
+
+    <div class="epic">
+      <div class="epic-header"><span class="epic-num">ÉPICO 2</span><span class="epic-title">Content Engine (Uso Diário)</span></div>
+      <div class="story-list">
+        <div class="story-item"><span class="status status-done">✅</span> Story 2.1 — Content Factory com Claude + Tavily</div>
+        <div class="story-item"><span class="status status-done">✅</span> Story 2.2 — Histórico de conteúdo gerado</div>
+        <div class="story-item"><span class="status status-wip">⏳</span> Story 2.3 — Editorial Calendar</div>
+        <div class="story-item"><span class="status status-wip">⏳</span> Story 2.4 — Calendário visual de agendamento</div>
+      </div>
+    </div>
+
+    <div class="epic">
+      <div class="epic-header"><span class="epic-num">ÉPICO 3</span><span class="epic-title">Design Machine</span></div>
+      <div class="story-list">
+        <div class="story-item"><span class="status status-done">✅</span> Story 3.1 — Template Principal (9 slides)</div>
+        <div class="story-item"><span class="status status-done">✅</span> Story 3.2 — Unsplash + Multi-upload</div>
+        <div class="story-item"><span class="status status-done">✅</span> Story 3.3 — Paleta personalizada</div>
+        <div class="story-item"><span class="status status-todo">❌</span> Story 3.4 — Geração de textos com IA (FR-07)</div>
+        <div class="story-item"><span class="status status-todo">❌</span> Story 3.5 — Nome de marca personalizável (FR-08)</div>
+        <div class="story-item"><span class="status status-todo">❌</span> Story 3.6 — Export pixelRatio 2× (FR-09)</div>
+        <div class="story-item"><span class="status status-todo">❌</span> Story 3.7 — Zoom/Modal no preview (FR-10)</div>
+        <div class="story-item"><span class="status status-todo">❌</span> Story 3.8 — Templates adicionais (FR-12)</div>
+      </div>
+    </div>
+
+    <div class="epic">
+      <div class="epic-header"><span class="epic-num">ÉPICO 4</span><span class="epic-title">Monetização</span></div>
+      <div class="story-list">
+        <div class="story-item"><span class="status status-todo">❌</span> Story 4.1 — Integração Stripe (trial 7 dias)</div>
+        <div class="story-item"><span class="status status-todo">❌</span> Story 4.2 — Webhooks Stripe</div>
+        <div class="story-item"><span class="status status-todo">❌</span> Story 4.3 — Rewardful afiliados</div>
+      </div>
+    </div>
+
+    <div class="epic">
+      <div class="epic-header"><span class="epic-num">ÉPICO 5</span><span class="epic-title">Growth & Analytics</span></div>
+      <div class="story-list">
+        <div class="story-item"><span class="status status-todo">❌</span> Story 5.1 — Analytics nativo</div>
+        <div class="story-item"><span class="status status-todo">❌</span> Story 5.2 — Auto-publish Instagram/LinkedIn</div>
+        <div class="story-item"><span class="status status-todo">❌</span> Story 5.3 — Dashboard de métricas</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. Riscos -->
+  <div class="section" id="riscos">
+    <div class="section-header">
+      <div class="section-num">11</div>
+      <h2>Riscos</h2>
+    </div>
+    <table>
+      <thead><tr><th>Risco</th><th>Prob.</th><th>Impacto</th><th>Mitigação</th></tr></thead>
+      <tbody>
+        <tr><td>Claude API custo elevado com escala</td><td>Médio</td><td>Alto</td><td>Rate limiting por utilizador, caching</td></tr>
+        <tr><td>Unsplash rate limit (1k/hora)</td><td>Baixo</td><td>Médio</td><td>Cache de pesquisas recentes</td></tr>
+        <tr><td>Dependência de Clerk para metadados</td><td>Médio</td><td>Alto</td><td>Migrar dados críticos para Supabase progressivamente</td></tr>
+        <tr><td>CORS em exports de imagens externas</td><td>Médio</td><td>Médio</td><td>Proxy para imagens externas</td></tr>
+        <tr><td>Qualidade do conteúdo gerado</td><td>Baixo</td><td>Alto</td><td>Testes A/B de prompts, feedback loop</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 12. Fora de âmbito -->
+  <div class="section" id="fora">
+    <div class="section-header">
+      <div class="section-num">12</div>
+      <h2>Fora de Âmbito V1</h2>
+    </div>
+    <ul style="list-style:none;padding:0">
+      <li style="padding:8px 0;border-bottom:1px solid var(--border);color:var(--muted)">❌ App móvel nativa (iOS/Android)</li>
+      <li style="padding:8px 0;border-bottom:1px solid var(--border);color:var(--muted)">❌ Publicação automática em redes sociais</li>
+      <li style="padding:8px 0;border-bottom:1px solid var(--border);color:var(--muted)">❌ Editor de vídeo / Reels</li>
+      <li style="padding:8px 0;border-bottom:1px solid var(--border);color:var(--muted)">❌ Multi-tenancy / workspaces de equipa</li>
+      <li style="padding:8px 0;border-bottom:1px solid var(--border);color:var(--muted)">❌ White-label / resell</li>
+      <li style="padding:8px 0;color:var(--muted)">❌ Suporte a idiomas além de Português e Inglês</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+  // Smooth scroll para âncoras
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelector(a.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>
