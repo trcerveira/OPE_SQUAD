@@ -126,6 +126,25 @@ export default function CalendarioPlanner() {
     setTimeout(() => setCopiedBulk(null), 2000);
   }
 
+  // Guarda o conteúdo na fila de design do Clerk e abre o editor
+  async function criarCarrossel(r: BulkResult) {
+    if (user) {
+      try {
+        await user.update({
+          unsafeMetadata: {
+            ...user.unsafeMetadata,
+            designQueue: {
+              rawContent: r.content,
+              tema: r.row.tema,
+              formato: r.row.formato,
+            },
+          },
+        });
+      } catch { /* abre na mesma */ }
+    }
+    window.open("/design", "_blank");
+  }
+
   // Guarda calendário no Clerk e vai para /content
   async function guardarEIr() {
     setGuardando(true);
@@ -372,16 +391,26 @@ export default function CalendarioPlanner() {
                       <pre className="text-[#F0ECE4] text-sm leading-relaxed whitespace-pre-wrap font-sans bg-[#0d1420] rounded-lg p-4 mb-3 max-h-96 overflow-y-auto">
                         {r.content}
                       </pre>
-                      <button
-                        onClick={() => copiarBulk(r.row.id, r.content)}
-                        className={`text-xs font-bold px-4 py-2 rounded-lg transition-all ${
-                          copiedBulk === r.row.id
-                            ? "bg-[#BFD64B] text-[#0A0E1A]"
-                            : "border border-[#2a3555] text-[#8892a4] hover:border-[#BFD64B]/50 hover:text-[#F0ECE4]"
-                        }`}
-                      >
-                        {copiedBulk === r.row.id ? "✓ Copiado!" : "Copiar"}
-                      </button>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => copiarBulk(r.row.id, r.content)}
+                          className={`text-xs font-bold px-4 py-2 rounded-lg transition-all ${
+                            copiedBulk === r.row.id
+                              ? "bg-[#BFD64B] text-[#0A0E1A]"
+                              : "border border-[#2a3555] text-[#8892a4] hover:border-[#BFD64B]/50 hover:text-[#F0ECE4]"
+                          }`}
+                        >
+                          {copiedBulk === r.row.id ? "✓ Copiado!" : "Copiar"}
+                        </button>
+                        {r.row.formato.toLowerCase().includes("carrossel") && (
+                          <button
+                            onClick={() => criarCarrossel(r)}
+                            className="text-xs font-bold px-4 py-2 rounded-lg transition-all bg-[#BFD64B]/10 border border-[#BFD64B]/40 text-[#BFD64B] hover:bg-[#BFD64B]/20"
+                          >
+                            ✨ Criar Design ↗
+                          </button>
+                        )}
+                      </div>
                     </>
                   )}
                 </div>
