@@ -1,13 +1,13 @@
 // ============================================================
-// Controle de Acesso — OPB Crew
+// Access Control — OPE_SQUAD
 // ============================================================
-// SEGURANÇA: emails lidos de variáveis de ambiente, não hard-coded no código.
+// SECURITY: emails read from environment variables, not hard-coded.
 //
-// Configurar em .env.local e no Vercel Dashboard:
+// Configure in .env.local and in the Vercel Dashboard:
 //   SUPER_ADMINS=trcerveira@gmail.com
-//   BETA_USERS=trcerveira@gmail.com,outro@email.com
+//   BETA_USERS=trcerveira@gmail.com,other@email.com
 //
-// Fallback: se a var não existir, usa os valores por defeito abaixo.
+// Fallback: if the variable does not exist, uses the default values below.
 // ============================================================
 
 function parseEmailList(envVar: string | undefined, defaults: string[]): string[] {
@@ -35,8 +35,8 @@ export const BETA_USERS: string[] = parseEmailList(
 );
 
 /**
- * Verifica se um email pertence a um super admin.
- * Super admins têm acesso ao painel /admin.
+ * Checks whether an email belongs to a super admin.
+ * Super admins have access to the /admin panel.
  */
 export function isAdmin(email: string | null | undefined): boolean {
   if (!email) return false;
@@ -44,12 +44,12 @@ export function isAdmin(email: string | null | undefined): boolean {
 }
 
 /**
- * Verifica se um email tem acesso beta.
- * Usado pelo middleware para proteger todas as rotas do dashboard.
+ * Checks whether an email has beta access.
+ * Used by the middleware to protect all dashboard routes.
  */
 export function hasBetaAccess(email: string | null | undefined): boolean {
   if (!email) return false;
-  // Super admins têm sempre acesso beta
+  // Super admins always have beta access
   const normalised = email.toLowerCase().trim();
   return BETA_USERS.includes(normalised) || SUPER_ADMINS.includes(normalised);
 }

@@ -1,47 +1,47 @@
 -- ============================================================
 -- Migration 010 — Audit Log + Rate Limits
 -- ============================================================
--- Dois problemas resolvidos:
+-- Two problems solved:
 --
---  1. AUDIT LOG — registo imutável de acções críticas do sistema
---     (quem gerou o quê e quando, quem apagou, quem mudou DNA)
---     → Antifragilidade: permite reconstruir o estado em qualquer momento
+--  1. AUDIT LOG — immutable record of critical system actions
+--     (who generated what and when, who deleted, who changed DNA)
+--     → Antifragility: allows reconstructing state at any point in time
 --
---  2. RATE LIMITS — controlo de consumo da Claude API por utilizador
---     → Cada linha = 1 chamada a uma API com custo
---     → Agregamos por user_id + endpoint + dia
+--  2. RATE LIMITS — Claude API consumption control per user
+--     → Each row = 1 call to a paid API
+--     → Aggregated by user_id + endpoint + day
 -- ============================================================
 
--- ── PARTE 1: Audit Log ───────────────────────────────────────
+-- ── PART 1: Audit Log ────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS public.audit_log (
   id          UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
 
-  -- Quem fez
+  -- Who
   user_id     TEXT        NOT NULL,
 
-  -- O quê
+  -- What
   action      TEXT        NOT NULL,
-  -- Exemplos: 'content.generate', 'content.delete', 'voz_dna.generate',
+  -- Examples: 'content.generate', 'content.delete', 'voz_dna.generate',
   --           'manifesto.generate', 'profile.update', 'editorial.generate'
 
-  -- Detalhes opcionais (sem PII sensível)
+  -- Optional details (no sensitive PII)
   metadata    JSONB,
   -- Ex: { "format": "reel", "subtype": "viral7s", "topic": "...", "tokens": 1234 }
 
-  -- Resultado
+  -- Result
   success     BOOLEAN     DEFAULT true NOT NULL,
-  error_msg   TEXT,       -- preenchido se success = false
+  error_msg   TEXT,       -- populated if success = false
 
-  -- Quando
+  -- When
   created_at  TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
 COMMENT ON TABLE public.audit_log IS
-  'Registo imutável de todas as acções críticas do sistema. '
-  'Nunca se apaga — serve para debugging, billing e recuperação de estado.';
+  'Immutable record of all critical system actions. '
+  'Never deleted — used for debugging, billing and state recovery.';
 
--- Índices para queries mais comuns
+-- Indexes for most common queries
 CREATE INDEX IF NOT EXISTS idx_audit_log_user_id
   ON public.audit_log (user_id, created_at DESC);
 
@@ -51,52 +51,52 @@ CREATE INDEX IF NOT EXISTS idx_audit_log_action
 CREATE INDEX IF NOT EXISTS idx_audit_log_date
   ON public.audit_log (created_at DESC);
 
--- RLS — imutável: service_role pode INSERT e SELECT, nunca UPDATE/DELETE
+-- RLS — immutable: service_role can INSERT and SELECT, never UPDATE/DELETE
 ALTER TABLE public.audit_log ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "bloquear_acesso_directo"
+CREATE POLICY "block_direct_access"
   ON public.audit_log
   FOR ALL
   USING (false)
   WITH CHECK (false);
 
--- ── PARTE 2: Rate Limits ─────────────────────────────────────
+-- ── PART 2: Rate Limits ──────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS public.rate_limits (
   id          UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
 
-  -- Quem e onde
+  -- Who and where
   user_id     TEXT        NOT NULL,
   endpoint    TEXT        NOT NULL,
-  -- Valores: 'generate', 'manifesto', 'voz-dna', 'editorial',
-  --          'calendario', 'viral-research', 'generate-caption'
+  -- Values: 'generate', 'manifesto', 'voz-dna', 'editorial',
+  --         'calendario', 'viral-research', 'generate-caption'
 
-  -- Quando (data exacta para agregação por dia)
+  -- When (exact date for daily aggregation)
   created_at  TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
 COMMENT ON TABLE public.rate_limits IS
-  'Uma linha por chamada a uma API com custo (Claude API). '
-  'Limites configurados por endpoint: generate=20/dia, manifesto=3/dia, etc. '
-  'Limpeza automática: rows com mais de 7 dias são descartáveis.';
+  'One row per call to a paid API (Claude API). '
+  'Limits configured per endpoint: generate=20/day, manifesto=3/day, etc. '
+  'Automatic cleanup: rows older than 7 days are disposable.';
 
--- Índice composto para a query de contagem (user + endpoint + today)
+-- Composite index for the count query (user + endpoint + today)
 CREATE INDEX IF NOT EXISTS idx_rate_limits_user_endpoint_day
   ON public.rate_limits (user_id, endpoint, created_at DESC);
 
 -- RLS
 ALTER TABLE public.rate_limits ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "bloquear_acesso_directo"
+CREATE POLICY "block_direct_access"
   ON public.rate_limits
   FOR ALL
   USING (false)
   WITH CHECK (false);
 
--- ── PARTE 3: Função de limpeza de rate_limits (housekeeping) ─
+-- ── PART 3: Rate limits cleanup function (housekeeping) ──────
 
--- Função para apagar rate_limits com mais de 30 dias (manter base limpa)
--- Chamada manualmente ou via cron job no Supabase Dashboard
+-- Function to delete rate_limits older than 30 days (keep the DB clean)
+-- Called manually or via cron job in the Supabase Dashboard
 CREATE OR REPLACE FUNCTION public.cleanup_rate_limits()
 RETURNS INTEGER
 LANGUAGE plpgsql
@@ -114,5 +114,5 @@ END;
 $$;
 
 COMMENT ON FUNCTION public.cleanup_rate_limits() IS
-  'Apaga registos de rate_limits com mais de 30 dias. '
-  'Chamar periodicamente via Supabase Dashboard → Edge Functions → Cron.';
+  'Deletes rate_limits records older than 30 days. '
+  'Call periodically via Supabase Dashboard → Edge Functions → Cron.';

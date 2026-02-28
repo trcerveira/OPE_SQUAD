@@ -1,25 +1,25 @@
 -- ============================================================
 -- OPE_SQUAD — Migration 005: Publish & Track (V2)
--- Criado em: 2026-02-27
--- Estado: PENDENTE — aplicar quando construir Auto-Publish
+-- Created: 2026-02-27
+-- Status: PENDING — apply when building Auto-Publish
 -- ============================================================
--- Funcionalidade:
---   - Agendar posts nas redes sociais
---   - Registar posts publicados
---   - Tracking de engagement (likes, comentários, partilhas)
+-- Features:
+--   - Schedule posts on social networks
+--   - Record published posts
+--   - Track engagement (likes, comments, shares)
 -- ============================================================
 
--- Tabela de publicações agendadas e realizadas
+-- Table for scheduled and published posts
 CREATE TABLE IF NOT EXISTS public.published_content (
   id                    uuid        DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id               text        NOT NULL REFERENCES public.user_profiles(user_id) ON DELETE CASCADE,
   generated_content_id  uuid        REFERENCES public.generated_content(id) ON DELETE SET NULL,
   platform              text        NOT NULL,        -- instagram | linkedin | twitter | email
   status                text        DEFAULT 'draft', -- draft | scheduled | published | failed
-  scheduled_for         timestamptz,                 -- Quando está agendado para publicar
-  published_at          timestamptz,                 -- Quando foi efectivamente publicado
-  social_post_id        text,                        -- ID do post na rede social (para tracking)
-  error_message         text,                        -- Motivo de falha (se status = failed)
+  scheduled_for         timestamptz,                 -- When it is scheduled to publish
+  published_at          timestamptz,                 -- When it was actually published
+  social_post_id        text,                        -- Social network post ID (for tracking)
+  error_message         text,                        -- Failure reason (if status = failed)
   created_at            timestamptz DEFAULT now() NOT NULL,
   updated_at            timestamptz DEFAULT now() NOT NULL,
 
@@ -27,12 +27,12 @@ CREATE TABLE IF NOT EXISTS public.published_content (
   CONSTRAINT valid_status   CHECK (status   IN ('draft', 'scheduled', 'published', 'failed'))
 );
 
--- Índice para buscar posts agendados (cron job de publicação)
+-- Index for fetching scheduled posts (publishing cron job)
 CREATE INDEX IF NOT EXISTS idx_published_content_scheduled
   ON public.published_content (scheduled_for)
   WHERE status = 'scheduled';
 
--- Índice para histórico por utilizador
+-- Index for user history
 CREATE INDEX IF NOT EXISTS idx_published_content_user
   ON public.published_content (user_id, created_at DESC);
 
@@ -42,7 +42,7 @@ CREATE TRIGGER trg_published_content_updated_at
   BEFORE UPDATE ON public.published_content
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
--- Tabela de métricas de engagement
+-- Engagement metrics table
 CREATE TABLE IF NOT EXISTS public.engagement_metrics (
   id                    uuid        DEFAULT gen_random_uuid() PRIMARY KEY,
   published_content_id  uuid        NOT NULL REFERENCES public.published_content(id) ON DELETE CASCADE,
@@ -51,20 +51,20 @@ CREATE TABLE IF NOT EXISTS public.engagement_metrics (
   shares                integer     DEFAULT 0 NOT NULL,
   views                 integer     DEFAULT 0 NOT NULL,
   clicks                integer     DEFAULT 0 NOT NULL,
-  synced_at             timestamptz DEFAULT now() NOT NULL -- Última sincronização com a rede social
+  synced_at             timestamptz DEFAULT now() NOT NULL -- Last sync with the social network
 );
 
 -- RLS
 ALTER TABLE public.published_content  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.engagement_metrics ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY IF NOT EXISTS "utilizador_ve_proprios_posts"
+CREATE POLICY IF NOT EXISTS "user_view_own_posts"
   ON public.published_content FOR SELECT USING (true);
 
-CREATE POLICY IF NOT EXISTS "utilizador_ve_proprias_metricas"
+CREATE POLICY IF NOT EXISTS "user_view_own_metrics"
   ON public.engagement_metrics FOR SELECT USING (true);
 
--- Comentários
-COMMENT ON TABLE  public.published_content                IS 'Posts agendados e publicados nas redes sociais (V2)';
-COMMENT ON COLUMN public.published_content.social_post_id IS 'ID do post na rede social (Instagram, LinkedIn, etc.) para sincronizar métricas';
-COMMENT ON TABLE  public.engagement_metrics               IS 'Métricas de engagement sincronizadas das redes sociais (V2)';
+-- Comments
+COMMENT ON TABLE  public.published_content                IS 'Posts scheduled and published on social networks (V2)';
+COMMENT ON COLUMN public.published_content.social_post_id IS 'Post ID on the social network (Instagram, LinkedIn, etc.) for syncing metrics';
+COMMENT ON TABLE  public.engagement_metrics               IS 'Engagement metrics synced from social networks (V2)';

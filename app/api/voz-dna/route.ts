@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-// API que gera o DNA de voz da marca com base nas 8 respostas do solopreneur
+// API that generates the brand voice DNA based on the solopreneur's 8 answers
 
 interface VozDNAAnswers {
   tom: string;
@@ -18,12 +18,12 @@ interface VozDNAAnswers {
 export async function POST(request: NextRequest) {
   const { userId } = await auth();
   if (!userId) {
-    return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY não configurada" },
+      { error: "ANTHROPIC_API_KEY not configured" },
       { status: 500 }
     );
   }
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Body inválido" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
   const { answers } = body;
@@ -123,10 +123,10 @@ Agora cria o DNA de Voz completo de ${nome} em JSON.`;
 
     const content = message.content[0];
     if (content.type !== "text") {
-      return NextResponse.json({ error: "Resposta inesperada da IA" }, { status: 500 });
+      return NextResponse.json({ error: "Unexpected AI response" }, { status: 500 });
     }
 
-    // Parse JSON — limpa possível texto extra à volta
+    // Parse JSON — strip any extra text around the JSON
     let jsonText = content.text.trim();
     const jsonStart = jsonText.indexOf("{");
     const jsonEnd = jsonText.lastIndexOf("}");
@@ -141,9 +141,9 @@ Agora cria o DNA de Voz completo de ${nome} em JSON.`;
       tokens: message.usage.input_tokens + message.usage.output_tokens,
     });
   } catch (error) {
-    console.error("Erro ao gerar DNA de voz:", error);
+    console.error("Error generating voice DNA:", error);
     return NextResponse.json(
-      { error: "Erro ao gerar DNA. Tenta novamente." },
+      { error: "Error generating DNA. Please try again." },
       { status: 500 }
     );
   }

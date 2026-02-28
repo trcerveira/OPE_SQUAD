@@ -9,17 +9,17 @@ import { ManifestoSchema, validateInput } from "@/lib/validators";
 export async function POST(request: NextRequest) {
   const { userId } = await auth();
   if (!userId) {
-    return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY não configurada" },
+      { error: "ANTHROPIC_API_KEY not configured" },
       { status: 500 }
     );
   }
 
-  // Rate limiting — 3 gerações de manifesto por dia
+  // Rate limiting — 3 manifesto generations per day
   const rateLimit = await checkAndConsumeRateLimit(userId, "manifesto");
   if (!rateLimit.allowed) {
     return NextResponse.json(rateLimitResponse(rateLimit), { status: 429 });
@@ -29,10 +29,10 @@ export async function POST(request: NextRequest) {
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json({ error: "Body inválido" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  // Validação com Zod
+  // Validate with Zod
   const validation = validateInput(ManifestoSchema, rawBody);
   if (!validation.success) {
     return NextResponse.json({ error: validation.error }, { status: 400 });
@@ -154,10 +154,10 @@ Agora cria os 22 blocos do manifesto em JSON. Cada bloco com 5-7 frases no corpo
 
     const content = message.content[0];
     if (content.type !== "text") {
-      return NextResponse.json({ error: "Resposta inesperada da IA" }, { status: 500 });
+      return NextResponse.json({ error: "Unexpected AI response" }, { status: 500 });
     }
 
-    // Parse JSON — limpa possível texto extra à volta
+    // Parse JSON — strip any extra text around the JSON
     let jsonText = content.text.trim();
     const jsonStart = jsonText.indexOf("{");
     const jsonEnd = jsonText.lastIndexOf("}");
@@ -169,7 +169,7 @@ Agora cria os 22 blocos do manifesto em JSON. Cada bloco com 5-7 frases no corpo
 
     const tokens = message.usage.input_tokens + message.usage.output_tokens;
 
-    // Guarda as respostas no Clerk (fonte primária)
+    // Save answers to Clerk (primary source)
     try {
       const client = await clerkClient();
       await client.users.updateUserMetadata(userId, {
@@ -179,10 +179,10 @@ Agora cria os 22 blocos do manifesto em JSON. Cada bloco com 5-7 frases no corpo
         },
       });
     } catch (metaErr) {
-      console.error("Erro ao guardar manifestoAnswers no Clerk:", metaErr);
+      console.error("Error saving manifestoAnswers to Clerk:", metaErr);
     }
 
-    // Backup no Supabase (antifragilidade — fonte secundária)
+    // Backup in Supabase (antifragility — secondary source)
     saveManifestoAnswers(userId, answers as Record<string, string>);
 
     // Audit log
@@ -193,10 +193,10 @@ Agora cria os 22 blocos do manifesto em JSON. Cada bloco com 5-7 frases no corpo
       tokens,
     });
   } catch (error) {
-    console.error("Erro ao gerar manifesto:", error);
+    console.error("Error generating manifesto:", error);
     logAudit({ userId, action: "manifesto.generate", success: false, errorMsg: String(error) });
     return NextResponse.json(
-      { error: "Erro ao gerar manifesto. Tenta novamente." },
+      { error: "Error generating manifesto. Please try again." },
       { status: 500 }
     );
   }

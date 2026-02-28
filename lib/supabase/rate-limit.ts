@@ -1,36 +1,36 @@
 import { createServerClient } from "@/lib/supabase/server";
 
 // ============================================================
-// Rate Limiting — Controlo de consumo da Claude API
-// Baseado em DB (Supabase) para funcionar em ambiente serverless
+// Rate Limiting — Claude API consumption control
+// DB-based (Supabase) to work in serverless environments
 // ============================================================
 
-// Limites por utilizador por dia (UTC)
+// Per-user daily limits (UTC)
 const DAILY_LIMITS: Record<string, number> = {
-  "generate":        20,  // Content Factory — 20 posts/dia
-  "manifesto":        3,  // Manifesto — 3 gerações/dia (é raro regenerar)
-  "voz-dna":          5,  // DNA de Voz — 5/dia
-  "editorial":        5,  // Linhas Editoriais — 5/dia
-  "calendario":       5,  // Calendário Editorial — 5/dia
-  "viral-research":  20,  // Ângulos Virais — 20/dia
-  "generate-caption": 30, // Legendas — 30/dia (são mais leves)
+  "generate":        20,  // Content Factory — 20 posts/day
+  "manifesto":        3,  // Manifesto — 3 generations/day (rare to regenerate)
+  "voz-dna":          5,  // Voice DNA — 5/day
+  "editorial":        5,  // Editorial Lines — 5/day
+  "calendario":       5,  // Editorial Calendar — 5/day
+  "viral-research":  20,  // Viral Angles — 20/day
+  "generate-caption": 30, // Captions — 30/day (lighter calls)
 };
 
 export interface RateLimitResult {
   allowed: boolean;
   remaining: number;
   limit: number;
-  resetAt: string; // ISO timestamp da meia-noite UTC de hoje
+  resetAt: string; // ISO timestamp of today's UTC midnight
 }
 
-// Início do dia em UTC (para janela de 24h)
+// Start of the day in UTC (for the 24h window)
 function getTodayWindowStart(): string {
   const now = new Date();
   now.setUTCHours(0, 0, 0, 0);
   return now.toISOString();
 }
 
-// Fim do dia em UTC (para a mensagem de reset)
+// End of the day in UTC (for the reset message)
 function getTodayWindowEnd(): string {
   const now = new Date();
   now.setUTCHours(23, 59, 59, 999);
@@ -47,7 +47,7 @@ export async function checkAndConsumeRateLimit(
   const supabase = createServerClient();
 
   try {
-    // Conta quantas chamadas já foram feitas hoje para este endpoint
+    // Count how many calls have already been made today for this endpoint
     const { count, error: countError } = await supabase
       .from("rate_limits")
       .select("*", { count: "exact", head: true })
@@ -56,8 +56,8 @@ export async function checkAndConsumeRateLimit(
       .gte("created_at", windowStart);
 
     if (countError) {
-      // Em caso de erro na BD, permite a chamada (não bloqueia o utilizador)
-      console.error("Erro ao verificar rate limit:", countError);
+      // On DB error, allow the call (do not block the user)
+      console.error("Error checking rate limit:", countError);
       return { allowed: true, remaining: limit, limit, resetAt: getTodayWindowEnd() };
     }
 
@@ -72,7 +72,7 @@ export async function checkAndConsumeRateLimit(
       };
     }
 
-    // Regista esta chamada
+    // Record this call
     await supabase
       .from("rate_limits")
       .insert({ user_id: userId, endpoint });
@@ -84,16 +84,16 @@ export async function checkAndConsumeRateLimit(
       resetAt: getTodayWindowEnd(),
     };
   } catch (error) {
-    // Nunca bloqueia por erro técnico — apenas regista
-    console.error("Erro inesperado no rate limiter:", error);
+    // Never block on technical error — just log it
+    console.error("Unexpected error in rate limiter:", error);
     return { allowed: true, remaining: limit, limit, resetAt: getTodayWindowEnd() };
   }
 }
 
-// Helper para resposta 429 padronizada
+// Helper for standardised 429 response
 export function rateLimitResponse(result: RateLimitResult) {
   return {
-    error: `Limite diário atingido para este recurso. Tens ${result.limit} por dia. Tenta amanhã.`,
+    error: `Daily limit reached for this resource. You have ${result.limit} per day. Try again tomorrow.`,
     limit: result.limit,
     remaining: 0,
     resetAt: result.resetAt,

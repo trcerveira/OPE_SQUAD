@@ -1,5 +1,5 @@
--- Tabela de waitlist / beta testers
--- Guarda emails de pessoas interessadas em testar o OPE_SQUAD
+-- Waitlist / beta testers table
+-- Stores emails of people interested in testing OPE_SQUAD
 
 CREATE TABLE IF NOT EXISTS waitlist (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS waitlist (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- Índice para pesquisa rápida por email
+-- Index for fast email lookup
 CREATE INDEX IF NOT EXISTS waitlist_email_idx ON waitlist (email);
 
--- Apenas o service role pode ler e escrever (sem acesso público)
+-- Only service role can read and write (no public access)
 ALTER TABLE waitlist ENABLE ROW LEVEL SECURITY;

@@ -1,9 +1,9 @@
 // ============================================================
-// OPB Crew — Tipos TypeScript para todas as tabelas Supabase
-// Sincronizado com as migrações 001-010
+// OPE_SQUAD — TypeScript types for all Supabase tables
+// Synchronised with migrations 001-010
 // ============================================================
 
-// ── Enums ────────────────────────────────────────────────────
+// ── Enums ─────────────────────────────────────────────────────
 
 export type Platform           = "instagram" | "linkedin" | "twitter" | "email";
 export type ContentFormat      = "reel" | "carrossel" | "story" | "post" | "email";
@@ -22,31 +22,31 @@ export type AuditAction =
   | "profile.update"
   | "viral_research.generate";
 
-// ── Tabela: generated_content (migrations 001, 008) ──────────
+// ── Table: generated_content (migrations 001, 008) ────────────
 
 export interface GeneratedContent {
   id:         string;
-  user_id:    string;               // ID Clerk (ex: "user_abc123")
-  platform:   string;               // Legacy — mantido para dados antigos
-  format:     ContentFormat | null; // Novo (migration 008)
-  subtype:    string | null;        // Novo (migration 008)
+  user_id:    string;               // Clerk ID (e.g. "user_abc123")
+  platform:   string;               // Legacy — kept for old data
+  format:     ContentFormat | null; // New field (migration 008)
+  subtype:    string | null;        // New field (migration 008)
   topic:      string;
   content:    string;
-  deleted_at: string | null;        // Soft delete — null = activo
+  deleted_at: string | null;        // Soft delete — null = active
   created_at: string;
   updated_at: string;
 }
 
 export type GeneratedContentInsert = {
   user_id:  string;
-  platform: string;    // Legacy (mantido para não quebrar queries antigas)
+  platform: string;    // Legacy (kept to avoid breaking old queries)
   format:   ContentFormat;
   subtype:  string;
   topic:    string;
   content:  string;
 };
 
-// ── Tabela: user_profiles (migrations 003, 007) ──────────────
+// ── Table: user_profiles (migrations 003, 007) ────────────────
 
 export interface UserProfile {
   user_id:            string;
@@ -55,7 +55,7 @@ export interface UserProfile {
   genius_complete:    boolean;
   manifesto_complete: boolean;
   voz_dna_complete:   boolean;
-  // Cores da marca (migration 007)
+  // Brand colours (migration 007)
   brand_bg:           string | null;
   brand_surface:      string | null;
   brand_accent:       string | null;
@@ -64,7 +64,7 @@ export interface UserProfile {
   updated_at:         string;
 }
 
-// ── Tabela: user_voice_profiles (migration 009) ──────────────
+// ── Table: user_voice_profiles (migration 009) ────────────────
 
 export interface VozDNA {
   arquetipo:           string;
@@ -100,7 +100,7 @@ export interface UserVoiceProfile {
   updated_at:         string;
 }
 
-// ── Tabela: subscriptions (migration 004 — V2 Stripe) ────────
+// ── Table: subscriptions (migration 004 — V2 Stripe) ──────────
 
 export interface Subscription {
   id:                 string;
@@ -116,7 +116,7 @@ export interface Subscription {
   updated_at:         string;
 }
 
-// ── Tabela: published_content (migration 005 — V2) ───────────
+// ── Table: published_content (migration 005 — V2) ─────────────
 
 export interface PublishedContent {
   id:                   string;
@@ -143,7 +143,7 @@ export interface EngagementMetrics {
   synced_at:            string;
 }
 
-// ── Tabela: waitlist (migration 006) ─────────────────────────
+// ── Table: waitlist (migration 006) ───────────────────────────
 
 export interface WaitlistEntry {
   id:         string;
@@ -152,7 +152,7 @@ export interface WaitlistEntry {
   created_at: string;
 }
 
-// ── Tabela: audit_log (migration 010) ────────────────────────
+// ── Table: audit_log (migration 010) ──────────────────────────
 
 export interface AuditLog {
   id:         string;
@@ -164,7 +164,7 @@ export interface AuditLog {
   created_at: string;
 }
 
-// ── Tabela: rate_limits (migration 010) ──────────────────────
+// ── Table: rate_limits (migration 010) ────────────────────────
 
 export interface RateLimit {
   id:         string;

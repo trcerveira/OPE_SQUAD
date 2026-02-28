@@ -12,6 +12,7 @@ const navLinks = [
   { href: "/editorial",  label: "Editorial",   icon: "🏛️" },
   { href: "/calendario", label: "Calendário",  icon: "📅" },
   { href: "/content",    label: "Conteúdo",    icon: "✍️" },
+  { href: "/machine",    label: "Machine",     icon: "⚙️" },
   { href: "/design",     label: "Design",      icon: "🖼️" },
   { href: "/settings",   label: "Marca",       icon: "🎨" },
 ];

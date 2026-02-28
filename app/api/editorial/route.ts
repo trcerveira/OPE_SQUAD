@@ -14,14 +14,14 @@ interface EditorialForm {
 export async function POST(request: NextRequest) {
   const { userId } = await auth();
   if (!userId) {
-    return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json({ error: "ANTHROPIC_API_KEY não configurada" }, { status: 500 });
+    return NextResponse.json({ error: "ANTHROPIC_API_KEY not configured" }, { status: 500 });
   }
 
-  // Rate limiting — 5 gerações de linhas editoriais por dia
+  // Rate limiting — 5 editorial line generations per day
   const rateLimit = await checkAndConsumeRateLimit(userId, "editorial");
   if (!rateLimit.allowed) {
     return NextResponse.json(rateLimitResponse(rateLimit), { status: 429 });
@@ -31,13 +31,13 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Body inválido" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
   const { form } = body;
 
   if (!form?.especialidade || !form?.publicoAlvo || !form?.transformacao || !form?.diferenciacao) {
-    return NextResponse.json({ error: "Preenche todos os campos." }, { status: 400 });
+    return NextResponse.json({ error: "Please fill in all required fields." }, { status: 400 });
   }
 
   const user = await currentUser();
@@ -120,7 +120,7 @@ Cria agora as 3 Linhas Editoriais em JSON. Cada uma com profundidade real. Usa a
 
     const content = message.content[0];
     if (content.type !== "text") {
-      return NextResponse.json({ error: "Resposta inesperada da IA" }, { status: 500 });
+      return NextResponse.json({ error: "Unexpected AI response" }, { status: 500 });
     }
 
     let jsonText = content.text.trim();
@@ -137,10 +137,10 @@ Cria agora as 3 Linhas Editoriais em JSON. Cada uma com profundidade real. Usa a
 
     return NextResponse.json({ editorias: parsed.editorias, tokens });
   } catch (error) {
-    console.error("Erro ao gerar linha editorial:", error);
+    console.error("Error generating editorial lines:", error);
     logAudit({ userId, action: "editorial.generate", success: false, errorMsg: String(error) });
     return NextResponse.json(
-      { error: "Erro ao gerar linha editorial. Tenta novamente." },
+      { error: "Error generating editorial lines. Please try again." },
       { status: 500 }
     );
   }

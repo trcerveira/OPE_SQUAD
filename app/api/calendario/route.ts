@@ -5,7 +5,7 @@ import { checkAndConsumeRateLimit, rateLimitResponse } from "@/lib/supabase/rate
 import { logAudit } from "@/lib/supabase/audit";
 import { CalendarioSchema, validateInput } from "@/lib/validators";
 
-// Permite até 60s para gerar calendários longos
+// Allow up to 60s to generate long calendars
 export const maxDuration = 60;
 
 interface EditorialLine {
@@ -49,14 +49,14 @@ const plataformaPorFormato: Record<string, string> = {
 export async function POST(request: NextRequest) {
   const { userId } = await auth();
   if (!userId) {
-    return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json({ error: "ANTHROPIC_API_KEY não configurada" }, { status: 500 });
+    return NextResponse.json({ error: "ANTHROPIC_API_KEY not configured" }, { status: 500 });
   }
 
-  // Rate limiting — 5 gerações de calendário por dia
+  // Rate limiting — 5 calendar generations per day
   const rateLimit = await checkAndConsumeRateLimit(userId, "calendario");
   if (!rateLimit.allowed) {
     return NextResponse.json(rateLimitResponse(rateLimit), { status: 429 });
@@ -66,10 +66,10 @@ export async function POST(request: NextRequest) {
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json({ error: "Body inválido" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  // Validação com Zod
+  // Validate with Zod
   const validation = validateInput(CalendarioSchema, rawBody);
   if (!validation.success) {
     return NextResponse.json({ error: validation.error }, { status: 400 });
@@ -78,10 +78,10 @@ export async function POST(request: NextRequest) {
   const { form, editorialLines } = validation.data as { form: FormCalendario; editorialLines: EditorialLine[] };
 
   if (!form?.dias || !form?.formatos?.length || !form?.objectivo || !form?.dataInicio) {
-    return NextResponse.json({ error: "Preenche todos os campos." }, { status: 400 });
+    return NextResponse.json({ error: "Please fill in all required fields." }, { status: 400 });
   }
 
-  // Limitar a 90 dias × 6 formatos = 540 linhas máximo (na prática muito menos)
+  // Limit to 90 days × 6 formats = 540 rows maximum (in practice much less)
   const dias = Math.min(form.dias, 90);
   const totalRows = dias * form.formatos.length;
 
@@ -142,7 +142,7 @@ Gera exactamente ${totalRows} objectos. Devolve apenas o array JSON.`;
   try {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-    // max_tokens: ~120 tokens por linha + margem de segurança
+    // max_tokens: ~120 tokens per row + safety margin
     const maxTokens = Math.min(Math.max(totalRows * 130 + 200, 1000), 16000);
 
     const message = await anthropic.messages.create({
@@ -153,7 +153,7 @@ Gera exactamente ${totalRows} objectos. Devolve apenas o array JSON.`;
 
     const content = message.content[0];
     if (content.type !== "text") {
-      return NextResponse.json({ error: "Resposta inesperada da IA" }, { status: 500 });
+      return NextResponse.json({ error: "Unexpected AI response" }, { status: 500 });
     }
 
     let jsonText = content.text.trim();
@@ -168,10 +168,10 @@ Gera exactamente ${totalRows} objectos. Devolve apenas o array JSON.`;
     logAudit({ userId, action: "calendario.generate", metadata: { dias: form.dias, formatos: form.formatos.length } });
     return NextResponse.json({ calendario });
   } catch (error) {
-    console.error("Erro ao gerar calendário:", error);
+    console.error("Error generating calendar:", error);
     logAudit({ userId, action: "calendario.generate", success: false, errorMsg: String(error) });
     return NextResponse.json(
-      { error: "Erro ao gerar calendário. Tenta novamente." },
+      { error: "Error generating calendar. Please try again." },
       { status: 500 }
     );
   }

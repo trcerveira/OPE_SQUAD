@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const client = new Anthropic();
 
-// Regras e limites por plataforma
+// Rules and limits per platform
 const PLATFORM_RULES: Record<string, { limit: number; rules: string }> = {
   Instagram: {
     limit: 2200,
@@ -44,13 +44,13 @@ export async function POST(req: NextRequest) {
   try {
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
     const { headline, body, platform, niche } = await req.json();
 
     if (!headline) {
-      return NextResponse.json({ error: "Headline em falta" }, { status: 400 });
+      return NextResponse.json({ error: "Headline is required" }, { status: 400 });
     }
 
     const platformKey = (platform as string) in PLATFORM_RULES ? platform : "Instagram";
@@ -87,7 +87,7 @@ IMPORTANTE: Escreve APENAS a legenda final, sem introdução, sem "Aqui está:",
 
     return NextResponse.json({ caption });
   } catch (error) {
-    console.error("Erro ao gerar legenda:", error);
-    return NextResponse.json({ error: "Erro ao gerar legenda" }, { status: 500 });
+    console.error("Error generating caption:", error);
+    return NextResponse.json({ error: "Error generating caption" }, { status: 500 });
   }
 }

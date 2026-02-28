@@ -3,14 +3,14 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 import { isAdmin } from "@/lib/config/admins";
 
-// GET /api/admin/users — devolve todos os utilizadores (só para super admins)
+// GET /api/admin/users — returns all users (super admins only)
 export async function GET() {
   const user = await currentUser();
   const email = user?.emailAddresses?.[0]?.emailAddress ?? null;
 
-  // Bloqueia acesso a não-admins
+  // Block access for non-admins
   if (!user || !isAdmin(email)) {
-    return NextResponse.json({ error: "Acesso negado" }, { status: 403 });
+    return NextResponse.json({ error: "Access denied" }, { status: 403 });
   }
 
   try {
@@ -24,7 +24,7 @@ export async function GET() {
 
     return NextResponse.json({ users: data ?? [] });
   } catch (error) {
-    console.error("Erro ao buscar utilizadores:", error);
-    return NextResponse.json({ error: "Erro ao carregar utilizadores" }, { status: 500 });
+    console.error("Error fetching users:", error);
+    return NextResponse.json({ error: "Error loading users" }, { status: 500 });
   }
 }

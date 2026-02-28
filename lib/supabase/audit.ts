@@ -1,7 +1,7 @@
 import { createServerClient } from "@/lib/supabase/server";
 
 // ============================================================
-// Audit Log — Registo de acções críticas do sistema
+// Audit Log — Record of critical system actions
 // ============================================================
 
 export type AuditAction =
@@ -23,7 +23,7 @@ interface AuditEntry {
   errorMsg?: string;
 }
 
-// Fire-and-forget: não bloqueia o handler se o audit falhar
+// Fire-and-forget: does not block the handler if the audit fails
 export async function logAudit(entry: AuditEntry): Promise<void> {
   const supabase = createServerClient();
 
@@ -36,7 +36,7 @@ export async function logAudit(entry: AuditEntry): Promise<void> {
       error_msg: entry.errorMsg ?? null,
     });
   } catch (error) {
-    // Nunca propaga erro — audit é não-bloqueante
-    console.error("Erro ao registar audit log:", error);
+    // Never propagates error — audit is non-blocking
+    console.error("Error writing to audit log:", error);
   }
 }

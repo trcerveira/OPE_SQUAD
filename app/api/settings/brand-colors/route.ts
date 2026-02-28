@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import { createServerClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
-// Valida se um valor é uma cor hex válida (#RRGGBB)
+// Validates whether a value is a valid hex colour (#RRGGBB)
 function isValidHex(color: string): boolean {
   return /^#[0-9A-Fa-f]{6}$/.test(color)
 }
@@ -10,18 +10,18 @@ function isValidHex(color: string): boolean {
 export async function POST(req: Request) {
   const { userId } = await auth()
   if (!userId) {
-    return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
+    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
   const body = await req.json()
   const { brand_bg, brand_surface, brand_accent, brand_text } = body
 
-  // Valida todas as cores
+  // Validate all colours
   const colors = { brand_bg, brand_surface, brand_accent, brand_text }
   for (const [key, value] of Object.entries(colors)) {
     if (value && !isValidHex(value)) {
       return NextResponse.json(
-        { error: `Cor inválida: ${key} deve ser um hex (#RRGGBB)` },
+        { error: `Invalid colour: ${key} must be a hex value (#RRGGBB)` },
         { status: 400 }
       )
     }
@@ -41,8 +41,8 @@ export async function POST(req: Request) {
     }, { onConflict: 'user_id' })
 
   if (error) {
-    console.error('Erro ao guardar cores:', error)
-    return NextResponse.json({ error: 'Erro ao guardar' }, { status: 500 })
+    console.error('Error saving brand colours:', error)
+    return NextResponse.json({ error: 'Error saving' }, { status: 500 })
   }
 
   return NextResponse.json({ success: true })

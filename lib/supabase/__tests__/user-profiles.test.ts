@@ -1,16 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // ============================================================
-// Testes do syncUserProfile (optimizado com select-before-upsert)
+// Tests for syncUserProfile (optimised with select-before-upsert)
 // ============================================================
 
-// Mock encadeável do Supabase — suporta .select().eq().maybeSingle() e .upsert()
+// Chainable Supabase mock — supports .select().eq().maybeSingle() and .upsert()
 const mockMaybeSingle = vi.fn().mockResolvedValue({ data: null });
 const mockEq = vi.fn(() => ({ maybeSingle: mockMaybeSingle, eq: mockEq }));
 const mockSelect = vi.fn(() => ({ eq: mockEq }));
 const mockUpsert = vi.fn().mockResolvedValue({ error: null });
 
-// from() devolve objecto que suporta ambos os padrões
+// from() returns an object that supports both patterns
 const mockFrom = vi.fn(() => ({
   select: mockSelect,
   upsert: mockUpsert,
@@ -25,14 +25,14 @@ const { syncUserProfile } = await import("../user-profiles");
 describe("syncUserProfile", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Por defeito: sem perfil existente → sempre faz upsert
+    // Default: no existing profile → always upserts
     mockMaybeSingle.mockResolvedValue({ data: null });
     mockUpsert.mockResolvedValue({ error: null });
     mockEq.mockReturnValue({ maybeSingle: mockMaybeSingle, eq: mockEq });
     mockSelect.mockReturnValue({ eq: mockEq });
   });
 
-  it("chama o upsert com os dados correctos (sem perfil existente)", async () => {
+  it("calls upsert with correct data (no existing profile)", async () => {
     await syncUserProfile({
       userId: "user_abc123",
       email: "telmo@exemplo.com",
@@ -56,8 +56,8 @@ describe("syncUserProfile", () => {
     );
   });
 
-  it("NÃO chama upsert quando os dados são iguais ao perfil existente", async () => {
-    // Perfil já existe com os mesmos dados
+  it("does NOT call upsert when data is unchanged", async () => {
+    // Profile already exists with the same data
     mockMaybeSingle.mockResolvedValue({
       data: {
         email:              "telmo@exemplo.com",
@@ -77,14 +77,14 @@ describe("syncUserProfile", () => {
       vozDNAComplete: false,
     });
 
-    // Não deve fazer upsert quando nada mudou (optimização)
+    // Must not upsert when nothing changed (optimisation)
     expect(mockUpsert).not.toHaveBeenCalled();
   });
 
-  it("faz upsert quando o email mudou", async () => {
+  it("calls upsert when email changed", async () => {
     mockMaybeSingle.mockResolvedValue({
       data: {
-        email:              "antigo@email.com",
+        email:              "old@email.com",
         name:               "Telmo",
         genius_complete:    false,
         manifesto_complete: false,
@@ -94,7 +94,7 @@ describe("syncUserProfile", () => {
 
     await syncUserProfile({
       userId: "user_abc123",
-      email:  "novo@email.com",
+      email:  "new@email.com",
       name:   "Telmo",
       geniusComplete:    false,
       manifestoComplete: false,
@@ -104,7 +104,7 @@ describe("syncUserProfile", () => {
     expect(mockUpsert).toHaveBeenCalled();
   });
 
-  it("funciona com email vazio (fallback)", async () => {
+  it("works with empty email (fallback)", async () => {
     await expect(
       syncUserProfile({
         userId: "user_abc123",
@@ -117,7 +117,7 @@ describe("syncUserProfile", () => {
     ).resolves.not.toThrow();
   });
 
-  it("inclui updated_at no upsert", async () => {
+  it("includes updated_at in upsert", async () => {
     await syncUserProfile({
       userId: "user_xyz",
       email: "x@x.com",
@@ -133,14 +133,14 @@ describe("syncUserProfile", () => {
     );
   });
 
-  it("não lança excepção quando Supabase devolve erro", async () => {
+  it("does not throw when Supabase returns an error", async () => {
     mockUpsert.mockResolvedValue({ error: new Error("DB error") });
 
     await expect(
       syncUserProfile({
         userId: "user_err",
         email: "err@x.com",
-        name: "Erro",
+        name: "Error",
         geniusComplete: false,
         manifestoComplete: false,
         vozDNAComplete: false,

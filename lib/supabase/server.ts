@@ -1,14 +1,14 @@
 import { createClient } from "@supabase/supabase-js";
 
-// Cliente server-side com service role key
-// Usa-se APENAS em API routes (server-side) — nunca no browser
+// Server-side client using the service role key
+// Used ONLY in API routes (server-side) — never in the browser
 export function createServerClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !key) {
     throw new Error(
-      "Faltam variáveis Supabase no .env.local: NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY"
+      "Missing Supabase environment variables in .env.local: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY"
     );
   }
 

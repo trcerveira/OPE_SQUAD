@@ -4,11 +4,11 @@ import { createServerClient } from "@/lib/supabase/server";
 import { DeleteContentSchema, validateInput } from "@/lib/validators";
 import { logAudit } from "@/lib/supabase/audit";
 
-// GET /api/content — devolve o histórico de conteúdo do utilizador
+// GET /api/content — returns the user's content history
 export async function GET() {
   const { userId } = await auth();
   if (!userId) {
-    return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   try {
@@ -17,27 +17,27 @@ export async function GET() {
       .from("generated_content")
       .select("id, platform, format, subtype, topic, content, created_at, updated_at")
       .eq("user_id", userId)
-      .is("deleted_at", null)          // Só conteúdo activo (soft delete)
+      .is("deleted_at", null)          // Only active content (soft delete)
       .order("created_at", { ascending: false })
-      .limit(50);                       // Aumentado de 20 para 50
+      .limit(50);                       // Increased from 20 to 50
 
     if (error) throw error;
 
     return NextResponse.json({ content: data ?? [] });
   } catch (error) {
-    console.error("Erro ao buscar histórico:", error);
+    console.error("Error fetching content history:", error);
     return NextResponse.json(
-      { error: "Erro ao carregar histórico" },
+      { error: "Error loading content history" },
       { status: 500 }
     );
   }
 }
 
-// DELETE /api/content?id=xxx — soft delete de um item do histórico
+// DELETE /api/content?id=xxx — soft delete a history item
 export async function DELETE(request: Request) {
   const { userId } = await auth();
   if (!userId) {
-    return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -50,22 +50,22 @@ export async function DELETE(request: Request) {
   try {
     const supabase = createServerClient();
 
-    // Soft delete — marca como apagado mas mantém o registo para auditoria
+    // Soft delete — marks as deleted but keeps the record for audit purposes
     const { error } = await supabase
       .from("generated_content")
       .update({ deleted_at: new Date().toISOString() })
       .eq("id", id)
-      .eq("user_id", userId)    // Garante que só apaga o seu próprio
-      .is("deleted_at", null);  // Só se ainda estiver activo
+      .eq("user_id", userId)    // Ensures the user can only delete their own content
+      .is("deleted_at", null);  // Only if still active
 
     if (error) throw error;
 
-    // Regista no audit log (não bloqueia a resposta)
+    // Record in the audit log (non-blocking)
     logAudit({ userId, action: "content.delete", metadata: { id } });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Erro ao apagar:", error);
-    return NextResponse.json({ error: "Erro ao apagar" }, { status: 500 });
+    console.error("Error deleting content:", error);
+    return NextResponse.json({ error: "Error deleting content" }, { status: 500 });
   }
 }

@@ -2,76 +2,76 @@ import { describe, it, expect } from "vitest";
 import { isAdmin, hasBetaAccess, SUPER_ADMINS, BETA_USERS } from "../admins";
 
 // ============================================================
-// Testes das funções de acesso (isAdmin e hasBetaAccess)
+// Tests for access control functions (isAdmin and hasBetaAccess)
 // ============================================================
 
 describe("isAdmin", () => {
-  it("devolve true para o super admin principal", () => {
+  it("returns true for the main super admin", () => {
     expect(isAdmin("trcerveira@gmail.com")).toBe(true);
   });
 
-  it("é case-insensitive (maiúsculas/minúsculas)", () => {
+  it("is case-insensitive (uppercase/lowercase)", () => {
     expect(isAdmin("TRCERVEIRA@GMAIL.COM")).toBe(true);
     expect(isAdmin("TrCerveira@Gmail.Com")).toBe(true);
   });
 
-  it("devolve false para email não admin", () => {
-    expect(isAdmin("utilizador@exemplo.com")).toBe(false);
+  it("returns false for a non-admin email", () => {
+    expect(isAdmin("user@example.com")).toBe(false);
   });
 
-  it("devolve false para null", () => {
+  it("returns false for null", () => {
     expect(isAdmin(null)).toBe(false);
   });
 
-  it("devolve false para undefined", () => {
+  it("returns false for undefined", () => {
     expect(isAdmin(undefined)).toBe(false);
   });
 
-  it("devolve false para string vazia", () => {
+  it("returns false for empty string", () => {
     expect(isAdmin("")).toBe(false);
   });
 });
 
 describe("hasBetaAccess", () => {
-  it("devolve true para o fundador", () => {
+  it("returns true for the founder", () => {
     expect(hasBetaAccess("trcerveira@gmail.com")).toBe(true);
   });
 
-  it("é case-insensitive", () => {
+  it("is case-insensitive", () => {
     expect(hasBetaAccess("TRCERVEIRA@GMAIL.COM")).toBe(true);
   });
 
-  it("devolve false para email sem acesso", () => {
-    expect(hasBetaAccess("estranho@exemplo.com")).toBe(false);
+  it("returns false for email without access", () => {
+    expect(hasBetaAccess("stranger@example.com")).toBe(false);
   });
 
-  it("devolve false para null", () => {
+  it("returns false for null", () => {
     expect(hasBetaAccess(null)).toBe(false);
   });
 
-  it("devolve false para undefined", () => {
+  it("returns false for undefined", () => {
     expect(hasBetaAccess(undefined)).toBe(false);
   });
 });
 
-describe("SUPER_ADMINS lista", () => {
-  it("é um array não vazio", () => {
+describe("SUPER_ADMINS list", () => {
+  it("is a non-empty array", () => {
     expect(Array.isArray(SUPER_ADMINS)).toBe(true);
     expect(SUPER_ADMINS.length).toBeGreaterThan(0);
   });
 
-  it("contém o email do fundador", () => {
+  it("contains the founder's email", () => {
     expect(SUPER_ADMINS).toContain("trcerveira@gmail.com");
   });
 });
 
-describe("BETA_USERS lista", () => {
-  it("é um array não vazio", () => {
+describe("BETA_USERS list", () => {
+  it("is a non-empty array", () => {
     expect(Array.isArray(BETA_USERS)).toBe(true);
     expect(BETA_USERS.length).toBeGreaterThan(0);
   });
 
-  it("inclui todos os super admins", () => {
+  it("includes all super admins", () => {
     for (const admin of SUPER_ADMINS) {
       expect(hasBetaAccess(admin)).toBe(true);
     }

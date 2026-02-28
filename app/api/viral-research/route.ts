@@ -5,7 +5,7 @@ import { checkAndConsumeRateLimit, rateLimitResponse } from "@/lib/supabase/rate
 import { logAudit } from "@/lib/supabase/audit";
 import { ViralResearchSchema, validateInput } from "@/lib/validators";
 
-// Voice DNA guardado no Clerk
+// Voice DNA stored in Clerk
 interface VozDNA {
   arquetipo?: string;
   descricaoArquetipo?: string;
@@ -16,7 +16,7 @@ interface VozDNA {
   regrasEstilo?: string[];
 }
 
-// Genius Profile guardado no Clerk
+// Genius Profile stored in Clerk
 interface GeniusProfile {
   hendricksZone?: string;
   wealthProfile?: string;
@@ -31,21 +31,21 @@ const platformNames: Record<string, string> = {
   email: "Email",
 };
 
-// Gera 5 ângulos únicos para um tema baseado no perfil do criador
+// Generates 5 unique angles for a topic based on the creator's profile
 export async function POST(request: NextRequest) {
   const { userId } = await auth();
   if (!userId) {
-    return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY não configurada" },
+      { error: "ANTHROPIC_API_KEY not configured" },
       { status: 500 }
     );
   }
 
-  // Rate limiting — 20 pesquisas virais por dia
+  // Rate limiting — 20 viral research calls per day
   const rateLimit = await checkAndConsumeRateLimit(userId, "viral-research");
   if (!rateLimit.allowed) {
     return NextResponse.json(rateLimitResponse(rateLimit), { status: 429 });
@@ -55,10 +55,10 @@ export async function POST(request: NextRequest) {
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json({ error: "Body inválido" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  // Validação com Zod
+  // Validate with Zod
   const validation = validateInput(ViralResearchSchema, rawBody);
   if (!validation.success) {
     return NextResponse.json({ error: validation.error }, { status: 400 });
@@ -66,15 +66,15 @@ export async function POST(request: NextRequest) {
 
   const { platform, topic } = validation.data;
 
-  // Lê o perfil do utilizador do Clerk
+  // Read the user profile from Clerk
   const user = await currentUser();
-  const authorName = user?.firstName ?? "Criador";
+  const authorName = user?.firstName ?? "Creator";
   const vozDNA = user?.unsafeMetadata?.vozDNA as VozDNA | undefined;
   const geniusProfile = user?.unsafeMetadata?.geniusProfile as GeniusProfile | undefined;
 
   const platformName = platformNames[platform] ?? platform;
 
-  // Secção de Voice DNA para o prompt
+  // Voice DNA section for the prompt
   const vozSection = vozDNA
     ? `VOICE DNA DE ${authorName.toUpperCase()}:
 - Arquétipo: ${vozDNA.arquetipo ?? "não definido"}
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
 - Regras de estilo: ${vozDNA.regrasEstilo?.join(" | ") ?? "nenhuma"}`
     : `VOICE DNA DE ${authorName.toUpperCase()}: não definido ainda`;
 
-  // Secção de Genius Profile para o prompt
+  // Genius Profile section for the prompt
   const geniusSection = geniusProfile
     ? `GENIUS PROFILE DE ${authorName.toUpperCase()}:
 - Zona de Genialidade (Hendricks): ${geniusProfile.hendricksZone ?? "não definida"}
@@ -165,7 +165,7 @@ REGRAS:
 
     const content = message.content[0];
     if (content.type !== "text") {
-      return NextResponse.json({ error: "Resposta inesperada da IA" }, { status: 500 });
+      return NextResponse.json({ error: "Unexpected AI response" }, { status: 500 });
     }
 
     const cleaned = content.text
@@ -177,9 +177,9 @@ REGRAS:
     try {
       parsed = JSON.parse(cleaned);
     } catch {
-      console.error("Falha ao fazer parse do JSON:", content.text);
+      console.error("Failed to parse JSON:", content.text);
       return NextResponse.json(
-        { error: "Erro ao processar resposta. Tenta novamente." },
+        { error: "Error processing response. Please try again." },
         { status: 500 }
       );
     }
@@ -187,10 +187,10 @@ REGRAS:
     logAudit({ userId, action: "viral_research.generate", metadata: { platform, topic: topic.slice(0, 100) } });
     return NextResponse.json(parsed);
   } catch (error) {
-    console.error("Erro na API Anthropic:", error);
+    console.error("Anthropic API error:", error);
     logAudit({ userId, action: "viral_research.generate", success: false, errorMsg: String(error) });
     return NextResponse.json(
-      { error: "Erro ao gerar ângulos. Tenta novamente." },
+      { error: "Error generating angles. Please try again." },
       { status: 500 }
     );
   }

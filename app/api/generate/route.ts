@@ -10,13 +10,13 @@ import { GenerateSchema, validateInput } from "@/lib/validators";
 import type { VozDNA, GeniusProfile } from "@/lib/supabase/types";
 
 // ─────────────────────────────────────────────
-// PROMPTS POR FORMATO + TIPO
-// Baseados nos melhores GPTs de conteúdo do mercado brasileiro
+// PROMPTS BY FORMAT + TYPE
+// Based on the best content GPTs in the market
 // ─────────────────────────────────────────────
 
 const formatPrompts: Record<string, Record<string, string>> = {
 
-  // ── REELS ────────────────────────────────────────────────────────────────
+  // ── REELS ─────────────────────────────────────────────────────────────────
   reel: {
     viral7s: `
 FORMATO: Roteiro de Reel Viral — Método 7 Cenas de 7 Segundos
@@ -131,7 +131,7 @@ REGRAS:
 ENTREGA: Roteiro completo com 6 cenas, falas e texto de ecrã.`,
   },
 
-  // ── CARROSSÉIS ───────────────────────────────────────────────────────────
+  // ── CAROUSELS ────────────────────────────────────────────────────────────
   carrossel: {
     utilidade: `
 FORMATO: Carrossel de Utilidade — Ensino Directo (10 Cards)
@@ -245,7 +245,7 @@ REGRAS ABSOLUTAS:
 - O leitor deve sentir que NÃO agir é a escolha irracional`,
   },
 
-  // ── STORIES ──────────────────────────────────────────────────────────────
+  // ── STORIES ───────────────────────────────────────────────────────────────
   story: {
     narrativaDensa: `
 FORMATO: Sequência de Stories — Narrativas Densas (7 Stories)
@@ -321,7 +321,7 @@ REGRAS:
 ENTREGA: As 8 stories completas, directas, prontas a publicar.`,
   },
 
-  // ── POSTS (mantém lógica anterior) ───────────────────────────────────────
+  // ── POSTS (keeps previous logic) ─────────────────────────────────────────
   post: {
     instagram: `
 FORMATO: Post para Instagram (optimizado para o algoritmo 2025)
@@ -390,7 +390,7 @@ CORPO: Hook → Identificação → Promessa → Prova/História → CTA
 CTA ÚNICO no final: "Quero [resultado]" > "Comprar agora"`,
   },
 
-  // ── LEGENDAS ─────────────────────────────────────────────────────────────
+  // ── CAPTIONS ─────────────────────────────────────────────────────────────
   legenda: {
     storytelling: `
 FORMATO: Legenda com Storytelling para Reel ou Post
@@ -419,7 +419,7 @@ CTA:
 Comprimento: 100-200 palavras.`,
   },
 
-  // ── EMAIL MARKETING ───────────────────────────────────────────────────────
+  // ── EMAIL MARKETING ──────────────────────────────────────────────────────
   email: {
     boasVindas: `
 FORMATO: Email de Boas-Vindas
@@ -485,7 +485,7 @@ Comprimento: 300-400 palavras. Zero fluff. Cada frase ganha o direito de existir
   },
 };
 
-// Princípios dos melhores copywriters
+// Principles of the best copywriters
 const copywritingMasters = `
 PRINCÍPIOS DOS MELHORES COPYWRITERS — APLICA EM TUDO:
 • GARY HALBERT: Especificidade vence generalidade. Histórias que vendem. Teste "e então?".
@@ -499,20 +499,20 @@ PRINCÍPIOS DOS MELHORES COPYWRITERS — APLICA EM TUDO:
 export async function POST(request: NextRequest) {
   const { userId } = await auth();
   if (!userId) {
-    return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json({ error: "ANTHROPIC_API_KEY não configurada" }, { status: 500 });
+    return NextResponse.json({ error: "ANTHROPIC_API_KEY not configured" }, { status: 500 });
   }
 
-  // Rate limiting — 20 gerações por dia por utilizador
+  // Rate limiting — 20 generations per day per user
   const rateLimit = await checkAndConsumeRateLimit(userId, "generate");
   if (!rateLimit.allowed) {
     return NextResponse.json(rateLimitResponse(rateLimit), { status: 429 });
   }
 
-  // Verificação de progresso no servidor (não confiar no Clerk unsafeMetadata)
+  // Server-side progress check (do not trust Clerk unsafeMetadata alone)
   const progress = await getUserProgress(userId);
   if (progress && !progress.vozDNAComplete) {
     return NextResponse.json(
@@ -525,10 +525,10 @@ export async function POST(request: NextRequest) {
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json({ error: "Body inválido" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  // Validação com Zod
+  // Validate with Zod
   const validation = validateInput(GenerateSchema, rawBody);
   if (!validation.success) {
     return NextResponse.json({ error: validation.error }, { status: 400 });
@@ -536,7 +536,7 @@ export async function POST(request: NextRequest) {
 
   const { topic, vozDNA } = validation.data;
 
-  // Suporta tanto o novo sistema (format+subtype) como o antigo (platform)
+  // Supports both the new system (format+subtype) and the legacy one (platform)
   const format = validation.data.format ?? "post";
   const subtype = validation.data.subtype ?? validation.data.platform ?? "instagram";
 
@@ -564,7 +564,7 @@ FRASES ASSINATURA: ${vozDNA.frasesAssinatura?.join(" | ") ?? "—"}
 REGRAS DE ESTILO: ${vozDNA.regrasEstilo?.join(" | ") ?? "Vai directo ao ponto"}`
     : `VOZ & DNA: directa, autêntica, sem filtros corporativos. Proibido: fácil, rápido, truque.`;
 
-  // Busca o prompt do formato+tipo
+  // Fetch the prompt for the format+type
   const formatTemplate = formatPrompts[format]?.[subtype]
     ?? formatPrompts.post.instagram;
 
@@ -602,28 +602,28 @@ Escreve o conteúdo completo, pronto a publicar. Sem introduções, sem explica�
 
     const content = message.content[0];
     if (content.type !== "text") {
-      return NextResponse.json({ error: "Resposta inesperada da IA" }, { status: 500 });
+      return NextResponse.json({ error: "Unexpected AI response" }, { status: 500 });
     }
 
     const generatedText = content.text;
 
-    // Guarda no Supabase com schema corrigido (migration 008)
+    // Save to Supabase with corrected schema (migration 008)
     const tokens = message.usage.input_tokens + message.usage.output_tokens;
     try {
       const supabase = createServerClient();
       await supabase.from("generated_content").insert({
         user_id:  userId,
-        platform: `${format}/${subtype}`,  // Legacy (mantido para retrocompatibilidade)
-        format,                             // Novo campo (migration 008)
-        subtype,                            // Novo campo (migration 008)
+        platform: `${format}/${subtype}`,  // Legacy (kept for backward compatibility)
+        format,                             // New field (migration 008)
+        subtype,                            // New field (migration 008)
         topic,
         content:  generatedText,
       });
     } catch (dbError) {
-      console.error("Erro ao guardar no Supabase:", dbError);
+      console.error("Error saving to Supabase:", dbError);
     }
 
-    // Audit log (não bloqueia)
+    // Audit log (non-blocking)
     logAudit({
       userId,
       action: "content.generate",
@@ -638,8 +638,8 @@ Escreve o conteúdo completo, pronto a publicar. Sem introduções, sem explica�
       tokens,
     });
   } catch (error) {
-    console.error("Erro ao chamar Claude API:", error);
+    console.error("Error calling Claude API:", error);
     logAudit({ userId, action: "content.generate", success: false, errorMsg: String(error) });
-    return NextResponse.json({ error: "Erro ao gerar conteúdo." }, { status: 500 });
+    return NextResponse.json({ error: "Error generating content. Please try again." }, { status: 500 });
   }
 }

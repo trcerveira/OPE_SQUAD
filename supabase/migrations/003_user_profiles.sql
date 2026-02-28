@@ -1,12 +1,12 @@
 -- ============================================================
--- OPE_SQUAD — Migration 003: Perfis de Utilizador
--- Criado em: 2026-02-27
--- Propósito: Registo leve de utilizadores sincronizado com Clerk
--- Usado em: painel de admin, analytics, suporte
+-- OPE_SQUAD — Migration 003: User Profiles
+-- Created: 2026-02-27
+-- Purpose: Lightweight user registry synchronised with Clerk
+-- Used in: admin panel, analytics, support
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS public.user_profiles (
-  user_id            text        PRIMARY KEY,   -- ID do Clerk (user_xxxxxxx)
+  user_id            text        PRIMARY KEY,   -- Clerk ID (user_xxxxxxx)
   email              text        NOT NULL,
   name               text,
   genius_complete    boolean     DEFAULT false NOT NULL,
@@ -16,11 +16,11 @@ CREATE TABLE IF NOT EXISTS public.user_profiles (
   updated_at         timestamptz DEFAULT now() NOT NULL
 );
 
--- Índice para pesquisar por email (admin panel, suporte)
+-- Index for email lookup (admin panel, support)
 CREATE INDEX IF NOT EXISTS idx_user_profiles_email
   ON public.user_profiles (email);
 
--- Função que actualiza updated_at automaticamente em cada UPDATE
+-- Function that automatically updates updated_at on each UPDATE
 CREATE OR REPLACE FUNCTION public.set_updated_at()
 RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
@@ -29,7 +29,7 @@ BEGIN
 END;
 $$;
 
--- Trigger: actualiza updated_at sempre que o perfil é alterado
+-- Trigger: updates updated_at whenever the profile changes
 DROP TRIGGER IF EXISTS trg_user_profiles_updated_at ON public.user_profiles;
 CREATE TRIGGER trg_user_profiles_updated_at
   BEFORE UPDATE ON public.user_profiles
@@ -38,18 +38,18 @@ CREATE TRIGGER trg_user_profiles_updated_at
 -- RLS
 ALTER TABLE public.user_profiles ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY IF NOT EXISTS "utilizador_ve_proprio_perfil"
+CREATE POLICY IF NOT EXISTS "user_view_own_profile"
   ON public.user_profiles FOR SELECT USING (true);
 
-CREATE POLICY IF NOT EXISTS "utilizador_actualiza_proprio_perfil"
+CREATE POLICY IF NOT EXISTS "user_update_own_profile"
   ON public.user_profiles FOR UPDATE USING (true);
 
-CREATE POLICY IF NOT EXISTS "utilizador_insere_proprio_perfil"
+CREATE POLICY IF NOT EXISTS "user_insert_own_profile"
   ON public.user_profiles FOR INSERT WITH CHECK (true);
 
--- Comentários
-COMMENT ON TABLE  public.user_profiles                    IS 'Perfis de utilizador sincronizados com Clerk';
-COMMENT ON COLUMN public.user_profiles.user_id            IS 'ID do utilizador no Clerk (formato: user_xxxxxxx)';
-COMMENT ON COLUMN public.user_profiles.genius_complete    IS 'True quando o utilizador completou a Genius Zone';
-COMMENT ON COLUMN public.user_profiles.manifesto_complete IS 'True quando o utilizador aceitou o Manifesto';
-COMMENT ON COLUMN public.user_profiles.voz_dna_complete   IS 'True quando o utilizador definiu o Voz & DNA';
+-- Comments
+COMMENT ON TABLE  public.user_profiles                    IS 'User profiles synchronised with Clerk';
+COMMENT ON COLUMN public.user_profiles.user_id            IS 'Clerk user ID (format: user_xxxxxxx)';
+COMMENT ON COLUMN public.user_profiles.genius_complete    IS 'True when the user has completed the Genius Zone';
+COMMENT ON COLUMN public.user_profiles.manifesto_complete IS 'True when the user has accepted the Manifesto';
+COMMENT ON COLUMN public.user_profiles.voz_dna_complete   IS 'True when the user has defined their Voice DNA';

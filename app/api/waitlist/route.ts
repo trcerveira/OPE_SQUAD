@@ -7,10 +7,10 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Body inválido." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
 
-  // Validação com Zod (email + normalização + nome mínimo)
+  // Validate with Zod (email + normalisation + minimum name length)
   const validation = validateInput(WaitlistSchema, body);
   if (!validation.success) {
     return NextResponse.json({ error: validation.error }, { status: 400 });
@@ -26,10 +26,10 @@ export async function POST(req: NextRequest) {
       .insert({ email, nome: name ?? null });
 
     if (error) {
-      // Código 23505 = email duplicado (UNIQUE constraint na migration 006)
+      // Code 23505 = duplicate email (UNIQUE constraint in migration 006)
       if (error.code === "23505") {
         return NextResponse.json(
-          { error: "Este email já está na lista. Vemo-nos em breve!" },
+          { error: "This email is already on the list. See you soon!" },
           { status: 409 }
         );
       }
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json(
-      { error: "Algo correu mal. Tenta novamente." },
+      { error: "Something went wrong. Please try again." },
       { status: 500 }
     );
   }
