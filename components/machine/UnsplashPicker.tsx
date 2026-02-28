@@ -45,7 +45,7 @@ export default function UnsplashPicker({ imagens, onChange, onNext }: Props) {
       } else {
         setFotos(data.photos);
       }
-    } catch (e: any) {
+    } catch {
       setErro("Falha na ligação. Verifica se o servidor está em execução e a chave Unsplash está no .env.local");
     }
     setCarregando(false);
