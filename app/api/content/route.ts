@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
+import { DeleteContentSchema, validateInput } from "@/lib/validators";
 
 // GET /api/content — devolve o histórico de conteúdo do utilizador
 export async function GET() {
@@ -38,11 +39,11 @@ export async function DELETE(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
-
-  if (!id) {
-    return NextResponse.json({ error: "id é obrigatório" }, { status: 400 });
+  const validation = validateInput(DeleteContentSchema, { id: searchParams.get("id") });
+  if (!validation.success) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
   }
+  const { id } = validation.data;
 
   try {
     const supabase = createServerClient();
