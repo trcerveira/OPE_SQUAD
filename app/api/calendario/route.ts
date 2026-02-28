@@ -1,6 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { checkAndConsumeRateLimit, rateLimitResponse } from "@/lib/supabase/rate-limit";
+import { logAudit } from "@/lib/supabase/audit";
+import { CalendarioSchema, validateInput } from "@/lib/validators";
 
 // Permite até 60s para gerar calendários longos
 export const maxDuration = 60;
@@ -53,14 +56,26 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "ANTHROPIC_API_KEY não configurada" }, { status: 500 });
   }
 
-  let body: { form: FormCalendario; editorialLines: EditorialLine[] };
+  // Rate limiting — 5 gerações de calendário por dia
+  const rateLimit = await checkAndConsumeRateLimit(userId, "calendario");
+  if (!rateLimit.allowed) {
+    return NextResponse.json(rateLimitResponse(rateLimit), { status: 429 });
+  }
+
+  let rawBody: unknown;
   try {
-    body = await request.json();
+    rawBody = await request.json();
   } catch {
     return NextResponse.json({ error: "Body inválido" }, { status: 400 });
   }
 
-  const { form, editorialLines } = body;
+  // Validação com Zod
+  const validation = validateInput(CalendarioSchema, rawBody);
+  if (!validation.success) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
+  }
+
+  const { form, editorialLines } = validation.data as { form: FormCalendario; editorialLines: EditorialLine[] };
 
   if (!form?.dias || !form?.formatos?.length || !form?.objectivo || !form?.dataInicio) {
     return NextResponse.json({ error: "Preenche todos os campos." }, { status: 400 });
@@ -150,9 +165,11 @@ Gera exactamente ${totalRows} objectos. Devolve apenas o array JSON.`;
 
     const calendario = JSON.parse(jsonText);
 
+    logAudit({ userId, action: "calendario.generate", metadata: { dias: form.dias, formatos: form.formatos.length } });
     return NextResponse.json({ calendario });
   } catch (error) {
     console.error("Erro ao gerar calendário:", error);
+    logAudit({ userId, action: "calendario.generate", success: false, errorMsg: String(error) });
     return NextResponse.json(
       { error: "Erro ao gerar calendário. Tenta novamente." },
       { status: 500 }

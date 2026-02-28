@@ -1,18 +1,10 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-
-interface ManifestoAnswers {
-  especialidade: string;
-  personalidade: string;
-  irritacoes: string;
-  publicoAlvo: string;
-  transformacao: string;
-  resultados: string;
-  crencas: string;
-  proposito: string;
-  visao: string;
-}
+import { checkAndConsumeRateLimit, rateLimitResponse } from "@/lib/supabase/rate-limit";
+import { logAudit } from "@/lib/supabase/audit";
+import { saveManifestoAnswers } from "@/lib/supabase/user-profiles";
+import { ManifestoSchema, validateInput } from "@/lib/validators";
 
 export async function POST(request: NextRequest) {
   const { userId } = await auth();
@@ -27,14 +19,26 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let body: { answers: ManifestoAnswers };
+  // Rate limiting — 3 gerações de manifesto por dia
+  const rateLimit = await checkAndConsumeRateLimit(userId, "manifesto");
+  if (!rateLimit.allowed) {
+    return NextResponse.json(rateLimitResponse(rateLimit), { status: 429 });
+  }
+
+  let rawBody: unknown;
   try {
-    body = await request.json();
+    rawBody = await request.json();
   } catch {
     return NextResponse.json({ error: "Body inválido" }, { status: 400 });
   }
 
-  const { answers } = body;
+  // Validação com Zod
+  const validation = validateInput(ManifestoSchema, rawBody);
+  if (!validation.success) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
+  }
+
+  const { answers } = validation.data;
   const user = await currentUser();
   const nome = user?.firstName ?? "Solopreneur";
 
@@ -163,7 +167,9 @@ Agora cria os 22 blocos do manifesto em JSON. Cada bloco com 5-7 frases no corpo
 
     const parsed = JSON.parse(jsonText);
 
-    // Guarda as respostas no Clerk para uso posterior (Linha Editorial)
+    const tokens = message.usage.input_tokens + message.usage.output_tokens;
+
+    // Guarda as respostas no Clerk (fonte primária)
     try {
       const client = await clerkClient();
       await client.users.updateUserMetadata(userId, {
@@ -176,12 +182,19 @@ Agora cria os 22 blocos do manifesto em JSON. Cada bloco com 5-7 frases no corpo
       console.error("Erro ao guardar manifestoAnswers no Clerk:", metaErr);
     }
 
+    // Backup no Supabase (antifragilidade — fonte secundária)
+    saveManifestoAnswers(userId, answers as Record<string, string>);
+
+    // Audit log
+    logAudit({ userId, action: "manifesto.generate", metadata: { tokens } });
+
     return NextResponse.json({
       blocks: parsed.blocks,
-      tokens: message.usage.input_tokens + message.usage.output_tokens,
+      tokens,
     });
   } catch (error) {
     console.error("Erro ao gerar manifesto:", error);
+    logAudit({ userId, action: "manifesto.generate", success: false, errorMsg: String(error) });
     return NextResponse.json(
       { error: "Erro ao gerar manifesto. Tenta novamente." },
       { status: 500 }

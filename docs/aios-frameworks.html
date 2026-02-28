@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIOS Frameworks — OPB Crew</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0A0E1A;
+      color: #F0ECE4;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 40px 24px;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* HEADER */
+    .header { text-align: center; margin-bottom: 56px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(191,214,75,0.1); border: 1px solid rgba(191,214,75,0.3);
+      color: #BFD64B; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.15em; padding: 6px 16px; border-radius: 999px;
+      margin-bottom: 20px;
+    }
+    h1 { font-size: 42px; font-weight: 800; margin-bottom: 12px; }
+    h1 span { color: #BFD64B; }
+    .subtitle { color: #8892a4; font-size: 16px; }
+
+    /* STATS */
+    .stats {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 16px; margin-bottom: 56px;
+    }
+    .stat-card {
+      background: #111827; border: 1px solid #1a2035;
+      border-radius: 14px; padding: 20px; text-align: center;
+    }
+    .stat-number { font-size: 36px; font-weight: 800; color: #BFD64B; }
+    .stat-label { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #4a5568; margin-top: 4px; }
+
+    /* SECTION */
+    .section { margin-bottom: 48px; }
+    .section-title {
+      font-size: 13px; font-weight: 700; letter-spacing: 0.15em;
+      color: #4a5568; text-transform: uppercase; margin-bottom: 20px;
+      padding-bottom: 12px; border-bottom: 1px solid #1a2035;
+    }
+
+    /* AGENTS GRID */
+    .agents-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .agent-card {
+      background: #111827; border: 1px solid #1a2035;
+      border-radius: 14px; padding: 20px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .agent-card:hover { border-color: #BFD64B44; transform: translateY(-2px); }
+    .agent-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .agent-icon { font-size: 24px; }
+    .agent-name { font-size: 16px; font-weight: 700; color: #F0ECE4; }
+    .agent-id {
+      font-size: 10px; color: #4a5568; font-family: monospace;
+      background: #0d1420; padding: 2px 8px; border-radius: 4px;
+    }
+    .agent-title { font-size: 12px; color: #BFD64B; font-weight: 600; margin-bottom: 8px; }
+    .agent-desc { font-size: 13px; color: #8892a4; line-height: 1.5; }
+    .agent-activate {
+      display: inline-block; margin-top: 12px;
+      font-size: 11px; font-family: monospace;
+      background: #0d1420; border: 1px solid #1a2035;
+      color: #BFD64B; padding: 4px 10px; border-radius: 6px;
+    }
+
+    /* WORKFLOWS TABLE */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left; padding: 10px 16px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+      color: #4a5568; border-bottom: 1px solid #1a2035;
+    }
+    td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid #0d1420; }
+    tr:hover td { background: #0d1420; }
+    td:first-child { font-size: 20px; }
+    .workflow-name { color: #F0ECE4; font-weight: 600; }
+    .workflow-type {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      padding: 3px 8px; border-radius: 4px;
+    }
+    .type-greenfield { background: rgba(191,214,75,0.1); color: #BFD64B; }
+    .type-brownfield { background: rgba(139,92,246,0.1); color: #a78bfa; }
+    .type-cycle { background: rgba(59,130,246,0.1); color: #60a5fa; }
+    .type-design { background: rgba(236,72,153,0.1); color: #f472b6; }
+    .workflow-desc { color: #8892a4; }
+
+    /* TAGS */
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .tag {
+      font-size: 11px; padding: 3px 10px; border-radius: 6px;
+      background: #0d1420; border: 1px solid #1a2035; color: #8892a4;
+    }
+
+    /* FOOTER */
+    footer {
+      margin-top: 64px; padding-top: 24px; border-top: 1px solid #1a2035;
+      text-align: center; color: #4a5568; font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      h1 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge">⚡ AIOS — AI ORCHESTRATED SYSTEM</div>
+    <h1>Todos os <span>Frameworks</span> AIOS</h1>
+    <p class="subtitle">Agentes, workflows, tasks e recursos disponíveis no OPB Crew</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-number">13</div>
+      <div class="stat-label">Agentes</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">15</div>
+      <div class="stat-label">Workflows</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">201</div>
+      <div class="stat-label">Tasks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">6</div>
+      <div class="stat-label">Templates</div>
+    </div>
+  </div>
+
+  <!-- AGENTES -->
+  <div class="section">
+    <div class="section-title">👥 Agentes Especializados</div>
+    <div class="agents-grid">
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">👑</div>
+          <div>
+            <div class="agent-name">Orion</div>
+            <div class="agent-id">@aios-master</div>
+          </div>
+        </div>
+        <div class="agent-title">AIOS Master Orchestrator</div>
+        <div class="agent-desc">Meta-tasks, criação de framework, orquestração cross-domain e execução de qualquer task.</div>
+        <div class="agent-activate">/AIOS:agents:aios-master</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">🏛️</div>
+          <div>
+            <div class="agent-name">Aria</div>
+            <div class="agent-id">@architect</div>
+          </div>
+        </div>
+        <div class="agent-title">Software Architect</div>
+        <div class="agent-desc">Arquitectura de sistemas, stack selection, API design, segurança e performance.</div>
+        <div class="agent-activate">/AIOS:agents:architect</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">💻</div>
+          <div>
+            <div class="agent-name">Dex</div>
+            <div class="agent-id">@dev</div>
+          </div>
+        </div>
+        <div class="agent-title">Full Stack Developer</div>
+        <div class="agent-desc">Implementação de código, debugging, refactoring e melhores práticas de desenvolvimento.</div>
+        <div class="agent-activate">/AIOS:agents:dev</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">✅</div>
+          <div>
+            <div class="agent-name">Quinn</div>
+            <div class="agent-id">@qa</div>
+          </div>
+        </div>
+        <div class="agent-title">Test Architect & QA</div>
+        <div class="agent-desc">Arquitectura de testes, quality gates, code review e avaliação de riscos.</div>
+        <div class="agent-activate">/AIOS:agents:qa</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">⚡</div>
+          <div>
+            <div class="agent-name">Gage</div>
+            <div class="agent-id">@devops</div>
+          </div>
+        </div>
+        <div class="agent-title">DevOps & GitHub Manager</div>
+        <div class="agent-desc">CI/CD, deploy, gestão de versões e push remoto. Único autorizado a fazer push.</div>
+        <div class="agent-activate">/AIOS:agents:devops</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">📊</div>
+          <div>
+            <div class="agent-name">Dara</div>
+            <div class="agent-id">@data-engineer</div>
+          </div>
+        </div>
+        <div class="agent-title">Database Architect</div>
+        <div class="agent-desc">Design de base de dados, schema, Supabase, RLS policies, migrações e optimização.</div>
+        <div class="agent-activate">/AIOS:agents:data-engineer</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">🎨</div>
+          <div>
+            <div class="agent-name">Uma</div>
+            <div class="agent-id">@ux-design-expert</div>
+          </div>
+        </div>
+        <div class="agent-title">UX/UI Designer</div>
+        <div class="agent-desc">Research, wireframes, design systems, componentes e design tokens.</div>
+        <div class="agent-activate">/AIOS:agents:ux-design-expert</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">🔍</div>
+          <div>
+            <div class="agent-name">Atlas</div>
+            <div class="agent-id">@analyst</div>
+          </div>
+        </div>
+        <div class="agent-title">Business Analyst</div>
+        <div class="agent-desc">Pesquisa de mercado, análise competitiva, brainstorming e descoberta de oportunidades.</div>
+        <div class="agent-activate">/AIOS:agents:analyst</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">🌊</div>
+          <div>
+            <div class="agent-name">River</div>
+            <div class="agent-id">@sm</div>
+          </div>
+        </div>
+        <div class="agent-title">Scrum Master</div>
+        <div class="agent-desc">User stories, sprint planning, backlog e gestão de branches locais.</div>
+        <div class="agent-activate">/AIOS:agents:sm</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">🎯</div>
+          <div>
+            <div class="agent-name">Pax</div>
+            <div class="agent-id">@po</div>
+          </div>
+        </div>
+        <div class="agent-title">Product Owner</div>
+        <div class="agent-desc">Gestão de backlog, refinamento de stories, critérios de aceitação e priorização.</div>
+        <div class="agent-activate">/AIOS:agents:po</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">📋</div>
+          <div>
+            <div class="agent-name">Bob</div>
+            <div class="agent-id">@pm</div>
+          </div>
+        </div>
+        <div class="agent-title">Product Manager</div>
+        <div class="agent-desc">Criação de PRDs, estratégia de produto, estrutura de épicos e roadmap.</div>
+        <div class="agent-activate">/AIOS:agents:pm</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">🏭</div>
+          <div>
+            <div class="agent-name">Iris</div>
+            <div class="agent-id">@squad-creator</div>
+          </div>
+        </div>
+        <div class="agent-title">Squad Creator</div>
+        <div class="agent-desc">Setup de squads, customização de agentes e orquestração de workflows.</div>
+        <div class="agent-activate">/AIOS:agents:squad-creator</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">🤖</div>
+          <div>
+            <div class="agent-name">José Amorim</div>
+            <div class="agent-id">@jose-amorim</div>
+          </div>
+        </div>
+        <div class="agent-title">Generalista</div>
+        <div class="agent-desc">Agente personalizado generalista para tarefas diversas do OPB Crew.</div>
+        <div class="agent-activate">/AIOS:agents:jose-amorim</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WORKFLOWS -->
+  <div class="section">
+    <div class="section-title">⚙️ Workflows Disponíveis</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Workflow</th>
+            <th>Tipo</th>
+            <th>Propósito</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🌱</td>
+            <td><div class="workflow-name">Greenfield Fullstack</div></td>
+            <td><span class="workflow-type type-greenfield">Greenfield</span></td>
+            <td class="workflow-desc">Novo projecto fullstack do zero</td>
+          </tr>
+          <tr>
+            <td>🌱</td>
+            <td><div class="workflow-name">Greenfield Service</div></td>
+            <td><span class="workflow-type type-greenfield">Greenfield</span></td>
+            <td class="workflow-desc">Novo serviço/microserviço do zero</td>
+          </tr>
+          <tr>
+            <td>🌱</td>
+            <td><div class="workflow-name">Greenfield UI</div></td>
+            <td><span class="workflow-type type-greenfield">Greenfield</span></td>
+            <td class="workflow-desc">Novo projecto de UI/frontend do zero</td>
+          </tr>
+          <tr>
+            <td>🏗️</td>
+            <td><div class="workflow-name">Brownfield Fullstack</div></td>
+            <td><span class="workflow-type type-brownfield">Brownfield</span></td>
+            <td class="workflow-desc">Desenvolvimento fullstack em projecto existente</td>
+          </tr>
+          <tr>
+            <td>🏗️</td>
+            <td><div class="workflow-name">Brownfield Service</div></td>
+            <td><span class="workflow-type type-brownfield">Brownfield</span></td>
+            <td class="workflow-desc">Novo serviço em projecto existente</td>
+          </tr>
+          <tr>
+            <td>🏗️</td>
+            <td><div class="workflow-name">Brownfield UI</div></td>
+            <td><span class="workflow-type type-brownfield">Brownfield</span></td>
+            <td class="workflow-desc">Novo componente UI em projecto existente</td>
+          </tr>
+          <tr>
+            <td>🔍</td>
+            <td><div class="workflow-name">Brownfield Discovery</div></td>
+            <td><span class="workflow-type type-brownfield">Brownfield</span></td>
+            <td class="workflow-desc">Discovery e análise de projecto existente</td>
+          </tr>
+          <tr>
+            <td>🔄</td>
+            <td><div class="workflow-name">Story Development Cycle</div></td>
+            <td><span class="workflow-type type-cycle">Ciclo</span></td>
+            <td class="workflow-desc">Ciclo completo de desenvolvimento de uma story</td>
+          </tr>
+          <tr>
+            <td>🔄</td>
+            <td><div class="workflow-name">Development Cycle</div></td>
+            <td><span class="workflow-type type-cycle">Ciclo</span></td>
+            <td class="workflow-desc">Ciclo completo de desenvolvimento</td>
+          </tr>
+          <tr>
+            <td>🔄</td>
+            <td><div class="workflow-name">Epic Orchestration</div></td>
+            <td><span class="workflow-type type-cycle">Ciclo</span></td>
+            <td class="workflow-desc">Orquestração de épicos completos</td>
+          </tr>
+          <tr>
+            <td>🔄</td>
+            <td><div class="workflow-name">QA Loop</div></td>
+            <td><span class="workflow-type type-cycle">Ciclo</span></td>
+            <td class="workflow-desc">Ciclo de qualidade e testes</td>
+          </tr>
+          <tr>
+            <td>🔄</td>
+            <td><div class="workflow-name">Spec Pipeline</div></td>
+            <td><span class="workflow-type type-cycle">Ciclo</span></td>
+            <td class="workflow-desc">Pipeline de especificação de features</td>
+          </tr>
+          <tr>
+            <td>🎨</td>
+            <td><div class="workflow-name">Design System Build Quality</div></td>
+            <td><span class="workflow-type type-design">Design</span></td>
+            <td class="workflow-desc">QA e build de design system</td>
+          </tr>
+          <tr>
+            <td>🌿</td>
+            <td><div class="workflow-name">Auto Worktree</div></td>
+            <td><span class="workflow-type type-cycle">Ciclo</span></td>
+            <td class="workflow-desc">Criação automática de worktrees isolados</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- COMO ACTIVAR -->
+  <div class="section">
+    <div class="section-title">🚀 Como Activar um Agente</div>
+    <div style="background:#111827;border:1px solid #1a2035;border-radius:14px;padding:24px;">
+      <p style="color:#8892a4;margin-bottom:16px;">No Claude Code, escreve o slash command do agente:</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;">
+        <div style="background:#0d1420;border-radius:8px;padding:12px;font-family:monospace;font-size:13px;">
+          <span style="color:#4a5568"># Maestro</span><br>
+          <span style="color:#BFD64B">/AIOS:agents:aios-master</span>
+        </div>
+        <div style="background:#0d1420;border-radius:8px;padding:12px;font-family:monospace;font-size:13px;">
+          <span style="color:#4a5568"># Desenvolvedor</span><br>
+          <span style="color:#BFD64B">/AIOS:agents:dev</span>
+        </div>
+        <div style="background:#0d1420;border-radius:8px;padding:12px;font-family:monospace;font-size:13px;">
+          <span style="color:#4a5568"># Base de Dados</span><br>
+          <span style="color:#BFD64B">/AIOS:agents:data-engineer</span>
+        </div>
+        <div style="background:#0d1420;border-radius:8px;padding:12px;font-family:monospace;font-size:13px;">
+          <span style="color:#4a5568"># Product Manager</span><br>
+          <span style="color:#BFD64B">/AIOS:agents:pm</span>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:#0d1420;border-radius:8px;">
+        <p style="color:#8892a4;font-size:13px;">Depois de activar, usa <code style="color:#BFD64B">*help</code> para ver os comandos do agente.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>OPB Crew · AIOS Framework v2.1 · 2026</p>
+    <p style="margin-top:8px">13 agentes · 15 workflows · 201 tasks</p>
+  </footer>
+
+</div>
+</body>
+</html>

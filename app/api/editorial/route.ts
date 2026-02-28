@@ -1,6 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { checkAndConsumeRateLimit, rateLimitResponse } from "@/lib/supabase/rate-limit";
+import { logAudit } from "@/lib/supabase/audit";
 
 interface EditorialForm {
   especialidade: string;
@@ -17,6 +19,12 @@ export async function POST(request: NextRequest) {
 
   if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json({ error: "ANTHROPIC_API_KEY não configurada" }, { status: 500 });
+  }
+
+  // Rate limiting — 5 gerações de linhas editoriais por dia
+  const rateLimit = await checkAndConsumeRateLimit(userId, "editorial");
+  if (!rateLimit.allowed) {
+    return NextResponse.json(rateLimitResponse(rateLimit), { status: 429 });
   }
 
   let body: { form: EditorialForm };
@@ -124,12 +132,13 @@ Cria agora as 3 Linhas Editoriais em JSON. Cada uma com profundidade real. Usa a
 
     const parsed = JSON.parse(jsonText);
 
-    return NextResponse.json({
-      editorias: parsed.editorias,
-      tokens: message.usage.input_tokens + message.usage.output_tokens,
-    });
+    const tokens = message.usage.input_tokens + message.usage.output_tokens;
+    logAudit({ userId, action: "editorial.generate", metadata: { tokens } });
+
+    return NextResponse.json({ editorias: parsed.editorias, tokens });
   } catch (error) {
     console.error("Erro ao gerar linha editorial:", error);
+    logAudit({ userId, action: "editorial.generate", success: false, errorMsg: String(error) });
     return NextResponse.json(
       { error: "Erro ao gerar linha editorial. Tenta novamente." },
       { status: 500 }

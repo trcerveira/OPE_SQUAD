@@ -1,6 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { checkAndConsumeRateLimit, rateLimitResponse } from "@/lib/supabase/rate-limit";
+import { logAudit } from "@/lib/supabase/audit";
+import { ViralResearchSchema, validateInput } from "@/lib/validators";
 
 // Voice DNA guardado no Clerk
 interface VozDNA {
@@ -42,20 +45,26 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let body: { platform: string; topic: string };
+  // Rate limiting — 20 pesquisas virais por dia
+  const rateLimit = await checkAndConsumeRateLimit(userId, "viral-research");
+  if (!rateLimit.allowed) {
+    return NextResponse.json(rateLimitResponse(rateLimit), { status: 429 });
+  }
+
+  let rawBody: unknown;
   try {
-    body = await request.json();
+    rawBody = await request.json();
   } catch {
     return NextResponse.json({ error: "Body inválido" }, { status: 400 });
   }
 
-  const { platform, topic } = body;
-  if (!platform || !topic?.trim()) {
-    return NextResponse.json(
-      { error: "platform e topic são obrigatórios" },
-      { status: 400 }
-    );
+  // Validação com Zod
+  const validation = validateInput(ViralResearchSchema, rawBody);
+  if (!validation.success) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
   }
+
+  const { platform, topic } = validation.data;
 
   // Lê o perfil do utilizador do Clerk
   const user = await currentUser();
@@ -175,9 +184,11 @@ REGRAS:
       );
     }
 
+    logAudit({ userId, action: "viral_research.generate", metadata: { platform, topic: topic.slice(0, 100) } });
     return NextResponse.json(parsed);
   } catch (error) {
     console.error("Erro na API Anthropic:", error);
+    logAudit({ userId, action: "viral_research.generate", success: false, errorMsg: String(error) });
     return NextResponse.json(
       { error: "Erro ao gerar ângulos. Tenta novamente." },
       { status: 500 }

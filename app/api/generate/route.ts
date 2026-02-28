@@ -2,23 +2,12 @@ import Anthropic from "@anthropic-ai/sdk";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
+import { checkAndConsumeRateLimit, rateLimitResponse } from "@/lib/supabase/rate-limit";
+import { logAudit } from "@/lib/supabase/audit";
+import { getUserProgress } from "@/lib/supabase/user-profiles";
+import { GenerateSchema, validateInput } from "@/lib/validators";
 
-interface VozDNA {
-  arquetipo?: string;
-  descricaoArquetipo?: string;
-  tomEmTresPalavras?: string[];
-  vocabularioActivo?: string[];
-  vocabularioProibido?: string[];
-  frasesAssinatura?: string[];
-  regrasEstilo?: string[];
-}
-
-interface GeniusProfile {
-  hendricksZone?: string;
-  wealthProfile?: string;
-  kolbeMode?: string;
-  fascinationAdvantage?: string;
-}
+import type { VozDNA, GeniusProfile } from "@/lib/supabase/types";
 
 // ─────────────────────────────────────────────
 // PROMPTS POR FORMATO + TIPO
@@ -517,25 +506,39 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "ANTHROPIC_API_KEY não configurada" }, { status: 500 });
   }
 
-  let body: {
-    format?: string;
-    subtype?: string;
-    platform?: string; // retrocompatibilidade
-    topic: string;
-    vozDNA?: VozDNA;
-  };
+  // Rate limiting — 20 gerações por dia por utilizador
+  const rateLimit = await checkAndConsumeRateLimit(userId, "generate");
+  if (!rateLimit.allowed) {
+    return NextResponse.json(rateLimitResponse(rateLimit), { status: 429 });
+  }
 
+  // Verificação de progresso no servidor (não confiar no Clerk unsafeMetadata)
+  const progress = await getUserProgress(userId);
+  if (progress && !progress.vozDNAComplete) {
+    return NextResponse.json(
+      { error: "Completa o Voz & DNA antes de gerar conteúdo." },
+      { status: 403 }
+    );
+  }
+
+  let rawBody: unknown;
   try {
-    body = await request.json();
+    rawBody = await request.json();
   } catch {
     return NextResponse.json({ error: "Body inválido" }, { status: 400 });
   }
 
-  const { topic, vozDNA } = body;
+  // Validação com Zod
+  const validation = validateInput(GenerateSchema, rawBody);
+  if (!validation.success) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
+  }
+
+  const { topic, vozDNA } = validation.data;
 
   // Suporta tanto o novo sistema (format+subtype) como o antigo (platform)
-  const format = body.format ?? (body.platform ? "post" : "post");
-  const subtype = body.subtype ?? body.platform ?? "instagram";
+  const format = validation.data.format ?? "post";
+  const subtype = validation.data.subtype ?? validation.data.platform ?? "instagram";
 
   if (!topic) {
     return NextResponse.json({ error: "topic é obrigatório" }, { status: 400 });
@@ -604,28 +607,39 @@ Escreve o conteúdo completo, pronto a publicar. Sem introduções, sem explica�
 
     const generatedText = content.text;
 
-    // Guarda no Supabase
+    // Guarda no Supabase com schema corrigido (migration 008)
+    const tokens = message.usage.input_tokens + message.usage.output_tokens;
     try {
       const supabase = createServerClient();
       await supabase.from("generated_content").insert({
-        user_id: userId,
-        platform: `${format}/${subtype}`,
+        user_id:  userId,
+        platform: `${format}/${subtype}`,  // Legacy (mantido para retrocompatibilidade)
+        format,                             // Novo campo (migration 008)
+        subtype,                            // Novo campo (migration 008)
         topic,
-        content: generatedText,
+        content:  generatedText,
       });
     } catch (dbError) {
       console.error("Erro ao guardar no Supabase:", dbError);
     }
+
+    // Audit log (não bloqueia)
+    logAudit({
+      userId,
+      action: "content.generate",
+      metadata: { format, subtype, topic: topic.slice(0, 100), tokens },
+    });
 
     return NextResponse.json({
       content: generatedText,
       format,
       subtype,
       topic,
-      tokens: message.usage.input_tokens + message.usage.output_tokens,
+      tokens,
     });
   } catch (error) {
     console.error("Erro ao chamar Claude API:", error);
+    logAudit({ userId, action: "content.generate", success: false, errorMsg: String(error) });
     return NextResponse.json({ error: "Erro ao gerar conteúdo." }, { status: 500 });
   }
 }
