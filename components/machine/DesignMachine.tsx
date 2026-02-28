@@ -30,6 +30,11 @@ const PALETAS_BASE: Palette[] = [
 
 const PASSOS = ["Conteúdo", "Imagens", "Cores", "Exportar"];
 
+// Valida se uma string é um hex de 6 dígitos válido
+function isValidHex(hex: string): boolean {
+  return /^#[0-9A-Fa-f]{6}$/.test(hex);
+}
+
 // ── Componente principal ─────────────────────────────────────────────────────
 
 export default function DesignMachine() {
@@ -41,6 +46,11 @@ export default function DesignMachine() {
   const [exportando, setExportando] = useState(false);
   const [progresso, setProgresso] = useState("");
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Estado da paleta personalizada
+  const [usarCustom, setUsarCustom] = useState(false);
+  const [customCores, setCustomCores] = useState<[string, string, string]>(["#F8FAFD", "#FF6A00", "#0F172A"]);
+  const [customErros, setCustomErros] = useState<[boolean, boolean, boolean]>([false, false, false]);
 
   // ── Parser de texto ────────────────────────────────────────────────────────
 
@@ -59,6 +69,44 @@ export default function DesignMachine() {
     setTextos(mapa);
     if (Object.keys(mapa).length > 0) setPasso(1);
   };
+
+  // ── Paleta personalizada ───────────────────────────────────────────────────
+
+  const atualizarCustomCor = (idx: 0 | 1 | 2, valor: string) => {
+    const novasCores = [...customCores] as [string, string, string];
+    novasCores[idx] = valor;
+    setCustomCores(novasCores);
+
+    const novosErros = [...customErros] as [boolean, boolean, boolean];
+    novosErros[idx] = valor.length > 0 && !isValidHex(valor);
+    setCustomErros(novosErros);
+
+    if (usarCustom && isValidHex(valor)) {
+      setPaleta({
+        id: "custom",
+        nome: "Personalizado",
+        cores: novasCores,
+      });
+    }
+  };
+
+  const activarCustom = () => {
+    setUsarCustom(true);
+    if (customCores.every(c => isValidHex(c))) {
+      setPaleta({ id: "custom", nome: "Personalizado", cores: customCores });
+    }
+  };
+
+  const activarPaletaBase = (p: Palette) => {
+    setUsarCustom(false);
+    setPaleta(p);
+  };
+
+  // Paleta efectiva (usada nos slides)
+  const paletaEfectiva: Palette = usarCustom && customCores.every(c => isValidHex(c))
+    ? { id: "custom", nome: "Personalizado", cores: customCores }
+    : usarCustom ? paleta // mantém a última válida se hex inválido
+    : paleta;
 
   // ── Export ─────────────────────────────────────────────────────────────────
 
@@ -137,7 +185,7 @@ export default function DesignMachine() {
           <div style={{ maxWidth: 680, margin: "0 auto" }}>
             <div style={{ marginBottom: 16 }}>
               <h2 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 4px" }}>
-                Cole o conteúdo gerado pela IA
+                Cola o conteúdo gerado pela IA
               </h2>
               <p style={{ fontSize: 13, color: "#8892a4", margin: 0 }}>
                 Formato: <code style={{ background: "var(--surface)", padding: "2px 6px", borderRadius: 4 }}>texto 1 - Título do cover</code>
@@ -238,32 +286,35 @@ export default function DesignMachine() {
 
         {/* ── PASSO 2: Cores ────────────────────────────────────────────── */}
         {passo === 2 && (
-          <div style={{ maxWidth: 600, margin: "0 auto" }}>
+          <div style={{ maxWidth: 640, margin: "0 auto" }}>
             <h2 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 16px" }}>
               Escolhe a paleta de cores
             </h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+
+            {/* Paletas pré-definidas */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
               {PALETAS_BASE.map(p => (
                 <button
                   key={p.id}
-                  onClick={() => setPaleta(p)}
+                  onClick={() => activarPaletaBase(p)}
                   style={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
                     padding: "14px 16px",
                     borderRadius: 12,
-                    border: `2px solid ${paleta.id === p.id ? "var(--accent)" : "var(--surface)"}`,
-                    background: paleta.id === p.id ? "var(--surface)" : "transparent",
+                    border: `2px solid ${!usarCustom && paleta.id === p.id ? "var(--accent)" : "var(--surface)"}`,
+                    background: !usarCustom && paleta.id === p.id ? "var(--surface)" : "transparent",
                     cursor: "pointer",
                     color: "var(--text)",
                   }}
                 >
                   <span style={{ fontWeight: 600, fontSize: 14 }}>{p.nome}</span>
-                  <div style={{ display: "flex", gap: 8 }}>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                     {p.cores.map((cor, i) => (
                       <div
                         key={i}
+                        title={cor}
                         style={{
                           width: 28,
                           height: 28,
@@ -277,6 +328,98 @@ export default function DesignMachine() {
                 </button>
               ))}
             </div>
+
+            {/* Paleta personalizada */}
+            <div style={{
+              padding: 16,
+              borderRadius: 12,
+              border: `2px solid ${usarCustom ? "var(--accent)" : "var(--surface)"}`,
+              background: usarCustom ? "var(--surface)" : "transparent",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                <span style={{ fontWeight: 600, fontSize: 14 }}>Personalizado</span>
+                <button
+                  onClick={activarCustom}
+                  style={{
+                    padding: "4px 12px",
+                    borderRadius: 8,
+                    fontSize: 12,
+                    fontWeight: 700,
+                    border: "none",
+                    cursor: "pointer",
+                    backgroundColor: usarCustom ? "var(--accent)" : "rgba(255,255,255,.1)",
+                    color: usarCustom ? "var(--bg)" : "var(--text)",
+                  }}
+                >
+                  {usarCustom ? "✓ Activa" : "Usar esta"}
+                </button>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+                {(["Fundo", "Destaque", "Texto"] as const).map((label, idx) => (
+                  <div key={idx}>
+                    <p style={{ fontSize: 11, color: "#8892a4", margin: "0 0 6px", fontWeight: 600, textTransform: "uppercase", letterSpacing: 1 }}>
+                      {label}
+                    </p>
+                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      {/* Swatch de cor */}
+                      <div style={{
+                        width: 32, height: 32,
+                        borderRadius: 8,
+                        backgroundColor: isValidHex(customCores[idx]) ? customCores[idx] : "#444",
+                        border: "1px solid rgba(255,255,255,.15)",
+                        flexShrink: 0,
+                        cursor: "pointer",
+                        position: "relative",
+                        overflow: "hidden",
+                      }}>
+                        <input
+                          type="color"
+                          value={isValidHex(customCores[idx]) ? customCores[idx] : "#888888"}
+                          onChange={e => {
+                            atualizarCustomCor(idx as 0 | 1 | 2, e.target.value);
+                            if (usarCustom) activarCustom();
+                          }}
+                          style={{
+                            position: "absolute", inset: 0,
+                            opacity: 0,
+                            cursor: "pointer",
+                            width: "100%", height: "100%",
+                          }}
+                        />
+                      </div>
+                      {/* Input hex */}
+                      <input
+                        value={customCores[idx]}
+                        onChange={e => {
+                          atualizarCustomCor(idx as 0 | 1 | 2, e.target.value);
+                          if (usarCustom) activarCustom();
+                        }}
+                        placeholder="#000000"
+                        maxLength={7}
+                        style={{
+                          flex: 1,
+                          padding: "6px 10px",
+                          borderRadius: 8,
+                          border: `1px solid ${customErros[idx] ? "#ef4444" : "var(--surface)"}`,
+                          background: "var(--bg)",
+                          color: "var(--text)",
+                          fontSize: 13,
+                          fontFamily: "monospace",
+                          outline: "none",
+                        }}
+                      />
+                    </div>
+                    {customErros[idx] && (
+                      <p style={{ fontSize: 10, color: "#f87171", margin: "4px 0 0" }}>
+                        Formato inválido (use #RRGGBB)
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <button
               onClick={() => setPasso(3)}
               style={{
@@ -300,7 +443,27 @@ export default function DesignMachine() {
         {passo === 3 && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Preview do carrossel</h2>
+              <div>
+                <h2 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 4px" }}>Preview do carrossel</h2>
+                <p style={{ fontSize: 12, color: "#8892a4", margin: 0 }}>
+                  Paleta: <span style={{ color: "var(--text)", fontWeight: 600 }}>{paletaEfectiva.nome}</span>
+                  {" · "}
+                  {[0, 1, 2].map(i => (
+                    <span
+                      key={i}
+                      style={{
+                        display: "inline-block",
+                        width: 10, height: 10,
+                        borderRadius: "50%",
+                        backgroundColor: paletaEfectiva.cores[i],
+                        border: "1px solid rgba(255,255,255,.2)",
+                        marginLeft: 4,
+                        verticalAlign: "middle",
+                      }}
+                    />
+                  ))}
+                </p>
+              </div>
               <button
                 onClick={exportarZip}
                 disabled={exportando}
@@ -354,7 +517,7 @@ export default function DesignMachine() {
                         slideIndex={i}
                         textos={textos}
                         imagens={imagens}
-                        paleta={paleta}
+                        paleta={paletaEfectiva}
                       />
                     </div>
                   </div>
