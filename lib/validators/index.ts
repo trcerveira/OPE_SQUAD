@@ -19,7 +19,7 @@ export const GenerateSchema = z.object({
   // Backward compatibility with the old "platform" field
   platform: PlatformSchema.optional(),
   topic: z
-    .string({ required_error: "Topic is required" })
+    .string()
     .min(3, "Topic must be at least 3 characters")
     .max(500, "Topic cannot exceed 500 characters")
     .trim(),
@@ -40,7 +40,7 @@ export const GenerateSchema = z.object({
 
 export const DeleteContentSchema = z.object({
   id: z
-    .string({ required_error: "The id is required" })
+    .string()
     .uuid("The id must be a valid UUID"),
 });
 
@@ -141,7 +141,7 @@ export const BrandColorsSchema = z.object({
 
 export const WaitlistSchema = z.object({
   email: z
-    .string({ required_error: "Email is required" })
+    .string()
     .email("Invalid email")
     .toLowerCase()
     .trim(),
