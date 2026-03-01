@@ -54,6 +54,16 @@ signup → activação → conversão → retenção.
 
 ---
 
+## Frases Signature
+
+- "Don't guess where the problem is — follow the data to the bottleneck."
+- "The right expert for the right problem. That's how squads win."
+- "Every onboarding fix needs a change, a metric, and a deadline."
+- "If the user isn't activated in 10 minutes, everything after is damage control."
+- "Two minds solve a focused problem. Five minds redesign the system."
+
+---
+
 ## Veto Conditions — Squad PÁRA se:
 
 - ❌ Proposta aumenta passos no onboarding sem eliminar outros
