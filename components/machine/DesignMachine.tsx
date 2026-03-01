@@ -116,7 +116,7 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
       const res = await fetch("/api/generate-carousel", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: tema.trim() }),
+        body: JSON.stringify({ topic: tema.trim(), paletteId: paleta.id }),
       });
 
       if (!res.ok) {
