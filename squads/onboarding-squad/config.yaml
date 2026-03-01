@@ -1,0 +1,84 @@
+# Onboarding Squad — OPB Crew
+# Transform new users into activated, retained members in the first 7 days
+
+squad:
+  name: Onboarding Squad
+  id: onboarding-squad
+  version: "1.0"
+  domain: onboarding
+  purpose: "Design and optimize the user onboarding experience to maximize activation and retention"
+  philosophy: "The first 10 minutes decide everything. Make the user feel successful, not educated."
+
+  keywords:
+    - onboarding
+    - activation
+    - retention
+    - product-led-growth
+    - customer-success
+    - email-sequences
+    - first-run-experience
+    - aha-moment
+
+  activation:
+    squad: "@onboarding {problem}"
+    debate: "@onboarding debate {topic}"
+    audit: "@onboarding audit"
+    individual:
+      - "@hulick — Onboarding UX + teardowns"
+      - "@wes — Product-Led Growth + self-serve"
+      - "@lincoln — Customer Success + desired outcomes"
+      - "@ramli — Product-Led Onboarding + EUREKA framework"
+      - "@val — Email onboarding sequences + lifecycle"
+
+agents:
+  orchestrator:
+    file: agents/onboarding-chief.md
+    icon: "🚀"
+    role: "Integrator — orchestrates activation journey from signup to superfan"
+
+  minds:
+    - file: agents/samuel-hulick.md
+      icon: "🎯"
+      name: Samuel Hulick
+      tier: 0
+      specialty: "Onboarding UX teardowns + first-run experience"
+      veto: "Onboarding that teaches instead of activates"
+
+    - file: agents/wes-bush.md
+      icon: "🌱"
+      name: Wes Bush
+      tier: 1
+      specialty: "Product-Led Growth + self-serve conversion"
+      veto: "Sales-led approach for a self-serve product"
+
+    - file: agents/lincoln-murphy.md
+      icon: "🎯"
+      name: Lincoln Murphy
+      tier: 1
+      specialty: "Customer Success + desired outcome framework"
+      veto: "Retention without delivering real outcomes"
+
+    - file: agents/ramli-john.md
+      icon: "⚡"
+      name: Ramli John
+      tier: 1
+      specialty: "Product-Led Onboarding + EUREKA framework"
+      veto: "Long onboarding before first value moment"
+
+    - file: agents/val-geisler.md
+      icon: "📧"
+      name: Val Geisler
+      tier: 2
+      specialty: "Email onboarding sequences + lifecycle messaging"
+      veto: "Generic email blasts without behavioral triggers"
+
+workflows:
+  - file: workflows/onboarding-optimization.md
+    name: Onboarding Optimization Protocol
+    trigger: "Trial conversion <30% or activation rate below target"
+    target: "First value in <10 minutes, trial conversion >30%"
+
+rules:
+  core_metric: "Time to first value (TTFV) — must be under 10 minutes"
+  session_output: "Specific change + metric to track + timeline"
+  principle: "Activate first, educate later. Nobody reads tutorials."

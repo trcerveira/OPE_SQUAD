@@ -1,0 +1,89 @@
+# Content Squad — OPB Crew
+# The engine that powers content generation in the user's authentic voice
+
+squad:
+  name: Content Squad
+  id: content-squad
+  version: "1.0"
+  domain: content
+  purpose: "Generate high-quality social media content in the solopreneur's authentic voice"
+  philosophy: "Content is not what you say about yourself. It's what others repeat about you."
+
+  keywords:
+    - content-creation
+    - social-media
+    - copywriting
+    - email-marketing
+    - viral-content
+    - storytelling
+    - hooks
+    - content-systems
+    - editorial-calendar
+    - authentic-voice
+
+  activation:
+    squad: "@content {problem}"
+    debate: "@content debate {topic}"
+    generate: "@content generate {topic}"
+    audit: "@content audit"
+    individual:
+      - "@ann — Content strategy + quality standards"
+      - "@cole — Viral writing + hooks + digital frameworks"
+      - "@laura — Personality-driven copy + authentic voice"
+      - "@david — Online writing + essays + deep content"
+      - "@pulizzi — Content systems + editorial calendar"
+
+agents:
+  orchestrator:
+    file: agents/content-chief.md
+    icon: "✏️"
+    role: "Integrator — orchestrates content generation pipeline from idea to publish-ready"
+
+  minds:
+    - file: agents/ann-handley.md
+      icon: "📝"
+      name: Ann Handley
+      tier: 0
+      specialty: "Content Strategy & Quality Standards"
+      veto: "Content without a clear point of view"
+
+    - file: agents/nicolas-cole.md
+      icon: "🔥"
+      name: Nicolas Cole
+      tier: 1
+      specialty: "Viral Writing, Hooks & Digital Frameworks"
+      veto: "Post without a strong hook in the first 2 seconds"
+
+    - file: agents/laura-belgray.md
+      icon: "💬"
+      name: Laura Belgray
+      tier: 1
+      specialty: "Personality-Driven Copy & Authentic Voice"
+      veto: "Content that doesn't sound like the user"
+
+    - file: agents/david-perell.md
+      icon: "🌊"
+      name: David Perell
+      tier: 1
+      specialty: "Online Writing, Essays & Deep Content"
+      veto: "Shallow content without original ideas"
+
+    - file: agents/joe-pulizzi.md
+      icon: "⚙️"
+      name: Joe Pulizzi
+      tier: 2
+      specialty: "Content Systems & Editorial Calendar"
+      veto: "Content without a production system"
+
+workflows:
+  - file: workflows/content-generation.md
+    name: Content Generation Pipeline
+    trigger: "User requests content generation for any platform"
+    target: "30 posts/month in the user's authentic voice"
+
+rules:
+  veto_without_voice_dna: true
+  veto_without_cta: true
+  veto_wrong_format: true
+  veto_without_approval_v1: true
+  core_metric: "Posts generated per user per month (target: 30)"
