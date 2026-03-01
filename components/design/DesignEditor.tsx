@@ -15,7 +15,15 @@ export type TemplateId =
   | "foto-split"
   | "dark-minimal"
   | "dark-brand"
-  | "thread";
+  | "thread"
+  | "nocturne-cyan"
+  | "obsidian-gold"
+  | "carbon-blue"
+  | "midnight-violet"
+  | "eclipse-rose"
+  | "stealth-emerald"
+  | "crimson-noir"
+  | "arctic-frost";
 
 export interface CardData {
   tag: string;
@@ -48,6 +56,15 @@ const TEMPLATES: TemplateInfo[] = [
   { id: "dark-minimal",      nome: "Dark Minimal",       descricao: "Preto · texto centrado",        bgColor: "#000000",  accentSample: "#ffffff" },
   { id: "dark-brand",        nome: "Dark Brand",         descricao: "Dark + Lime · OPE",             bgColor: "#0A0E1A",  accentSample: "#BFD64B" },
   { id: "thread",            nome: "Thread",             descricao: "Branco · estilo X/Twitter",     bgColor: "#ffffff",  accentSample: "#1DA1F2" },
+  // Premium templates
+  { id: "nocturne-cyan",    nome: "Nocturne Cyan",      descricao: "Dark · barra lateral cyan",     bgColor: "#0B1017",  accentSample: "#7DE8EB" },
+  { id: "obsidian-gold",    nome: "Obsidian Gold",       descricao: "Dark · linhas gold + serif",    bgColor: "#0C0A07",  accentSample: "#D4A853" },
+  { id: "carbon-blue",      nome: "Carbon Blue",         descricao: "Dark · badge + border azul",    bgColor: "#0A0F1A",  accentSample: "#3B82F6" },
+  { id: "midnight-violet",  nome: "Midnight Violet",     descricao: "Dark · gradient violet",        bgColor: "#0C0815",  accentSample: "#A855F7" },
+  { id: "eclipse-rose",     nome: "Eclipse Rose",        descricao: "Dark · headline + underline",   bgColor: "#100A0C",  accentSample: "#F43F5E" },
+  { id: "stealth-emerald",  nome: "Stealth Emerald",     descricao: "Dark · ultra-minimalista",      bgColor: "#080F0D",  accentSample: "#10B981" },
+  { id: "crimson-noir",     nome: "Crimson Noir",        descricao: "Dark · bold uppercase + glow",  bgColor: "#0F0808",  accentSample: "#EF4444" },
+  { id: "arctic-frost",     nome: "Arctic Frost",        descricao: "Dark · glassmorphism + frost",  bgColor: "#0A1018",  accentSample: "#38BDF8" },
 ];
 
 // ─── Templates (inline styles para html-to-image) ────────────────────────────
@@ -55,7 +72,7 @@ const TEMPLATES: TemplateInfo[] = [
 function TemplateEditorial({ card, author, index, total }: { card: CardData; author: AuthorData; index: number; total: number }) {
   const accent = author.accentColor || "#E85D26";
   return (
-    <div style={{ width: 1080, height: 1080, background: "#ffffff", fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <div style={{ width: 1080, height: 1080, background: "#ffffff", fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif", display: "flex", flexDirection: "column", overflow: "hidden", boxShadow: "inset 0 0 80px rgba(0,0,0,.02)" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "28px 60px 20px", borderBottom: "1px solid #e5e7eb" }}>
         <span style={{ fontSize: 18, color: "#9ca3af", letterSpacing: 2, fontWeight: 500 }}>Content Machine</span>
         <span style={{ fontSize: 18, color: "#9ca3af" }}>{author.handle}</span>
@@ -67,11 +84,14 @@ function TemplateEditorial({ card, author, index, total }: { card: CardData; aut
             <span style={{ fontSize: 16, fontWeight: 700, color: accent, letterSpacing: 2, textTransform: "uppercase" }}>{card.tag}</span>
           </div>
         )}
-        <h1 style={{ fontSize: 68, fontWeight: 800, lineHeight: 1.1, color: "#111827", margin: "0 0 36px", letterSpacing: -1 }}>
+        <h1 style={{ fontSize: 68, fontWeight: 800, lineHeight: 1.1, color: "#111827", margin: "0 0 36px", letterSpacing: -1, textShadow: "0 1px 2px rgba(0,0,0,.06)" }}>
           {card.headline || "Título do card"}
         </h1>
+        {/* Gradient separator */}
+        <div style={{ width: 80, height: 3, borderRadius: 2, background: `linear-gradient(to right, ${accent}, ${accent}44)`, marginBottom: 32 }} />
         {card.imageUrl && (
-          <div style={{ flex: 1, marginBottom: 36, borderRadius: 20, overflow: "hidden", maxHeight: 380 }}>
+          <div style={{ flex: 1, marginBottom: 36, borderRadius: 20, overflow: "hidden", maxHeight: 380, boxShadow: "0 8px 30px rgba(0,0,0,.08)" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={card.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
         )}
@@ -93,7 +113,7 @@ function TemplateEditorialCompact({ card, author, index, total }: { card: CardDa
   const accent = author.accentColor || "#C2840A";
   return (
     <div style={{ width: 1080, height: 1080, background: "#F8F6F1", fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-      <div style={{ height: 4, background: accent }} />
+      <div style={{ height: 5, background: `linear-gradient(to right, ${accent}, ${accent}88)` }} />
       <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "60px 80px" }}>
         <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 20 }}>
           <span style={{ fontSize: 20, color: "#9ca3af", fontWeight: 600 }}>{String(index + 1).padStart(2, "0")}</span>
@@ -106,6 +126,8 @@ function TemplateEditorialCompact({ card, author, index, total }: { card: CardDa
           <p style={{ fontSize: 32, lineHeight: 1.65, color: "#374151", marginBottom: 40 }}>{card.body}</p>
         )}
         <div style={{ flex: 1 }} />
+        {/* Decorative ornament */}
+        <div style={{ width: 40, height: 2, background: `linear-gradient(to right, ${accent}, transparent)`, borderRadius: 1, marginBottom: 20 }} />
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
           <span style={{ fontSize: 20, color: "#9ca3af", fontStyle: "italic" }}>
             {index + 1 < total ? "ARRASTE PARA O LADO" : (card.cta || "GUARDA ESTE CONTEÚDO")}
@@ -122,9 +144,10 @@ function TemplateFotoTotal({ card, author, index, total }: { card: CardData; aut
   return (
     <div style={{ width: 1080, height: 1080, background: "#0a0a0a", fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif", overflow: "hidden", position: "relative" }}>
       {card.imageUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
         <img src={card.imageUrl} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
       )}
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 30%, rgba(0,0,0,0.85) 100%)" }} />
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.15) 25%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.92) 100%)" }} />
       <div style={{ position: "absolute", top: 48, left: 56, zIndex: 10 }}>
         <span style={{ fontSize: 20, fontWeight: 800, color: "#fff", letterSpacing: 2, textTransform: "uppercase", background: "rgba(0,0,0,0.4)", padding: "8px 16px", borderRadius: 8 }}>
           {author.handle}
@@ -132,18 +155,18 @@ function TemplateFotoTotal({ card, author, index, total }: { card: CardData; aut
       </div>
       {card.tag && (
         <div style={{ position: "absolute", top: 48, right: 56, zIndex: 10 }}>
-          <span style={{ fontSize: 16, fontWeight: 700, color: accent, background: "rgba(0,0,0,0.5)", border: `1px solid ${accent}`, padding: "8px 16px", borderRadius: 20, textTransform: "uppercase", letterSpacing: 2 }}>
+          <span style={{ fontSize: 16, fontWeight: 700, color: accent, background: "rgba(0,0,0,0.5)", border: `1px solid ${accent}`, padding: "8px 16px", borderRadius: 20, textTransform: "uppercase", letterSpacing: 2, boxShadow: `0 0 12px ${accent}33` }}>
             {card.tag}
           </span>
         </div>
       )}
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 10, padding: "0 60px 60px" }}>
-        <h1 style={{ fontSize: 88, fontWeight: 900, color: "#ffffff", lineHeight: 1.0, margin: "0 0 32px", letterSpacing: -2, textShadow: "0 2px 20px rgba(0,0,0,0.5)" }}>
+        <h1 style={{ fontSize: 88, fontWeight: 900, color: "#ffffff", lineHeight: 1.0, margin: "0 0 32px", letterSpacing: -2, textShadow: "0 4px 24px rgba(0,0,0,0.6), 0 1px 3px rgba(0,0,0,0.4)" }}>
           {card.headline || "TÍTULO DO CARD"}
         </h1>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           {card.body && <p style={{ fontSize: 24, color: "rgba(255,255,255,0.85)", maxWidth: "70%", lineHeight: 1.5, margin: 0 }}>{card.body}</p>}
-          <span style={{ fontSize: 16, fontWeight: 700, color: "#fff", background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)", padding: "10px 20px", borderRadius: 30, letterSpacing: 2, whiteSpace: "nowrap" }}>
+          <span style={{ fontSize: 16, fontWeight: 700, color: "#fff", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", padding: "10px 20px", borderRadius: 30, letterSpacing: 2, whiteSpace: "nowrap", boxShadow: "inset 0 1px 0 rgba(255,255,255,.08)" }}>
             {index + 1 < total ? "PASSE PARA O LADO »" : (card.cta || "GUARDA ESTE CONTEÚDO")}
           </span>
         </div>
@@ -158,15 +181,18 @@ function TemplateFotoSplit({ card, author, index, total }: { card: CardData; aut
     <div style={{ width: 1080, height: 1080, fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif", display: "flex", flexDirection: "column", overflow: "hidden" }}>
       <div style={{ height: 560, background: "#1a1a2e", position: "relative", overflow: "hidden" }}>
         {card.imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
           <img src={card.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         )}
+        {/* Gradient transition on photo bottom */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80, background: "linear-gradient(to bottom, transparent, #111827)" }} />
         <div style={{ position: "absolute", top: 32, left: 40 }}>
           <span style={{ fontSize: 18, fontWeight: 800, color: "#fff", background: "rgba(0,0,0,0.5)", padding: "6px 14px", borderRadius: 6, letterSpacing: 2 }}>{author.handle}</span>
         </div>
       </div>
-      <div style={{ flex: 1, background: "#111827", display: "flex", flexDirection: "column", justifyContent: "center", padding: "48px 60px" }}>
+      <div style={{ flex: 1, background: "#111827", display: "flex", flexDirection: "column", justifyContent: "center", padding: "48px 60px", boxShadow: "inset 0 2px 20px rgba(0,0,0,.3)" }}>
         {card.tag && (
-          <p style={{ fontSize: 16, fontWeight: 700, color: accent, letterSpacing: 3, textTransform: "uppercase", margin: "0 0 16px" }}>{card.tag}</p>
+          <p style={{ fontSize: 16, fontWeight: 700, color: accent, letterSpacing: 3, textTransform: "uppercase", margin: "0 0 16px", background: `${accent}12`, display: "inline-block", padding: "4px 12px", borderRadius: 4, width: "fit-content" }}>{card.tag}</p>
         )}
         <h2 style={{ fontSize: 52, fontWeight: 800, color: "#ffffff", lineHeight: 1.15, margin: "0 0 20px", letterSpacing: -1 }}>
           {card.headline || "Título do card"}
@@ -187,10 +213,14 @@ function TemplateFotoSplit({ card, author, index, total }: { card: CardData; aut
 
 function TemplateDarkMinimal({ card, author, index, total }: { card: CardData; author: AuthorData; index: number; total: number }) {
   return (
-    <div style={{ width: 1080, height: 1080, background: "#000000", fontFamily: "'Georgia', 'Times New Roman', serif", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px", textAlign: "center", position: "relative" }}>
+    <div style={{ width: 1080, height: 1080, background: "radial-gradient(ellipse at center, #0a0a0a 0%, #000000 100%)", fontFamily: "'Georgia', 'Times New Roman', serif", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px", textAlign: "center", position: "relative" }}>
       <span style={{ position: "absolute", top: 50, right: 60, fontSize: 20, color: "rgba(255,255,255,0.2)", fontFamily: "'Inter', sans-serif" }}>{String(index + 1).padStart(2, "0")}</span>
       {card.tag && (
-        <p style={{ fontSize: 16, fontWeight: 700, color: "rgba(255,255,255,0.4)", letterSpacing: 4, textTransform: "uppercase", fontFamily: "'Inter', sans-serif", margin: "0 0 40px" }}>{card.tag}</p>
+        <div style={{ marginBottom: 40, display: "flex", alignItems: "center", gap: 16 }}>
+          <div style={{ width: 24, height: 1, background: "rgba(255,255,255,.2)" }} />
+          <p style={{ fontSize: 16, fontWeight: 700, color: "rgba(255,255,255,0.4)", letterSpacing: 4, textTransform: "uppercase", fontFamily: "'Inter', sans-serif", margin: 0 }}>{card.tag}</p>
+          <div style={{ width: 24, height: 1, background: "rgba(255,255,255,.2)" }} />
+        </div>
       )}
       <h1 style={{ fontSize: 80, fontWeight: 700, color: "#ffffff", lineHeight: 1.15, margin: "0 0 48px", letterSpacing: -1 }}>
         {card.headline || "TEXTO PRINCIPAL"}
@@ -200,9 +230,12 @@ function TemplateDarkMinimal({ card, author, index, total }: { card: CardData; a
           {card.body}
         </p>
       )}
-      <p style={{ position: "absolute", bottom: 50, left: 0, right: 0, textAlign: "center", fontSize: 18, color: "rgba(255,255,255,0.2)", fontFamily: "'Inter', sans-serif", letterSpacing: 3, textTransform: "uppercase" }}>
-        {card.cta || (index + 1 < total ? "CONTINUA →" : author.handle)}
-      </p>
+      {/* Encapsulated CTA */}
+      <div style={{ position: "absolute", bottom: 44, left: "50%", transform: "translateX(-50%)", padding: "8px 28px", borderRadius: 20, border: "1px solid rgba(255,255,255,.1)", background: "rgba(255,255,255,.03)" }}>
+        <p style={{ fontSize: 16, color: "rgba(255,255,255,0.25)", fontFamily: "'Inter', sans-serif", letterSpacing: 3, textTransform: "uppercase", margin: 0 }}>
+          {card.cta || (index + 1 < total ? "CONTINUA →" : author.handle)}
+        </p>
+      </div>
     </div>
   );
 }
@@ -210,7 +243,7 @@ function TemplateDarkMinimal({ card, author, index, total }: { card: CardData; a
 function TemplateDarkBrand({ card, author, index, total }: { card: CardData; author: AuthorData; index: number; total: number }) {
   const accent = author.accentColor || "#BFD64B";
   return (
-    <div style={{ width: 1080, height: 1080, background: "#0A0E1A", fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif", display: "flex", flexDirection: "column", padding: "60px 72px", overflow: "hidden", position: "relative" }}>
+    <div style={{ width: 1080, height: 1080, background: `linear-gradient(165deg, #0A0E1A 0%, #0d1225 50%, #0A0E1A 100%)`, fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif", display: "flex", flexDirection: "column", padding: "60px 72px", overflow: "hidden", position: "relative" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 56 }}>
         {card.tag ? (
           <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: 3, color: accent, background: `${accent}18`, border: `1px solid ${accent}44`, padding: "8px 18px", borderRadius: 40, textTransform: "uppercase" }}>
@@ -222,9 +255,11 @@ function TemplateDarkBrand({ card, author, index, total }: { card: CardData; aut
       <h1 style={{ fontSize: 76, fontWeight: 900, color: "#F0ECE4", lineHeight: 1.05, margin: "0 0 36px", letterSpacing: -2 }}>
         {card.headline || "Título do card"}
       </h1>
-      <div style={{ width: 80, height: 4, background: accent, borderRadius: 2, marginBottom: 36 }} />
+      {/* Accent line with glow */}
+      <div style={{ width: 80, height: 4, background: accent, borderRadius: 2, marginBottom: 36, boxShadow: `0 0 14px ${accent}55, 0 0 4px ${accent}33` }} />
       {card.imageUrl && (
-        <div style={{ flex: 1, borderRadius: 16, overflow: "hidden", marginBottom: 36, maxHeight: 380 }}>
+        <div style={{ flex: 1, borderRadius: 16, overflow: "hidden", marginBottom: 36, maxHeight: 380, boxShadow: "0 8px 32px rgba(0,0,0,.4)" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={card.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         </div>
       )}
@@ -233,7 +268,7 @@ function TemplateDarkBrand({ card, author, index, total }: { card: CardData; aut
       )}
       <div style={{ flex: 1 }} />
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 40, borderTop: "1px solid #1a2035" }}>
-        <span style={{ fontSize: 18, fontWeight: 700, color: accent, letterSpacing: 1 }}>{author.handle}</span>
+        <span style={{ fontSize: 18, fontWeight: 700, color: accent, letterSpacing: 1, textShadow: `0 0 10px ${accent}33` }}>{author.handle}</span>
         <span style={{ fontSize: 16, color: "#4a5568", letterSpacing: 2 }}>
           {index + 1 < total ? "CONTINUA →" : (card.cta || "GUARDA ESTE CONTEÚDO")}
         </span>
@@ -246,13 +281,16 @@ function TemplateThread({ card, author, index, total }: { card: CardData; author
   return (
     <div style={{ width: 1080, height: 1080, background: "#ffffff", fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif", display: "flex", flexDirection: "column", padding: "72px 80px", overflow: "hidden" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 28, marginBottom: 56 }}>
-        <div style={{ width: 100, height: 100, borderRadius: "50%", background: "#e5e7eb", overflow: "hidden", flexShrink: 0 }}>
+        <div style={{ width: 100, height: 100, borderRadius: "50%", background: "#e5e7eb", overflow: "hidden", flexShrink: 0, boxShadow: "0 4px 16px rgba(0,0,0,.1)", border: "3px solid #f3f4f6" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           {author.avatarUrl && <img src={author.avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
         </div>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <span style={{ fontSize: 32, fontWeight: 800, color: "#111827" }}>{author.nome || "Nome"}</span>
-            <span style={{ fontSize: 28 }}>✅</span>
+            <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#1DA1F2", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span style={{ color: "#fff", fontSize: 14, fontWeight: 800, lineHeight: 1 }}>✓</span>
+            </div>
           </div>
           <span style={{ fontSize: 24, color: "#9ca3af" }}>{author.handle || "@handle"}</span>
         </div>
@@ -265,7 +303,8 @@ function TemplateThread({ card, author, index, total }: { card: CardData; author
           <h2 style={{ fontSize: 52, fontWeight: 800, color: "#111827", lineHeight: 1.2, margin: "0 0 36px" }}>{card.headline}</h2>
         )}
         {card.imageUrl && (
-          <div style={{ borderRadius: 20, overflow: "hidden", marginBottom: 36, maxHeight: 360 }}>
+          <div style={{ borderRadius: 20, overflow: "hidden", marginBottom: 36, maxHeight: 360, boxShadow: "0 4px 20px rgba(0,0,0,.08)" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={card.imageUrl} alt="" style={{ width: "100%", objectFit: "cover" }} />
           </div>
         )}
@@ -277,6 +316,279 @@ function TemplateThread({ card, author, index, total }: { card: CardData; author
         <span style={{ fontSize: 20, color: "#d1d5db" }}>{String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
         <span style={{ fontSize: 20, color: "#9ca3af" }}>
           {card.cta || (index + 1 < total ? "CONTINUA ↓" : "SEGUE PARA MAIS")}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// ─── Premium Templates ────────────────────────────────────────────────────────
+
+function TemplateNocturneCyan({ card, author, index, total }: { card: CardData; author: AuthorData; index: number; total: number }) {
+  const accent = "#7DE8EB";
+  return (
+    <div style={{ width: 1080, height: 1080, background: "#0B1017", fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif", display: "flex", overflow: "hidden", position: "relative" }}>
+      {/* Left cyan accent bar */}
+      <div style={{ width: 6, background: `linear-gradient(to bottom, ${accent}, ${accent}44)`, flexShrink: 0 }} />
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "60px 64px 60px 56px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 48 }}>
+          <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: 3, color: accent, textTransform: "uppercase" }}>{author.handle}</span>
+          <span style={{ fontSize: 16, color: "#3a4a5a" }}>{String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
+        </div>
+        {card.tag && (
+          <p style={{ fontSize: 14, fontWeight: 700, color: accent, letterSpacing: 3, textTransform: "uppercase", margin: "0 0 24px", opacity: 0.7 }}>{card.tag}</p>
+        )}
+        <h1 style={{ fontSize: 72, fontWeight: 900, color: "#E8ECF0", lineHeight: 1.08, margin: "0 0 36px", letterSpacing: -2 }}>
+          {card.headline || "Título do card"}
+        </h1>
+        <div style={{ width: 60, height: 3, background: accent, borderRadius: 2, marginBottom: 32, boxShadow: `0 0 12px ${accent}55` }} />
+        {card.imageUrl && (
+          <div style={{ borderRadius: 12, overflow: "hidden", marginBottom: 32, maxHeight: 320, boxShadow: `0 8px 32px rgba(0,0,0,.5), 0 0 0 1px ${accent}15` }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={card.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          </div>
+        )}
+        {card.body && (
+          <p style={{ fontSize: 28, color: "#8a9aaa", lineHeight: 1.65, margin: "0 0 auto" }}>{card.body}</p>
+        )}
+        <div style={{ flex: 1 }} />
+        <span style={{ fontSize: 15, color: "#3a4a5a", letterSpacing: 2 }}>
+          {index + 1 < total ? "CONTINUA →" : (card.cta || "GUARDA ESTE CONTEÚDO")}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function TemplateObsidianGold({ card, author, index, total }: { card: CardData; author: AuthorData; index: number; total: number }) {
+  const accent = "#D4A853";
+  return (
+    <div style={{ width: 1080, height: 1080, background: "#0C0A07", fontFamily: "'Georgia', 'Times New Roman', serif", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px", textAlign: "center", position: "relative", overflow: "hidden" }}>
+      <span style={{ position: "absolute", top: 48, right: 56, fontSize: 18, color: "#3a3020", fontFamily: "'Inter', sans-serif" }}>{String(index + 1).padStart(2, "0")}</span>
+      {/* Top gold double line */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 48 }}>
+        <div style={{ width: 60, height: 1, background: accent }} />
+        <div style={{ width: 30, height: 1, background: `${accent}66` }} />
+      </div>
+      {card.tag && (
+        <p style={{ fontSize: 15, fontWeight: 600, color: accent, letterSpacing: 5, textTransform: "uppercase", fontFamily: "'Inter', sans-serif", margin: "0 0 32px", opacity: 0.8 }}>{card.tag}</p>
+      )}
+      <h1 style={{ fontSize: 74, fontWeight: 700, color: "#F5F0E8", lineHeight: 1.12, margin: "0 0 40px", letterSpacing: -0.5 }}>
+        {card.headline || "Título do card"}
+      </h1>
+      {/* Bottom gold double line */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 40 }}>
+        <div style={{ width: 30, height: 1, background: `${accent}66` }} />
+        <div style={{ width: 60, height: 1, background: accent }} />
+      </div>
+      {card.body && (
+        <p style={{ fontSize: 28, color: "#8a7a60", lineHeight: 1.7, fontFamily: "'Inter', sans-serif", fontWeight: 400, margin: 0, maxWidth: 800 }}>
+          {card.body}
+        </p>
+      )}
+      <div style={{ position: "absolute", bottom: 48, display: "flex", alignItems: "center", gap: 20 }}>
+        <span style={{ fontSize: 14, color: "#3a3020", fontFamily: "'Inter', sans-serif", letterSpacing: 3, textTransform: "uppercase" }}>
+          {card.cta || (index + 1 < total ? "CONTINUA →" : author.handle)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function TemplateCarbonBlue({ card, author, index, total }: { card: CardData; author: AuthorData; index: number; total: number }) {
+  const accent = "#3B82F6";
+  return (
+    <div style={{ width: 1080, height: 1080, background: "#0A0F1A", fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif", display: "flex", flexDirection: "column", padding: "60px 72px", overflow: "hidden", position: "relative" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 48 }}>
+        {card.tag ? (
+          <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: 3, color: accent, background: `${accent}18`, border: `1px solid ${accent}33`, padding: "8px 18px", borderRadius: 6, textTransform: "uppercase" }}>
+            {card.tag}
+          </span>
+        ) : <span />}
+        <span style={{ fontSize: 16, color: "#2a3a5a" }}>{String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
+      </div>
+      <h1 style={{ fontSize: 72, fontWeight: 900, color: "#E2E8F0", lineHeight: 1.08, margin: "0 0 32px", letterSpacing: -2 }}>
+        {card.headline || "Título do card"}
+      </h1>
+      <div style={{ width: 70, height: 3, background: accent, borderRadius: 2, marginBottom: 32 }} />
+      {card.imageUrl && (
+        <div style={{ borderRadius: 12, overflow: "hidden", marginBottom: 32, maxHeight: 380, border: `1px solid ${accent}22`, boxShadow: `0 8px 32px rgba(0,0,0,.4)` }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={card.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        </div>
+      )}
+      {card.body && (
+        <p style={{ fontSize: 28, color: "#7a8a9a", lineHeight: 1.65, margin: "0 0 auto" }}>{card.body}</p>
+      )}
+      <div style={{ flex: 1 }} />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 36, borderTop: `1px solid ${accent}22` }}>
+        <span style={{ fontSize: 16, fontWeight: 700, color: accent, letterSpacing: 1 }}>{author.handle}</span>
+        <span style={{ fontSize: 15, color: "#2a3a5a", letterSpacing: 2 }}>
+          {index + 1 < total ? "CONTINUA →" : (card.cta || "GUARDA ESTE CONTEÚDO")}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function TemplateMidnightViolet({ card, author, index, total }: { card: CardData; author: AuthorData; index: number; total: number }) {
+  const accent = "#A855F7";
+  return (
+    <div style={{ width: 1080, height: 1080, background: "linear-gradient(135deg, #0C0815 0%, #130d20 50%, #0C0815 100%)", fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif", display: "flex", flexDirection: "column", padding: "60px 72px", overflow: "hidden", position: "relative" }}>
+      {/* Violet glow in corner */}
+      <div style={{ position: "absolute", top: -100, right: -100, width: 400, height: 400, borderRadius: "50%", background: `radial-gradient(circle, ${accent}08 0%, transparent 70%)` }} />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 48 }}>
+        <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: 3, color: accent, textTransform: "uppercase" }}>{author.handle}</span>
+        <span style={{ fontSize: 16, color: "#3a2a5a" }}>{String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
+      </div>
+      {card.tag && (
+        <p style={{ fontSize: 14, fontWeight: 700, color: accent, letterSpacing: 3, textTransform: "uppercase", margin: "0 0 24px", opacity: 0.7 }}>{card.tag}</p>
+      )}
+      <h1 style={{ fontSize: 74, fontWeight: 900, color: "#EDE8F5", lineHeight: 1.08, margin: "0 0 36px", letterSpacing: -2 }}>
+        {card.headline || "Título do card"}
+      </h1>
+      <div style={{ width: 70, height: 3, background: `linear-gradient(to right, ${accent}, transparent)`, borderRadius: 2, marginBottom: 32, boxShadow: `0 0 16px ${accent}44` }} />
+      {card.imageUrl && (
+        <div style={{ borderRadius: 14, overflow: "hidden", marginBottom: 32, maxHeight: 360, boxShadow: `0 8px 32px rgba(0,0,0,.5), 0 0 0 1px ${accent}15` }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={card.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        </div>
+      )}
+      {card.body && (
+        <p style={{ fontSize: 28, color: "#8a7a9a", lineHeight: 1.65, margin: "0 0 auto" }}>{card.body}</p>
+      )}
+      <div style={{ flex: 1 }} />
+      <span style={{ fontSize: 15, color: "#3a2a5a", letterSpacing: 2 }}>
+        {index + 1 < total ? "CONTINUA →" : (card.cta || "GUARDA ESTE CONTEÚDO")}
+      </span>
+    </div>
+  );
+}
+
+function TemplateEclipseRose({ card, author, index, total }: { card: CardData; author: AuthorData; index: number; total: number }) {
+  const accent = "#F43F5E";
+  return (
+    <div style={{ width: 1080, height: 1080, background: "#100A0C", fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif", display: "flex", flexDirection: "column", padding: "60px 72px", overflow: "hidden", position: "relative" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 56 }}>
+        <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: 3, color: "#5a3a40", textTransform: "uppercase" }}>{author.handle}</span>
+        <span style={{ fontSize: 16, color: "#3a2a2e" }}>{String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
+      </div>
+      {card.tag && (
+        <p style={{ fontSize: 14, fontWeight: 700, color: accent, letterSpacing: 3, textTransform: "uppercase", margin: "0 0 20px", opacity: 0.7 }}>{card.tag}</p>
+      )}
+      <h1 style={{ fontSize: 82, fontWeight: 900, color: "#F5E8EA", lineHeight: 1.05, margin: "0 0 16px", letterSpacing: -2 }}>
+        {card.headline || "Título do card"}
+      </h1>
+      {/* Rose accent underline */}
+      <div style={{ width: 100, height: 4, background: accent, borderRadius: 2, marginBottom: 36, boxShadow: `0 0 14px ${accent}55` }} />
+      {card.imageUrl && (
+        <div style={{ borderRadius: 14, overflow: "hidden", marginBottom: 32, maxHeight: 360, boxShadow: "0 8px 32px rgba(0,0,0,.5)" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={card.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        </div>
+      )}
+      {card.body && (
+        <p style={{ fontSize: 28, color: "#8a6a70", lineHeight: 1.65, margin: "0 0 auto" }}>{card.body}</p>
+      )}
+      <div style={{ flex: 1 }} />
+      <span style={{ fontSize: 15, color: "#3a2a2e", letterSpacing: 2 }}>
+        {index + 1 < total ? "CONTINUA →" : (card.cta || "GUARDA ESTE CONTEÚDO")}
+      </span>
+    </div>
+  );
+}
+
+function TemplateStealthEmerald({ card, author, index, total }: { card: CardData; author: AuthorData; index: number; total: number }) {
+  const accent = "#10B981";
+  return (
+    <div style={{ width: 1080, height: 1080, background: "#080F0D", fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 100px", textAlign: "center", position: "relative", overflow: "hidden" }}>
+      <span style={{ position: "absolute", top: 48, right: 56, fontSize: 16, color: "#1a3a2a", fontFamily: "'Inter', sans-serif" }}>{String(index + 1).padStart(2, "0")}</span>
+      {card.tag && (
+        <p style={{ fontSize: 13, fontWeight: 700, color: accent, letterSpacing: 6, textTransform: "uppercase", margin: "0 0 40px", opacity: 0.6 }}>{card.tag}</p>
+      )}
+      <h1 style={{ fontSize: 68, fontWeight: 800, color: "#E8F5F0", lineHeight: 1.12, margin: "0 0 40px", letterSpacing: 2 }}>
+        {card.headline || "Título do card"}
+      </h1>
+      <div style={{ width: 40, height: 2, background: accent, borderRadius: 1, marginBottom: 36 }} />
+      {card.body && (
+        <p style={{ fontSize: 26, color: "#5a7a6a", lineHeight: 1.75, fontWeight: 400, margin: 0, maxWidth: 780, letterSpacing: 0.5 }}>
+          {card.body}
+        </p>
+      )}
+      <div style={{ position: "absolute", bottom: 48, fontSize: 13, color: "#1a3a2a", letterSpacing: 4, textTransform: "uppercase" }}>
+        {card.cta || (index + 1 < total ? "CONTINUA →" : author.handle)}
+      </div>
+    </div>
+  );
+}
+
+function TemplateCrimsonNoir({ card, author, index, total }: { card: CardData; author: AuthorData; index: number; total: number }) {
+  const accent = "#EF4444";
+  return (
+    <div style={{ width: 1080, height: 1080, background: "#0F0808", fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif", display: "flex", flexDirection: "column", padding: "60px 72px", overflow: "hidden", position: "relative" }}>
+      {/* Red glow top-right */}
+      <div style={{ position: "absolute", top: -80, right: -80, width: 350, height: 350, borderRadius: "50%", background: `radial-gradient(circle, ${accent}0a 0%, transparent 70%)` }} />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 48 }}>
+        <span style={{ fontSize: 13, fontWeight: 900, letterSpacing: 4, color: accent, textTransform: "uppercase" }}>{author.handle}</span>
+        <span style={{ fontSize: 16, color: "#3a2020" }}>{String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
+      </div>
+      {card.tag && (
+        <p style={{ fontSize: 15, fontWeight: 900, color: accent, letterSpacing: 4, textTransform: "uppercase", margin: "0 0 24px", textShadow: `0 0 12px ${accent}44` }}>{card.tag}</p>
+      )}
+      <h1 style={{ fontSize: 78, fontWeight: 900, color: "#F5E8E8", lineHeight: 1.05, margin: "0 0 32px", letterSpacing: -1, textTransform: "uppercase" }}>
+        {card.headline || "TÍTULO DO CARD"}
+      </h1>
+      <div style={{ width: 80, height: 4, background: accent, borderRadius: 2, marginBottom: 32, boxShadow: `0 0 20px ${accent}55, 0 0 6px ${accent}33` }} />
+      {card.imageUrl && (
+        <div style={{ borderRadius: 10, overflow: "hidden", marginBottom: 32, maxHeight: 360, boxShadow: `0 8px 32px rgba(0,0,0,.5), 0 0 0 1px ${accent}15` }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={card.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        </div>
+      )}
+      {card.body && (
+        <p style={{ fontSize: 28, color: "#7a5050", lineHeight: 1.65, margin: "0 0 auto" }}>{card.body}</p>
+      )}
+      <div style={{ flex: 1 }} />
+      <span style={{ fontSize: 15, fontWeight: 800, color: "#3a2020", letterSpacing: 3, textTransform: "uppercase" }}>
+        {index + 1 < total ? "CONTINUA →" : (card.cta || "GUARDA ESTE CONTEÚDO")}
+      </span>
+    </div>
+  );
+}
+
+function TemplateArcticFrost({ card, author, index, total }: { card: CardData; author: AuthorData; index: number; total: number }) {
+  const accent = "#38BDF8";
+  return (
+    <div style={{ width: 1080, height: 1080, background: "#0A1018", fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif", display: "flex", flexDirection: "column", padding: "60px 72px", overflow: "hidden", position: "relative" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 48 }}>
+        <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: 3, color: accent, textTransform: "uppercase" }}>{author.handle}</span>
+        <span style={{ fontSize: 16, color: "#2a3a4a" }}>{String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
+      </div>
+      {card.tag && (
+        <div style={{ marginBottom: 24 }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: accent, letterSpacing: 3, textTransform: "uppercase", background: `${accent}10`, border: `1px solid ${accent}22`, padding: "8px 18px", borderRadius: 8 }}>{card.tag}</span>
+        </div>
+      )}
+      <h1 style={{ fontSize: 72, fontWeight: 900, color: "#E8F0F8", lineHeight: 1.08, margin: "0 0 32px", letterSpacing: -2 }}>
+        {card.headline || "Título do card"}
+      </h1>
+      {/* Glassmorphism content panel */}
+      <div style={{ background: "rgba(56,189,248,0.04)", border: `1px solid ${accent}18`, borderRadius: 16, padding: "32px 36px", marginBottom: 28 }}>
+        {card.body && (
+          <p style={{ fontSize: 28, color: "#7aa0b8", lineHeight: 1.65, margin: 0 }}>{card.body}</p>
+        )}
+      </div>
+      {card.imageUrl && (
+        <div style={{ borderRadius: 12, overflow: "hidden", marginBottom: 28, maxHeight: 320, boxShadow: "0 8px 32px rgba(0,0,0,.4)" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={card.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        </div>
+      )}
+      <div style={{ flex: 1 }} />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 32, borderTop: `1px solid ${accent}15` }}>
+        <span style={{ fontSize: 15, fontWeight: 700, color: accent, letterSpacing: 1 }}>{author.nome}</span>
+        <span style={{ fontSize: 14, color: "#2a3a4a", letterSpacing: 2 }}>
+          {index + 1 < total ? "CONTINUA →" : (card.cta || "GUARDA ESTE CONTEÚDO")}
         </span>
       </div>
     </div>
@@ -305,6 +617,14 @@ function renderCard(c: CardData, author: AuthorData, templateId: TemplateId, i: 
     case "dark-minimal":      return <TemplateDarkMinimal {...props} />;
     case "dark-brand":        return <TemplateDarkBrand {...props} />;
     case "thread":            return <TemplateThread {...props} />;
+    case "nocturne-cyan":     return <TemplateNocturneCyan {...props} />;
+    case "obsidian-gold":     return <TemplateObsidianGold {...props} />;
+    case "carbon-blue":       return <TemplateCarbonBlue {...props} />;
+    case "midnight-violet":   return <TemplateMidnightViolet {...props} />;
+    case "eclipse-rose":      return <TemplateEclipseRose {...props} />;
+    case "stealth-emerald":   return <TemplateStealthEmerald {...props} />;
+    case "crimson-noir":      return <TemplateCrimsonNoir {...props} />;
+    case "arctic-frost":      return <TemplateArcticFrost {...props} />;
   }
 }
 
@@ -598,8 +918,9 @@ export default function DesignEditor() {
               </p>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))", gap: 14, marginBottom: 40 }}>
-              {TEMPLATES.map(t => (
+            {/* Standard templates */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))", gap: 14, marginBottom: 20 }}>
+              {TEMPLATES.filter(t => !["nocturne-cyan","obsidian-gold","carbon-blue","midnight-violet","eclipse-rose","stealth-emerald","crimson-noir","arctic-frost"].includes(t.id)).map(t => (
                 <button
                   key={t.id}
                   onClick={() => setTemplateId(t.id)}
@@ -617,6 +938,39 @@ export default function DesignEditor() {
                   </div>
                   <div style={{ padding: "10px 14px", background: templateId === t.id ? "#0d1a00" : "#0d1218" }}>
                     <p style={{ fontSize: 13, fontWeight: 700, color: templateId === t.id ? "#BFD64B" : "#F0ECE4", margin: 0 }}>{t.nome}</p>
+                    <p style={{ fontSize: 11, color: "#4a5568", margin: "3px 0 0" }}>{t.descricao}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Premium separator */}
+            <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "8px 0 20px" }}>
+              <div style={{ flex: 1, height: 1, background: "linear-gradient(to right, transparent, #BFD64B55, transparent)" }} />
+              <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: 3, color: "#BFD64B", textTransform: "uppercase" }}>Premium</span>
+              <div style={{ flex: 1, height: 1, background: "linear-gradient(to right, transparent, #BFD64B55, transparent)" }} />
+            </div>
+
+            {/* Premium templates */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))", gap: 14, marginBottom: 40 }}>
+              {TEMPLATES.filter(t => ["nocturne-cyan","obsidian-gold","carbon-blue","midnight-violet","eclipse-rose","stealth-emerald","crimson-noir","arctic-frost"].includes(t.id)).map(t => (
+                <button
+                  key={t.id}
+                  onClick={() => setTemplateId(t.id)}
+                  style={{
+                    background: "#111827", border: templateId === t.id ? `2px solid ${t.accentSample}` : "2px solid #1a2035",
+                    borderRadius: 14, padding: 0, cursor: "pointer", overflow: "hidden", textAlign: "left",
+                    transform: templateId === t.id ? "scale(1.02)" : "scale(1)", transition: "all 0.15s",
+                  }}
+                >
+                  <div style={{ height: 120, background: t.bgColor, position: "relative", overflow: "hidden" }}>
+                    <TemplateThumbnail tmpl={t} />
+                    {templateId === t.id && (
+                      <div style={{ position: "absolute", top: 8, right: 8, background: t.accentSample, borderRadius: "50%", width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: t.bgColor }}>✓</div>
+                    )}
+                  </div>
+                  <div style={{ padding: "10px 14px", background: templateId === t.id ? "#0d1218" : "#0d1218" }}>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: templateId === t.id ? t.accentSample : "#F0ECE4", margin: 0 }}>{t.nome}</p>
                     <p style={{ fontSize: 11, color: "#4a5568", margin: "3px 0 0" }}>{t.descricao}</p>
                   </div>
                 </button>
@@ -705,6 +1059,7 @@ export default function DesignEditor() {
                 <label style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#4a5568", display: "block", marginBottom: 8 }}>AVATAR (OPCIONAL · template Thread)</label>
                 {author.avatarUrl ? (
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={author.avatarUrl} alt="" style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "cover" }} />
                     <button onClick={() => setAuthor(p => ({ ...p, avatarUrl: "" }))} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", fontSize: 13 }}>Remover</button>
                   </div>

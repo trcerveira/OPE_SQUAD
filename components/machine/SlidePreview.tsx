@@ -55,9 +55,13 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: `0 ${P}px`, fontSize: 14, fontWeight: 600,
           letterSpacing: 1.2, color: c, zIndex: 10,
+          background: isDark
+            ? "linear-gradient(to bottom, rgba(0,0,0,.4) 0%, transparent 100%)"
+            : "linear-gradient(to bottom, rgba(255,255,255,.5) 0%, transparent 100%)",
+          borderBottom: `1px solid ${isDark ? "rgba(255,255,255,.06)" : "rgba(0,0,0,.06)"}`,
         }}>
           <span>Powered by OPB Crew</span>
-          <span style={{ fontWeight: 700 }}>{brandShort}</span>
+          <span style={{ fontWeight: 800, color: corDestaque }}>{brandShort}</span>
           <span>{dateLabel}</span>
         </div>
       );
@@ -80,6 +84,7 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
         position: "absolute", top, left: P,
         width, height: 4, borderRadius: 2,
         backgroundColor: corDestaque,
+        boxShadow: `0 0 12px ${corDestaque}66, 0 0 4px ${corDestaque}33`,
       }} />
     );
 
@@ -92,6 +97,7 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
           backgroundSize: "cover",
           backgroundPosition: "center",
           borderRadius: 16,
+          boxShadow: "0 8px 32px rgba(0,0,0,.25), 0 2px 8px rgba(0,0,0,.15)",
           ...style,
         }} />
       );
@@ -113,29 +119,39 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
           )}
           <div style={{
             position: "absolute", inset: 0,
-            background: "linear-gradient(to top, rgba(0,0,0,.92) 30%, rgba(0,0,0,.25) 65%, rgba(0,0,0,.55) 100%)",
+            background: "linear-gradient(to top, rgba(0,0,0,.95) 20%, rgba(0,0,0,.7) 45%, rgba(0,0,0,.3) 70%, rgba(0,0,0,.6) 100%)",
           }} />
           {headerBar("rgba(255,255,255,.35)")}
 
-          {/* Tag pill */}
+          {/* Tag pill with glow */}
           {t(1) && (
             <div style={{
-              position: "absolute", bottom: 360, left: P,
+              position: "absolute", bottom: 370, left: P,
               display: "inline-block",
               padding: "10px 22px", borderRadius: 6,
               backgroundColor: corDestaque,
               fontSize: 17, fontWeight: 800, letterSpacing: 2.5,
               color: corTexto, textTransform: "uppercase",
+              boxShadow: `0 0 20px ${corDestaque}44, 0 4px 12px rgba(0,0,0,.3)`,
             }}>
               {t(1)}
             </div>
           )}
+
+          {/* Accent line decorative */}
+          <div style={{
+            position: "absolute", bottom: 340, left: P,
+            width: 60, height: 3, borderRadius: 2,
+            backgroundColor: corDestaque,
+            boxShadow: `0 0 10px ${corDestaque}55`,
+          }} />
 
           {/* Main cover title */}
           <div style={{
             position: "absolute", bottom: 80, left: P, right: P,
             fontFamily: serif, fontSize: 80, fontWeight: 700,
             lineHeight: 1.08, color: "#fff", letterSpacing: -0.5,
+            textShadow: "0 2px 20px rgba(0,0,0,.5)",
           }}>
             {t(2) || "TITULO DO CARROSSEL"}
           </div>
@@ -485,7 +501,7 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
           )}
           <div style={{
             position: "absolute", inset: 0,
-            background: `linear-gradient(to top, ${corTexto} 50%, rgba(0,0,0,.35) 100%)`,
+            background: `linear-gradient(to top, ${corTexto} 45%, rgba(0,0,0,.5) 75%, rgba(0,0,0,.35) 100%)`,
           }} />
           {headerBar("rgba(255,255,255,.3)")}
 
@@ -495,23 +511,26 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
             transform: "translateY(-50%)", textAlign: "center",
           }}>
             <div style={{
-              fontFamily: serif, fontSize: 42, fontWeight: 700,
+              fontFamily: serif, fontSize: 46, fontWeight: 700,
               color: "#fff", lineHeight: 1.4, marginBottom: 40,
+              textShadow: "0 2px 16px rgba(0,0,0,.4)",
             }}>
               {t(18) || "Guarda este carrossel para mais tarde."}
             </div>
 
-            {/* Glassmorphism card */}
+            {/* Glassmorphism card — upgraded */}
             <div style={{
               display: "inline-block",
-              padding: "22px 48px", borderRadius: 14,
-              backgroundColor: "rgba(255,255,255,.1)",
-              border: "1px solid rgba(255,255,255,.15)",
+              padding: "26px 56px", borderRadius: 16,
+              backgroundColor: "rgba(255,255,255,.08)",
+              border: "1px solid rgba(255,255,255,.18)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,.1), 0 8px 32px rgba(0,0,0,.3)",
             }}>
               <div style={{
-                fontSize: 20, fontWeight: 800,
+                fontSize: 22, fontWeight: 800,
                 color: corDestaque, letterSpacing: 3,
                 textTransform: "uppercase",
+                textShadow: `0 0 16px ${corDestaque}44`,
               }}>
                 {brandShort}
               </div>
@@ -525,12 +544,13 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
             </div>
           </div>
 
-          {/* Bottom brand bar */}
+          {/* Bottom brand bar — gradient + glow */}
           <div style={{
             position: "absolute", bottom: 0, left: 0, right: 0, height: 52,
-            backgroundColor: corDestaque,
+            background: `linear-gradient(135deg, ${corDestaque} 0%, ${corDestaque}dd 100%)`,
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: 15, fontWeight: 800, letterSpacing: 3, color: corTexto,
+            boxShadow: `0 -4px 20px ${corDestaque}33`,
           }}>
             {brandName}
           </div>

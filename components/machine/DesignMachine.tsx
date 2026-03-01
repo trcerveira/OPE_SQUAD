@@ -33,6 +33,17 @@ const PALETAS_BASE: Palette[] = [
   { id: "dark",        nome: "Dark",        cores: ["#0B0F17", "#BFD64B", "#F0ECE4"] },
 ];
 
+const PALETAS_PREMIUM: Palette[] = [
+  { id: "nocturne-cyan",    nome: "Nocturne Cyan",    cores: ["#0B1017", "#7DE8EB", "#E8ECF0"] },
+  { id: "obsidian-gold",    nome: "Obsidian Gold",    cores: ["#0C0A07", "#D4A853", "#F5F0E8"] },
+  { id: "carbon-blue",      nome: "Carbon Blue",      cores: ["#0A0F1A", "#3B82F6", "#E2E8F0"] },
+  { id: "midnight-violet",  nome: "Midnight Violet",  cores: ["#0C0815", "#A855F7", "#EDE8F5"] },
+  { id: "eclipse-rose",     nome: "Eclipse Rose",     cores: ["#100A0C", "#F43F5E", "#F5E8EA"] },
+  { id: "stealth-emerald",  nome: "Stealth Emerald",  cores: ["#080F0D", "#10B981", "#E8F5F0"] },
+  { id: "crimson-noir",     nome: "Crimson Noir",     cores: ["#0F0808", "#EF4444", "#F5E8E8"] },
+  { id: "arctic-frost",     nome: "Arctic Frost",     cores: ["#0A1018", "#38BDF8", "#E8F0F8"] },
+];
+
 const PASSOS = ["Conteúdo", "Imagens", "Cores", "Exportar"];
 
 function isValidHex(hex: string): boolean {
@@ -70,6 +81,8 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
         ...PALETAS_BASE,
       ]
     : PALETAS_BASE;
+
+  const allPremium: Palette[] = PALETAS_PREMIUM;
 
   // Default palette: brand colors if available, otherwise first base palette
   const [paleta, setPaleta] = useState<Palette>(allPaletas[0]);
@@ -116,18 +129,13 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
       const data = await res.json();
       const generatedTexts = data.textos as string;
       const keywords = data.keywords as string[];
-      const imagePrompts = data.imagePrompts as string[] | undefined;
-
       // Fill textarea + parse texts
       setTextoRaw(generatedTexts);
       const mapa = parseTextos(generatedTexts);
       setTextos(mapa);
 
-      // Auto-generate AI images via Pollinations (free, no API key)
-      if (imagePrompts && imagePrompts.length > 0) {
-        autoGenerateAIImages(imagePrompts);
-      } else if (keywords && keywords.length > 0) {
-        // Fallback: search Unsplash with keywords
+      // Always fetch Unsplash images first (fast & reliable)
+      if (keywords && keywords.length > 0) {
         autoFetchImages(keywords);
       }
 
@@ -137,19 +145,6 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
       setErroGerar("Connection error. Check if the server is running.");
     }
     setGerando(false);
-  };
-
-  // Auto-generate AI images via Pollinations.ai (free, no API key needed)
-  const autoGenerateAIImages = (prompts: string[]) => {
-    const aiImagens: Record<number, string> = {};
-    const seed = Math.floor(Math.random() * 999999);
-    prompts.forEach((prompt, i) => {
-      if (i < 9 && prompt) {
-        const encoded = encodeURIComponent(prompt.trim());
-        aiImagens[i + 1] = `https://image.pollinations.ai/prompt/${encoded}?width=1080&height=1350&model=flux&nologo=true&seed=${seed + i}`;
-      }
-    });
-    setImagens(aiImagens);
   };
 
   // Auto-fetch Unsplash images based on AI keywords
@@ -504,6 +499,58 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
             {/* Pre-defined palettes (includes brand if available) */}
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
               {allPaletas.map(p => (
+                <button
+                  key={p.id}
+                  onClick={() => activarPaletaBase(p)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "14px 16px",
+                    borderRadius: 12,
+                    border: `2px solid ${!usarCustom && paleta.id === p.id ? "var(--accent)" : "var(--surface)"}`,
+                    background: !usarCustom && paleta.id === p.id ? "var(--surface)" : "transparent",
+                    cursor: "pointer",
+                    color: "var(--text)",
+                  }}
+                >
+                  <span style={{ fontWeight: 600, fontSize: 14 }}>
+                    {p.nome}
+                  </span>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    {p.cores.map((cor, i) => (
+                      <div
+                        key={i}
+                        title={cor}
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: "50%",
+                          backgroundColor: cor,
+                          border: "1px solid rgba(255,255,255,.15)",
+                        }}
+                      />
+                    ))}
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Premium palettes separator */}
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              margin: "8px 0 16px",
+            }}>
+              <div style={{ flex: 1, height: 1, background: "linear-gradient(to right, transparent, var(--accent), transparent)" }} />
+              <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: 3, color: "var(--accent)", textTransform: "uppercase" }}>Premium</span>
+              <div style={{ flex: 1, height: 1, background: "linear-gradient(to right, transparent, var(--accent), transparent)" }} />
+            </div>
+
+            {/* Premium palettes */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
+              {allPremium.map(p => (
                 <button
                   key={p.id}
                   onClick={() => activarPaletaBase(p)}
