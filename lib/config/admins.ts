@@ -31,6 +31,7 @@ export const BETA_USERS: string[] = parseEmailList(
     "geral@arm-lda.com",
     "cleciofwise@hotmail.com",
     "bruno@pulsifyai.com",
+    "coachdavid.method25@gmail.com",
   ]
 );
 
