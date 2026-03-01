@@ -116,14 +116,18 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
       const data = await res.json();
       const generatedTexts = data.textos as string;
       const keywords = data.keywords as string[];
+      const imagePrompts = data.imagePrompts as string[] | undefined;
 
       // Fill textarea + parse texts
       setTextoRaw(generatedTexts);
       const mapa = parseTextos(generatedTexts);
       setTextos(mapa);
 
-      // Auto-search images with returned keywords
-      if (keywords && keywords.length > 0) {
+      // Auto-generate AI images via Pollinations (free, no API key)
+      if (imagePrompts && imagePrompts.length > 0) {
+        autoGenerateAIImages(imagePrompts);
+      } else if (keywords && keywords.length > 0) {
+        // Fallback: search Unsplash with keywords
         autoFetchImages(keywords);
       }
 
@@ -133,6 +137,19 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
       setErroGerar("Connection error. Check if the server is running.");
     }
     setGerando(false);
+  };
+
+  // Auto-generate AI images via Pollinations.ai (free, no API key needed)
+  const autoGenerateAIImages = (prompts: string[]) => {
+    const aiImagens: Record<number, string> = {};
+    const seed = Math.floor(Math.random() * 999999);
+    prompts.forEach((prompt, i) => {
+      if (i < 9 && prompt) {
+        const encoded = encodeURIComponent(prompt.trim());
+        aiImagens[i + 1] = `https://image.pollinations.ai/prompt/${encoded}?width=1080&height=1350&model=flux&nologo=true&seed=${seed + i}`;
+      }
+    });
+    setImagens(aiImagens);
   };
 
   // Auto-fetch Unsplash images based on AI keywords

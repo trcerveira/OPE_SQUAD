@@ -115,11 +115,32 @@ REGRAS ABSOLUTAS:
 FORMATO DE RESPOSTA — JSON exacto:
 {
   "textos": "texto 1 - ...\ntexto 2 - ...\n...\ntexto 18 - ...",
-  "keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"]
+  "keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
+  "imagePrompts": [
+    "slide 1 image description in English",
+    "slide 2 image description in English",
+    "slide 3 image description in English",
+    "slide 4 image description in English",
+    "slide 5 image description in English",
+    "slide 6 image description in English",
+    "slide 7 image description in English",
+    "slide 8 image description in English",
+    "slide 9 image description in English"
+  ]
 }
 
 O campo "textos" tem EXACTAMENTE 18 linhas no formato "texto N - conteudo".
 O campo "keywords" tem 5 palavras-chave em ingles para pesquisa de imagens no Unsplash (relacionadas com o tema).
+O campo "imagePrompts" tem EXACTAMENTE 9 descricoes em INGLES para gerar imagens com AI, uma por slide.
+
+REGRAS PARA imagePrompts:
+- Slide 1 (cover): imagem dramatica, cinematica, escura, relacionada ao tema. Sem texto na imagem.
+- Slides impares (3,5,7): imagens mood/atmosfericas, tons escuros, abstractas ou metaforicas.
+- Slides pares (2,4,6,8): imagens profissionais, tons claros, concretas e realistas.
+- Slide 9 (CTA): imagem inspiracional, cinematica, ampla.
+- TODAS as descricoes devem ser especificas ao tema do carrossel.
+- Cada prompt deve ter 15-25 palavras, estilo "professional photography, cinematic lighting, [descricao]".
+- NUNCA incluir texto, letras ou palavras na descricao da imagem.
 
 Responde APENAS com JSON valido. Sem texto antes ou depois.`;
 
@@ -130,7 +151,7 @@ Responde APENAS com JSON valido. Sem texto antes ou depois.`;
 
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 2048,
+      max_tokens: 3000,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
     });
@@ -148,7 +169,7 @@ Responde APENAS com JSON valido. Sem texto antes ou depois.`;
       jsonText = jsonText.slice(jsonStart, jsonEnd + 1);
     }
 
-    const parsed = JSON.parse(jsonText) as { textos: string; keywords: string[] };
+    const parsed = JSON.parse(jsonText) as { textos: string; keywords: string[]; imagePrompts?: string[] };
     const tokens = message.usage.input_tokens + message.usage.output_tokens;
 
     // Audit log (non-blocking)
@@ -161,6 +182,7 @@ Responde APENAS com JSON valido. Sem texto antes ou depois.`;
     return NextResponse.json({
       textos: parsed.textos,
       keywords: parsed.keywords ?? [],
+      imagePrompts: parsed.imagePrompts ?? [],
       tokens,
     });
   } catch (error) {

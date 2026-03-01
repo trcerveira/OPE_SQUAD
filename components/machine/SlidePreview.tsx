@@ -17,48 +17,89 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
     const img = (n: number) => imagens[n] || "";
     const [corFundo, corDestaque, corTexto] = paleta.cores;
 
-    // Short brand name for the CTA badge (without " · POWERED BY IA")
     const brandShort = brandName.includes(" · ") ? brandName.split(" · ")[0] : brandName;
-
     const slide = slideIndex + 1;
 
-    // Shared base styles
+    // Alternating: odd=dark, even=light
+    const isDark = slide % 2 === 1;
+    const bgColor = isDark ? corTexto : corFundo;
+    const txtColor = isDark ? corFundo : corTexto;
+    const mutedTxt = isDark ? "rgba(255,255,255,.55)" : "rgba(0,0,0,.45)";
+
+    // Date for header
+    const now = new Date();
+    const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    const dateLabel = `${months[now.getMonth()]} ${now.getFullYear()}`;
+
+    // ── Design tokens (research-based) ─────────────────────────────────────
+    const P = 60; // safe zone padding
+    const serif = "Georgia, 'Times New Roman', serif";
+    const sans = "'Inter', 'Helvetica Neue', Arial, sans-serif";
+
     const base: React.CSSProperties = {
       width: 1080,
       height: 1350,
       position: "relative",
       overflow: "hidden",
-      fontFamily: "'Inter', 'Helvetica Neue', sans-serif",
+      fontFamily: sans,
+      backgroundColor: bgColor,
     };
 
-    const numTag: React.CSSProperties = {
-      position: "absolute",
-      top: 40,
-      left: 48,
-      fontSize: 22,
-      fontWeight: 700,
-      color: corTexto,
-      opacity: 0.4,
-      letterSpacing: 2,
+    // ── Header bar (top of every slide) ────────────────────────────────────
+    const headerBar = (color?: string) => {
+      const c = color || (isDark ? "rgba(255,255,255,.35)" : "rgba(0,0,0,.3)");
+      return (
+        <div style={{
+          position: "absolute", top: 0, left: 0, right: 0, height: 52,
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: `0 ${P}px`, fontSize: 14, fontWeight: 600,
+          letterSpacing: 1.2, color: c, zIndex: 10,
+        }}>
+          <span>Powered by OPB Crew</span>
+          <span style={{ fontWeight: 700 }}>{brandShort}</span>
+          <span>{dateLabel}</span>
+        </div>
+      );
     };
 
-    const brandBar: React.CSSProperties = {
-      position: "absolute",
-      bottom: 0,
-      left: 0,
-      right: 0,
-      height: 52,
-      backgroundColor: corDestaque,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontSize: 16,
-      fontWeight: 800,
-      letterSpacing: 3,
-      color: corFundo,
+    // ── Swipe indicator ">>" ───────────────────────────────────────────────
+    const swipe = () => slide === 9 ? null : (
+      <div style={{
+        position: "absolute", bottom: 28, right: P,
+        fontSize: 26, fontWeight: 800, color: corDestaque,
+        letterSpacing: -2, zIndex: 10, opacity: 0.8,
+      }}>
+        {">>"}
+      </div>
+    );
+
+    // ── Accent line separator ─────────────────────────────────────────────
+    const accentLine = (top: number, width = 70) => (
+      <div style={{
+        position: "absolute", top, left: P,
+        width, height: 4, borderRadius: 2,
+        backgroundColor: corDestaque,
+      }} />
+    );
+
+    // ── Rounded image ─────────────────────────────────────────────────────
+    const rImg = (src: string, style: React.CSSProperties) => {
+      if (!src) return null;
+      return (
+        <div style={{
+          backgroundImage: `url(${src})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          borderRadius: 16,
+          ...style,
+        }} />
+      );
     };
 
-    // ── Slide 01 — Cover ──────────────────────────────────────────────────
+    // ════════════════════════════════════════════════════════════════════════
+    // SLIDE 01 — COVER (DARK)
+    // ════════════════════════════════════════════════════════════════════════
     if (slide === 1) {
       return (
         <div ref={ref} style={{ ...base, backgroundColor: corTexto }}>
@@ -66,392 +107,371 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
             <div style={{
               position: "absolute", inset: 0,
               backgroundImage: `url(${img(1)})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              opacity: 0.55,
-            }} />
-          )}
-          <div style={{
-            position: "absolute", inset: 0,
-            background: "linear-gradient(to top, rgba(0,0,0,.9) 40%, rgba(0,0,0,.2) 100%)",
-          }} />
-          <div style={{ ...numTag, color: "#fff" }}>01</div>
-          {t(1) && (
-            <div style={{
-              position: "absolute",
-              top: 80,
-              left: 0, right: 0,
-              textAlign: "center",
-              fontSize: 20,
-              fontWeight: 600,
-              color: "rgba(255,255,255,.7)",
-              letterSpacing: 1,
-              padding: "0 60px",
-            }}>
-              {t(1).toUpperCase()}
-            </div>
-          )}
-          <div style={{
-            position: "absolute",
-            bottom: 100,
-            left: 48,
-            right: 48,
-            fontSize: 88,
-            fontWeight: 900,
-            lineHeight: 1.0,
-            color: "#fff",
-            textTransform: "uppercase",
-            letterSpacing: -1,
-          }}>
-            {t(2) || "TÍTULO DO CARROSSEL"}
-          </div>
-          <div style={{ ...brandBar }}>{brandName}</div>
-        </div>
-      );
-    }
-
-    // ── Slide 02 — Headline accent ───────────────────────────────────────
-    if (slide === 2) {
-      return (
-        <div ref={ref} style={{ ...base, backgroundColor: corDestaque }}>
-          <div style={{ ...numTag, color: corFundo, opacity: 0.5 }}>02</div>
-          {img(2) && (
-            <div style={{
-              position: "absolute",
-              right: 0, top: 0, bottom: 52,
-              width: "45%",
-              backgroundImage: `url(${img(2)})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }} />
-          )}
-          <div style={{
-            position: "absolute",
-            top: 100,
-            left: 48,
-            right: img(2) ? "50%" : 48,
-            fontSize: 76,
-            fontWeight: 900,
-            lineHeight: 1.05,
-            color: corFundo,
-            textTransform: "uppercase",
-            letterSpacing: -1,
-          }}>
-            {t(3) || "HEADLINE DO SLIDE"}
-          </div>
-          {t(4) && (
-            <div style={{
-              position: "absolute",
-              bottom: 100,
-              left: 48,
-              right: img(2) ? "50%" : 48,
-              fontSize: 26,
-              lineHeight: 1.6,
-              color: corFundo,
-              opacity: 0.85,
-            }}>
-              {t(4)}
-            </div>
-          )}
-          <div style={{ ...brandBar, backgroundColor: corTexto, color: corFundo }}>
-            {brandName}
-          </div>
-        </div>
-      );
-    }
-
-    // ── Slide 03 — Body + image ─────────────────────────────────────────
-    if (slide === 3) {
-      return (
-        <div ref={ref} style={{ ...base, backgroundColor: corFundo }}>
-          <div style={{ ...numTag, color: corTexto }}>03</div>
-          {img(3) && (
-            <div style={{
-              position: "absolute",
-              top: 0, left: 0, right: 0,
-              height: "45%",
-              backgroundImage: `url(${img(3)})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center top",
-            }} />
-          )}
-          <div style={{
-            position: "absolute",
-            top: img(3) ? "46%" : 120,
-            left: 48,
-            width: 16, height: 16,
-            borderRadius: "50%",
-            backgroundColor: corDestaque,
-          }} />
-          <div style={{
-            position: "absolute",
-            top: img(3) ? "48%" : 150,
-            left: 48, right: 48,
-            bottom: 80,
-            display: "flex",
-            flexDirection: "column",
-            gap: 20,
-          }}>
-            {t(5) && (
-              <p style={{ margin: 0, fontSize: 28, lineHeight: 1.65, color: corTexto, fontWeight: 500 }}>
-                {t(5)}
-              </p>
-            )}
-            {t(6) && (
-              <p style={{ margin: 0, fontSize: 28, lineHeight: 1.65, color: corTexto, opacity: 0.8 }}>
-                {t(6)}
-              </p>
-            )}
-          </div>
-          <div style={{ ...brandBar, backgroundColor: corDestaque, color: corFundo }}>
-            {brandName}
-          </div>
-        </div>
-      );
-    }
-
-    // ── Slide 04 — Big headline over image ───────────────────────────────
-    if (slide === 4) {
-      return (
-        <div ref={ref} style={{ ...base, backgroundColor: corTexto }}>
-          {img(4) && (
-            <div style={{
-              position: "absolute", inset: 0,
-              backgroundImage: `url(${img(4)})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
+              backgroundSize: "cover", backgroundPosition: "center",
               opacity: 0.45,
             }} />
           )}
           <div style={{
             position: "absolute", inset: 0,
-            background: `linear-gradient(to bottom, transparent 20%, ${corTexto} 75%)`,
+            background: "linear-gradient(to top, rgba(0,0,0,.92) 30%, rgba(0,0,0,.25) 65%, rgba(0,0,0,.55) 100%)",
           }} />
-          <div style={{ ...numTag, color: "#fff" }}>04</div>
+          {headerBar("rgba(255,255,255,.35)")}
+
+          {/* Tag pill */}
+          {t(1) && (
+            <div style={{
+              position: "absolute", bottom: 360, left: P,
+              display: "inline-block",
+              padding: "10px 22px", borderRadius: 6,
+              backgroundColor: corDestaque,
+              fontSize: 17, fontWeight: 800, letterSpacing: 2.5,
+              color: corTexto, textTransform: "uppercase",
+            }}>
+              {t(1)}
+            </div>
+          )}
+
+          {/* Main cover title */}
+          <div style={{
+            position: "absolute", bottom: 80, left: P, right: P,
+            fontFamily: serif, fontSize: 80, fontWeight: 700,
+            lineHeight: 1.08, color: "#fff", letterSpacing: -0.5,
+          }}>
+            {t(2) || "TITULO DO CARROSSEL"}
+          </div>
+
+          {swipe()}
+        </div>
+      );
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // SLIDE 02 — INTRO / PROBLEM (LIGHT)
+    // ════════════════════════════════════════════════════════════════════════
+    if (slide === 2) {
+      const hasImg = !!img(2);
+      return (
+        <div ref={ref} style={base}>
+          {headerBar()}
+
+          {/* Headline */}
+          <div style={{
+            position: "absolute", top: 76, left: P, right: hasImg ? 480 : P,
+            fontFamily: serif, fontSize: 52, fontWeight: 700,
+            lineHeight: 1.22, color: txtColor, letterSpacing: -0.5,
+          }}>
+            {t(3) || "HEADLINE DO SLIDE"}
+          </div>
+
+          {accentLine(hasImg ? 460 : 400)}
+
+          {/* Body */}
+          {t(4) && (
+            <div style={{
+              position: "absolute",
+              top: hasImg ? 490 : 430, left: P, right: hasImg ? 480 : P,
+              fontFamily: sans, fontSize: 30, lineHeight: 1.55,
+              color: mutedTxt,
+            }}>
+              {t(4)}
+            </div>
+          )}
+
+          {/* Image */}
+          {hasImg && rImg(img(2), {
+            position: "absolute", top: 76, right: P,
+            width: 390, bottom: 76,
+          })}
+
+          {swipe()}
+        </div>
+      );
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // SLIDE 03 — CONTENT A (DARK)
+    // ════════════════════════════════════════════════════════════════════════
+    if (slide === 3) {
+      const hasImg = !!img(3);
+      return (
+        <div ref={ref} style={base}>
+          {headerBar()}
+
+          {/* Main text */}
+          <div style={{
+            position: "absolute", top: 76, left: P, right: P,
+            fontFamily: serif, fontSize: 46, fontWeight: 700,
+            lineHeight: 1.3, color: txtColor, letterSpacing: -0.3,
+          }}>
+            {t(5) || "Primeiro insight concreto e accionavel."}
+          </div>
+
+          {/* Secondary text */}
+          {t(6) && (
+            <div style={{
+              position: "absolute",
+              top: hasImg ? 400 : 440,
+              left: P, right: P,
+              fontSize: 28, lineHeight: 1.6, color: mutedTxt,
+            }}>
+              {t(6)}
+            </div>
+          )}
+
+          {/* Image — bottom */}
+          {hasImg && rImg(img(3), {
+            position: "absolute",
+            bottom: P, left: P, right: P, height: 460,
+          })}
+
+          {!hasImg && accentLine(420)}
+
+          {swipe()}
+        </div>
+      );
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // SLIDE 04 — IMPACT (LIGHT)
+    // ════════════════════════════════════════════════════════════════════════
+    if (slide === 4) {
+      const hasImg = !!img(4);
+      return (
+        <div ref={ref} style={base}>
+          {headerBar()}
+
+          {/* Image — top */}
+          {hasImg && rImg(img(4), {
+            position: "absolute",
+            top: 68, left: P, right: P, height: 500,
+          })}
+
+          {accentLine(hasImg ? 590 : 76)}
+
+          {/* Impact headline */}
           <div style={{
             position: "absolute",
-            bottom: 100,
-            left: 48, right: 48,
-            fontSize: 86,
-            fontWeight: 900,
-            lineHeight: 1.0,
-            color: corDestaque,
-            textTransform: "uppercase",
-            letterSpacing: -1,
+            top: hasImg ? 610 : 100,
+            left: P, right: P,
+            fontFamily: serif, fontSize: 58, fontWeight: 700,
+            lineHeight: 1.18, color: txtColor, letterSpacing: -0.5,
           }}>
-            {t(7) || "HEADLINE IMPACTO"}
+            {t(7) || "HEADLINE DE IMPACTO"}
           </div>
+
+          {/* Body */}
           {t(8) && (
             <div style={{
-              position: "absolute",
-              bottom: 80,
-              left: 48, right: 48,
-              fontSize: 0,
-            }} />
+              position: "absolute", bottom: 76, left: P, right: P,
+              fontSize: 28, lineHeight: 1.55, color: mutedTxt,
+            }}>
+              {t(8)}
+            </div>
           )}
-          <div style={{ ...brandBar, backgroundColor: corDestaque, color: corFundo }}>
-            {brandName}
-          </div>
+
+          {swipe()}
         </div>
       );
     }
 
-    // ── Slide 05 — Body with side image ──────────────────────────────────
+    // ════════════════════════════════════════════════════════════════════════
+    // SLIDE 05 — CONTENT B (DARK)
+    // ════════════════════════════════════════════════════════════════════════
     if (slide === 5) {
+      const hasImg = !!img(5);
       return (
-        <div ref={ref} style={{ ...base, backgroundColor: corFundo }}>
-          <div style={{ ...numTag, color: corTexto }}>05</div>
-          {img(5) && (
+        <div ref={ref} style={base}>
+          {headerBar()}
+
+          {/* Headline */}
+          <div style={{
+            position: "absolute", top: 76, left: P,
+            right: hasImg ? 480 : P,
+            fontFamily: serif, fontSize: 44, fontWeight: 700,
+            lineHeight: 1.3, color: txtColor, letterSpacing: -0.3,
+          }}>
+            {t(9) || "Segundo insight, mais profundo."}
+          </div>
+
+          {!hasImg && accentLine(420)}
+
+          {/* Body */}
+          {t(10) && (
             <div style={{
               position: "absolute",
-              top: 80, right: 0,
-              width: "40%",
-              bottom: 80,
-              backgroundImage: `url(${img(5)})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              borderRadius: "24px 0 0 24px",
-            }} />
+              bottom: 76, left: P, right: hasImg ? 480 : P,
+              fontSize: 28, lineHeight: 1.55, color: mutedTxt,
+            }}>
+              {t(10)}
+            </div>
           )}
-          <div style={{
-            position: "absolute",
-            top: 140,
-            left: 48,
-            width: 16, height: 16,
-            borderRadius: "50%",
-            backgroundColor: corDestaque,
-          }} />
-          <div style={{
-            position: "absolute",
-            top: 170,
-            left: 48,
-            right: img(5) ? "44%" : 48,
-            bottom: 80,
-            display: "flex",
-            flexDirection: "column",
-            gap: 28,
-          }}>
-            {t(9) && (
-              <p style={{ margin: 0, fontSize: 30, lineHeight: 1.6, color: corTexto, fontWeight: 500 }}>
-                {t(9)}
-              </p>
-            )}
-            {t(10) && (
-              <p style={{ margin: 0, fontSize: 28, lineHeight: 1.6, color: corTexto, opacity: 0.8 }}>
-                {t(10)}
-              </p>
-            )}
-          </div>
-          <div style={{ ...brandBar, backgroundColor: corDestaque, color: corFundo }}>
-            {brandName}
-          </div>
+
+          {/* Image — right side */}
+          {hasImg && rImg(img(5), {
+            position: "absolute", top: 76, right: P,
+            width: 390, bottom: 76,
+          })}
+
+          {swipe()}
         </div>
       );
     }
 
-    // ── Slide 06 — Dark + Bold ────────────────────────────────────────────
+    // ════════════════════════════════════════════════════════════════════════
+    // SLIDE 06 — GOLDEN NUGGET (LIGHT)
+    // ════════════════════════════════════════════════════════════════════════
     if (slide === 6) {
+      const hasImg = !!img(6);
       return (
-        <div ref={ref} style={{ ...base, backgroundColor: corTexto }}>
-          {img(6) && (
-            <div style={{
-              position: "absolute",
-              right: 0, top: 0, bottom: 52,
-              width: "42%",
-              backgroundImage: `url(${img(6)})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              opacity: 0.7,
-            }} />
-          )}
-          <div style={{ ...numTag, color: "#fff" }}>06</div>
+        <div ref={ref} style={base}>
+          {headerBar()}
+
+          {/* THE golden nugget headline */}
           <div style={{
-            position: "absolute",
-            top: 100,
-            left: 48,
-            right: img(6) ? "46%" : 48,
-            fontSize: 78,
-            fontWeight: 900,
-            lineHeight: 1.05,
-            color: corDestaque,
-            textTransform: "uppercase",
-            letterSpacing: -1,
+            position: "absolute", top: 76, left: P,
+            right: hasImg ? 480 : P,
+            fontFamily: serif, fontSize: 56, fontWeight: 700,
+            lineHeight: 1.2, color: txtColor, letterSpacing: -0.5,
           }}>
-            {t(11) || "SCALE RULES EVERYTHING."}
+            {t(11) || "O INSIGHT MAIS VALIOSO."}
           </div>
+
+          {accentLine(hasImg ? 460 : 440)}
+
+          {/* Body */}
           {t(12) && (
             <div style={{
               position: "absolute",
-              bottom: 100,
-              left: 48,
-              right: img(6) ? "46%" : 48,
-              fontSize: 24,
-              lineHeight: 1.7,
-              color: "#fff",
-              opacity: 0.75,
+              top: hasImg ? 490 : 470,
+              left: P, right: hasImg ? 480 : P,
+              fontFamily: serif, fontSize: 28,
+              lineHeight: 1.65, color: mutedTxt,
             }}>
               {t(12)}
             </div>
           )}
-          <div style={{ ...brandBar }}>{brandName}</div>
+
+          {/* Image — right */}
+          {hasImg && rImg(img(6), {
+            position: "absolute", top: 76, right: P,
+            width: 390, bottom: 76,
+          })}
+
+          {swipe()}
         </div>
       );
     }
 
-    // ── Slide 07 — Headline + background image ──────────────────────────
+    // ════════════════════════════════════════════════════════════════════════
+    // SLIDE 07 — TRANSFORMATION (DARK)
+    // ════════════════════════════════════════════════════════════════════════
     if (slide === 7) {
+      const hasImg = !!img(7);
       return (
-        <div ref={ref} style={{ ...base, backgroundColor: corFundo }}>
-          {img(7) && (
-            <div style={{
-              position: "absolute",
-              top: 0, left: 0, right: 0,
-              height: "55%",
-              backgroundImage: `url(${img(7)})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }} />
-          )}
-          <div style={{ ...numTag, color: "#fff" }}>07</div>
+        <div ref={ref} style={base}>
+          {headerBar()}
+
+          {/* Image — top */}
+          {hasImg && rImg(img(7), {
+            position: "absolute",
+            top: 68, left: P, right: P, height: 500,
+          })}
+
+          {/* Transformation headline in accent color */}
           <div style={{
             position: "absolute",
-            top: img(7) ? "52%" : 100,
-            left: 48, right: 48,
-            fontSize: 74,
-            fontWeight: 900,
-            lineHeight: 1.05,
-            color: corDestaque,
-            textTransform: "uppercase",
-            letterSpacing: -1,
+            top: hasImg ? 600 : 100,
+            left: P, right: P,
+            fontFamily: serif, fontSize: 54, fontWeight: 700,
+            lineHeight: 1.2, color: corDestaque, letterSpacing: -0.5,
           }}>
-            {t(13) || "GROWTH BECAME A DUTY."}
+            {t(13) || "O QUE MUDA QUANDO APLICAS ISTO."}
           </div>
+
+          {/* Body */}
           {t(14) && (
             <div style={{
-              position: "absolute",
-              bottom: 100,
-              left: 48, right: 48,
-              fontSize: 26,
-              lineHeight: 1.65,
-              color: corTexto,
-              opacity: 0.85,
+              position: "absolute", bottom: 76, left: P, right: P,
+              fontSize: 28, lineHeight: 1.55, color: mutedTxt,
             }}>
               {t(14)}
             </div>
           )}
-          <div style={{ ...brandBar, backgroundColor: corDestaque, color: corFundo }}>
-            {brandName}
-          </div>
+
+          {swipe()}
         </div>
       );
     }
 
-    // ── Slide 08 — Long body ─────────────────────────────────────────────
+    // ════════════════════════════════════════════════════════════════════════
+    // SLIDE 08 — SUMMARY (LIGHT)
+    // ════════════════════════════════════════════════════════════════════════
     if (slide === 8) {
+      const hasImg = !!img(8);
       return (
-        <div ref={ref} style={{ ...base, backgroundColor: corFundo }}>
-          <div style={{ ...numTag, color: corTexto }}>08</div>
-          {img(8) && (
-            <div style={{
-              position: "absolute",
-              top: 80, right: 0,
-              width: "38%", bottom: 80,
-              backgroundImage: `url(${img(8)})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              borderRadius: "24px 0 0 24px",
-            }} />
-          )}
+        <div ref={ref} style={base}>
+          {headerBar()}
+
           <div style={{
             position: "absolute",
-            top: 100,
-            left: 48,
-            right: img(8) ? "42%" : 48,
-            bottom: 80,
-            display: "flex",
-            flexDirection: "column",
-            gap: 22,
+            top: 76, left: P,
+            right: hasImg ? 440 : P,
+            bottom: 76,
+            display: "flex", flexDirection: "column", gap: 28,
           }}>
-            {[t(15), t(16), t(17)].filter(Boolean).map((texto, i) => (
-              <p key={i} style={{
-                margin: 0,
-                fontSize: 26,
-                lineHeight: 1.7,
-                color: corTexto,
-                opacity: i === 0 ? 1 : 0.8,
+            {/* P1 — serif, large */}
+            {t(15) && (
+              <p style={{
+                margin: 0, fontFamily: serif,
+                fontSize: 38, fontWeight: 700, lineHeight: 1.3,
+                color: txtColor,
               }}>
-                {texto}
+                {t(15)}
               </p>
-            ))}
+            )}
+
+            {/* Accent separator */}
+            <div style={{
+              width: 60, height: 4, borderRadius: 2,
+              backgroundColor: corDestaque, flexShrink: 0,
+            }} />
+
+            {/* P2 — sans, muted */}
+            {t(16) && (
+              <p style={{
+                margin: 0, fontSize: 27, lineHeight: 1.55,
+                color: mutedTxt,
+              }}>
+                {t(16)}
+              </p>
+            )}
+
+            {/* P3 — serif, bold closing */}
+            {t(17) && (
+              <p style={{
+                margin: 0, fontFamily: serif,
+                fontSize: 30, fontWeight: 700, lineHeight: 1.4,
+                color: txtColor,
+              }}>
+                {t(17)}
+              </p>
+            )}
           </div>
-          <div style={{ ...brandBar, backgroundColor: corDestaque, color: corFundo }}>
-            {brandName}
-          </div>
+
+          {/* Image — right */}
+          {hasImg && rImg(img(8), {
+            position: "absolute", top: 76, right: P,
+            width: 360, bottom: 76,
+          })}
+
+          {swipe()}
         </div>
       );
     }
 
-    // ── Slide 09 — Final CTA ─────────────────────────────────────────────
+    // ════════════════════════════════════════════════════════════════════════
+    // SLIDE 09 — CTA FINAL (DARK)
+    // ════════════════════════════════════════════════════════════════════════
     if (slide === 9) {
       return (
         <div ref={ref} style={{ ...base, backgroundColor: corTexto }}>
@@ -459,44 +479,61 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
             <div style={{
               position: "absolute", inset: 0,
               backgroundImage: `url(${img(9)})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              opacity: 0.4,
+              backgroundSize: "cover", backgroundPosition: "center",
+              opacity: 0.3,
             }} />
           )}
           <div style={{
             position: "absolute", inset: 0,
-            background: `linear-gradient(to top, ${corTexto} 50%, transparent 100%)`,
+            background: `linear-gradient(to top, ${corTexto} 50%, rgba(0,0,0,.35) 100%)`,
           }} />
+          {headerBar("rgba(255,255,255,.3)")}
+
+          {/* CTA centered */}
           <div style={{
-            position: "absolute",
-            bottom: 120,
-            left: 48, right: 48,
-            textAlign: "center",
+            position: "absolute", top: "50%", left: P, right: P,
+            transform: "translateY(-50%)", textAlign: "center",
           }}>
             <div style={{
-              fontSize: 32,
-              fontWeight: 800,
-              color: "#fff",
-              lineHeight: 1.5,
-              marginBottom: 16,
+              fontFamily: serif, fontSize: 42, fontWeight: 700,
+              color: "#fff", lineHeight: 1.4, marginBottom: 40,
             }}>
-              {t(18) || "Produzido com ajuda de Inteligência Artificial."}
+              {t(18) || "Guarda este carrossel para mais tarde."}
             </div>
+
+            {/* Glassmorphism card */}
             <div style={{
               display: "inline-block",
-              padding: "10px 28px",
-              borderRadius: 999,
-              backgroundColor: corDestaque,
-              color: corFundo,
-              fontSize: 20,
-              fontWeight: 800,
-              letterSpacing: 2,
+              padding: "22px 48px", borderRadius: 14,
+              backgroundColor: "rgba(255,255,255,.1)",
+              border: "1px solid rgba(255,255,255,.15)",
             }}>
-              {brandShort}
+              <div style={{
+                fontSize: 20, fontWeight: 800,
+                color: corDestaque, letterSpacing: 3,
+                textTransform: "uppercase",
+              }}>
+                {brandShort}
+              </div>
+            </div>
+
+            <div style={{
+              marginTop: 28, fontSize: 15,
+              color: "rgba(255,255,255,.3)", letterSpacing: 0.5,
+            }}>
+              Produzido com ajuda de Inteligencia Artificial
             </div>
           </div>
-          <div style={{ ...brandBar }}>{brandName}</div>
+
+          {/* Bottom brand bar */}
+          <div style={{
+            position: "absolute", bottom: 0, left: 0, right: 0, height: 52,
+            backgroundColor: corDestaque,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 15, fontWeight: 800, letterSpacing: 3, color: corTexto,
+          }}>
+            {brandName}
+          </div>
         </div>
       );
     }
