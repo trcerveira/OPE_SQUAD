@@ -8,17 +8,21 @@ interface Props {
   textos: Record<number, string>;
   imagens: Record<number, string>;
   paleta: Palette;
+  brandName?: string;
 }
 
 const SlidePreview = forwardRef<HTMLDivElement, Props>(
-  ({ slideIndex, textos, imagens, paleta }, ref) => {
+  ({ slideIndex, textos, imagens, paleta, brandName = "OPB CREW · POWERED BY IA" }, ref) => {
     const t = (n: number) => textos[n] || "";
     const img = (n: number) => imagens[n] || "";
     const [corFundo, corDestaque, corTexto] = paleta.cores;
 
+    // Short brand name for the CTA badge (without " · POWERED BY IA")
+    const brandShort = brandName.includes(" · ") ? brandName.split(" · ")[0] : brandName;
+
     const slide = slideIndex + 1;
 
-    // Estilos base partilhados
+    // Shared base styles
     const base: React.CSSProperties = {
       width: 1080,
       height: 1350,
@@ -58,7 +62,6 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
     if (slide === 1) {
       return (
         <div ref={ref} style={{ ...base, backgroundColor: corTexto }}>
-          {/* Imagem de fundo */}
           {img(1) && (
             <div style={{
               position: "absolute", inset: 0,
@@ -68,14 +71,11 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
               opacity: 0.55,
             }} />
           )}
-          {/* Overlay gradiente */}
           <div style={{
             position: "absolute", inset: 0,
             background: "linear-gradient(to top, rgba(0,0,0,.9) 40%, rgba(0,0,0,.2) 100%)",
           }} />
-          {/* Número */}
           <div style={{ ...numTag, color: "#fff" }}>01</div>
-          {/* Tag line */}
           {t(1) && (
             <div style={{
               position: "absolute",
@@ -91,7 +91,6 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
               {t(1).toUpperCase()}
             </div>
           )}
-          {/* Título principal */}
           <div style={{
             position: "absolute",
             bottom: 100,
@@ -106,13 +105,12 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
           }}>
             {t(2) || "TÍTULO DO CARROSSEL"}
           </div>
-          {/* Barra de marca */}
-          <div style={{ ...brandBar }}>OPE SQUAD · POWERED BY IA</div>
+          <div style={{ ...brandBar }}>{brandName}</div>
         </div>
       );
     }
 
-    // ── Slide 02 — Headline laranja ───────────────────────────────────────
+    // ── Slide 02 — Headline accent ───────────────────────────────────────
     if (slide === 2) {
       return (
         <div ref={ref} style={{ ...base, backgroundColor: corDestaque }}>
@@ -156,13 +154,13 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
             </div>
           )}
           <div style={{ ...brandBar, backgroundColor: corTexto, color: corFundo }}>
-            OPE SQUAD · POWERED BY IA
+            {brandName}
           </div>
         </div>
       );
     }
 
-    // ── Slide 03 — Corpo + imagem ─────────────────────────────────────────
+    // ── Slide 03 — Body + image ─────────────────────────────────────────
     if (slide === 3) {
       return (
         <div ref={ref} style={{ ...base, backgroundColor: corFundo }}>
@@ -177,7 +175,6 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
               backgroundPosition: "center top",
             }} />
           )}
-          {/* Ponto laranja */}
           <div style={{
             position: "absolute",
             top: img(3) ? "46%" : 120,
@@ -207,13 +204,13 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
             )}
           </div>
           <div style={{ ...brandBar, backgroundColor: corDestaque, color: corFundo }}>
-            OPE SQUAD · POWERED BY IA
+            {brandName}
           </div>
         </div>
       );
     }
 
-    // ── Slide 04 — Grande headline sobre imagem ───────────────────────────
+    // ── Slide 04 — Big headline over image ───────────────────────────────
     if (slide === 4) {
       return (
         <div ref={ref} style={{ ...base, backgroundColor: corTexto }}>
@@ -249,17 +246,17 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
               position: "absolute",
               bottom: 80,
               left: 48, right: 48,
-              fontSize: 0, // escondido por baixo do título — no template original é separado
+              fontSize: 0,
             }} />
           )}
           <div style={{ ...brandBar, backgroundColor: corDestaque, color: corFundo }}>
-            OPE SQUAD · POWERED BY IA
+            {brandName}
           </div>
         </div>
       );
     }
 
-    // ── Slide 05 — Corpo com imagem lateral ───────────────────────────────
+    // ── Slide 05 — Body with side image ──────────────────────────────────
     if (slide === 5) {
       return (
         <div ref={ref} style={{ ...base, backgroundColor: corFundo }}>
@@ -276,7 +273,6 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
               borderRadius: "24px 0 0 24px",
             }} />
           )}
-          {/* Ponto laranja */}
           <div style={{
             position: "absolute",
             top: 140,
@@ -307,7 +303,7 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
             )}
           </div>
           <div style={{ ...brandBar, backgroundColor: corDestaque, color: corFundo }}>
-            OPE SQUAD · POWERED BY IA
+            {brandName}
           </div>
         </div>
       );
@@ -357,12 +353,12 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
               {t(12)}
             </div>
           )}
-          <div style={{ ...brandBar }}>OPE SQUAD · POWERED BY IA</div>
+          <div style={{ ...brandBar }}>{brandName}</div>
         </div>
       );
     }
 
-    // ── Slide 07 — Headline + imagem de fundo ─────────────────────────────
+    // ── Slide 07 — Headline + background image ──────────────────────────
     if (slide === 7) {
       return (
         <div ref={ref} style={{ ...base, backgroundColor: corFundo }}>
@@ -404,13 +400,13 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
             </div>
           )}
           <div style={{ ...brandBar, backgroundColor: corDestaque, color: corFundo }}>
-            OPE SQUAD · POWERED BY IA
+            {brandName}
           </div>
         </div>
       );
     }
 
-    // ── Slide 08 — Corpo longo ────────────────────────────────────────────
+    // ── Slide 08 — Long body ─────────────────────────────────────────────
     if (slide === 8) {
       return (
         <div ref={ref} style={{ ...base, backgroundColor: corFundo }}>
@@ -449,13 +445,13 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
             ))}
           </div>
           <div style={{ ...brandBar, backgroundColor: corDestaque, color: corFundo }}>
-            OPE SQUAD · POWERED BY IA
+            {brandName}
           </div>
         </div>
       );
     }
 
-    // ── Slide 09 — CTA final ──────────────────────────────────────────────
+    // ── Slide 09 — Final CTA ─────────────────────────────────────────────
     if (slide === 9) {
       return (
         <div ref={ref} style={{ ...base, backgroundColor: corTexto }}>
@@ -497,10 +493,10 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
               fontWeight: 800,
               letterSpacing: 2,
             }}>
-              OPE SQUAD
+              {brandShort}
             </div>
           </div>
-          <div style={{ ...brandBar }}>OPE SQUAD · POWERED BY IA</div>
+          <div style={{ ...brandBar }}>{brandName}</div>
         </div>
       );
     }

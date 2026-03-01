@@ -13,7 +13,8 @@ export type AuditAction =
   | "editorial.generate"
   | "calendario.generate"
   | "profile.update"
-  | "viral_research.generate";
+  | "viral_research.generate"
+  | "carousel.generate";
 
 interface AuditEntry {
   userId: string;
