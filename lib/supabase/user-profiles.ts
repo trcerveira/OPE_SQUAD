@@ -120,6 +120,77 @@ export async function saveManifestoAnswers(
   }
 }
 
+// Reads the full voice profile from Supabase (source of truth)
+// Returns vozDNA, geniusProfile, manifestoAnswers or null if not found.
+export async function getVoiceProfile(userId: string): Promise<{
+  vozDNA: Record<string, unknown> | null;
+  geniusProfile: Record<string, unknown> | null;
+  manifestoAnswers: Record<string, string> | null;
+} | null> {
+  const supabase = createServerClient();
+
+  try {
+    const { data } = await supabase
+      .from("user_voice_profiles")
+      .select("voz_dna, genius_profile, manifesto_answers")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (!data) return null;
+
+    return {
+      vozDNA:            data.voz_dna ?? null,
+      geniusProfile:     data.genius_profile ?? null,
+      manifestoAnswers:  data.manifesto_answers ?? null,
+    };
+  } catch (error) {
+    console.error("Error reading voice profile from Supabase:", error);
+    return null;
+  }
+}
+
+// Saves a backup of geniusProfile to the user_voice_profiles table (migration 009)
+// Called from the client-side GeniusAssessment via /api/voice-profile PUT
+export async function saveGeniusProfile(
+  userId: string,
+  geniusProfile: Record<string, unknown>
+): Promise<void> {
+  const supabase = createServerClient();
+
+  try {
+    // Ensure the user_profiles row exists first (FK constraint)
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("user_id")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (!profile) {
+      console.warn("saveGeniusProfile: user_profiles row not found for", userId);
+      return;
+    }
+
+    // Upsert with version increment
+    const { data: existing } = await supabase
+      .from("user_voice_profiles")
+      .select("genius_version")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    await supabase.from("user_voice_profiles").upsert(
+      {
+        user_id:        userId,
+        genius_profile: geniusProfile,
+        genius_version: (existing?.genius_version ?? 0) + 1,
+        updated_at:     new Date().toISOString(),
+      },
+      { onConflict: "user_id" }
+    );
+  } catch (error) {
+    console.error("Error saving geniusProfile to Supabase:", error);
+  }
+}
+
 // Reads the user's real progress from Supabase (source of truth for APIs)
 export async function getUserProgress(userId: string): Promise<{
   geniusComplete: boolean;

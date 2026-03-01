@@ -1,6 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { saveVoiceProfile } from "@/lib/supabase/user-profiles";
+import { logAudit } from "@/lib/supabase/audit";
 
 // API that generates the brand voice DNA based on the solopreneur's 8 answers
 
@@ -135,13 +137,24 @@ Agora cria o DNA de Voz completo de ${nome} em JSON.`;
     }
 
     const parsed = JSON.parse(jsonText);
+    const tokens = message.usage.input_tokens + message.usage.output_tokens;
+
+    // Fire-and-forget: persist vozDNA to Supabase (source of truth)
+    // Does not block the response — if Supabase fails, Clerk still has it
+    saveVoiceProfile(userId, parsed).catch((err) =>
+      console.error("Fire-and-forget saveVoiceProfile failed:", err)
+    );
+
+    // Audit log (non-blocking)
+    logAudit({ userId, action: "voz_dna.generate", metadata: { tokens } });
 
     return NextResponse.json({
       dna: parsed,
-      tokens: message.usage.input_tokens + message.usage.output_tokens,
+      tokens,
     });
   } catch (error) {
     console.error("Error generating voice DNA:", error);
+    logAudit({ userId, action: "voz_dna.generate", success: false, errorMsg: String(error) });
     return NextResponse.json(
       { error: "Error generating DNA. Please try again." },
       { status: 500 }

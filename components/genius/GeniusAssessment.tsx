@@ -673,6 +673,7 @@ export default function GeniusAssessment() {
         setProfile(calculated);
 
         if (user) {
+          // Save to Clerk (redundancy/backup)
           user.update({
             unsafeMetadata: {
               ...user.unsafeMetadata,
@@ -680,6 +681,15 @@ export default function GeniusAssessment() {
               geniusComplete: true,
             },
           }).catch(console.error);
+
+          // Fire-and-forget: persist to Supabase (source of truth)
+          fetch("/api/voice-profile", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ geniusProfile: calculated }),
+          }).catch((err) =>
+            console.error("Fire-and-forget saveGeniusProfile failed:", err)
+          );
         }
 
         setTimeout(() => setPhase("results"), 800);
