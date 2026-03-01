@@ -179,7 +179,7 @@ export default function UnsplashPicker({ imagens, onChange, onNext }: Props) {
             fontSize: 13,
             marginBottom: 12,
           }}>
-            ⚠️ {erro}
+            {erro}
           </div>
         )}
 
@@ -292,7 +292,7 @@ export default function UnsplashPicker({ imagens, onChange, onNext }: Props) {
                   color: "var(--accent)",
                 }}
               >
-                ✓ Aplicar {selecionadas.length} foto(s) a partir do slide {multiUploadSlide}
+                Aplicar {selecionadas.length} foto(s) a partir do slide {multiUploadSlide}
               </button>
             )}
           </div>
@@ -358,7 +358,7 @@ export default function UnsplashPicker({ imagens, onChange, onNext }: Props) {
           </button>
           {totalAplicadas > 0 && (
             <span style={{ fontSize: 12, color: "#4ade80" }}>
-              ✓ {totalAplicadas} imagem(ns) carregada(s)
+              {totalAplicadas} imagem(ns) carregada(s)
             </span>
           )}
         </div>
@@ -457,7 +457,7 @@ export default function UnsplashPicker({ imagens, onChange, onNext }: Props) {
             color: "var(--bg)",
           }}
         >
-          {totalAplicadas > 0 ? `Continuar com ${totalAplicadas} imagem(ns) →` : "Continuar sem imagens →"}
+          {totalAplicadas > 0 ? `Continuar com ${totalAplicadas} imagem(ns) ->` : "Continuar sem imagens ->"}
         </button>
       </div>
     </div>

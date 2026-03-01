@@ -7,8 +7,8 @@ export default async function MachinePage() {
   const user = await currentUser();
 
   let brandName = user?.firstName
-    ? `${user.firstName.toUpperCase()} · POWERED BY IA`
-    : "OPB CREW · POWERED BY IA";
+    ? `${user.firstName.toUpperCase()} · POWERED BY OPB CREW`
+    : "COACH TEO · POWERED BY OPB CREW";
 
   let brandColors: [string, string, string] | null = null;
 
@@ -26,7 +26,7 @@ export default async function MachinePage() {
       }
 
       if (data?.name) {
-        brandName = `${data.name.toUpperCase()} · POWERED BY IA`;
+        brandName = `${data.name.toUpperCase()} · POWERED BY OPB CREW`;
       }
     } catch {
       // Non-blocking — use defaults

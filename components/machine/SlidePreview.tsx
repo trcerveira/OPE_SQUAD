@@ -12,7 +12,7 @@ interface Props {
 }
 
 const SlidePreview = forwardRef<HTMLDivElement, Props>(
-  ({ slideIndex, textos, imagens, paleta, brandName = "OPB CREW · POWERED BY IA" }, ref) => {
+  ({ slideIndex, textos, imagens, paleta, brandName = "COACH TEO · POWERED BY OPB CREW" }, ref) => {
     const t = (n: number) => textos[n] || "";
     const img = (n: number) => imagens[n] || "";
     const [corFundo, corDestaque, corTexto] = paleta.cores;

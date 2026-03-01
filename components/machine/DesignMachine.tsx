@@ -41,7 +41,7 @@ function isValidHex(hex: string): boolean {
 
 // ── Main component ───────────────────────────────────────────────────────────
 
-export default function DesignMachine({ brandName = "OPB CREW · POWERED BY IA", brandColors }: DesignMachineProps) {
+export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB CREW", brandColors }: DesignMachineProps) {
   const [passo, setPasso] = useState(0);
   const [textoRaw, setTextoRaw] = useState("");
   const [textos, setTextos] = useState<Record<number, string>>({});
@@ -343,7 +343,6 @@ export default function DesignMachine({ brandName = "OPB CREW · POWERED BY IA",
                   alignItems: "center",
                   gap: 8,
                 }}>
-                  <span style={{ animation: "spin 1s linear infinite", display: "inline-block" }}>⏳</span>
                   A gerar 18 textos + imagens... (10-20 segundos)
                 </div>
               )}
@@ -504,7 +503,7 @@ export default function DesignMachine({ brandName = "OPB CREW · POWERED BY IA",
                   }}
                 >
                   <span style={{ fontWeight: 600, fontSize: 14 }}>
-                    {p.id === "marca" ? "⭐ " : ""}{p.nome}
+                    {p.nome}
                   </span>
                   <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                     {p.cores.map((cor, i) => (

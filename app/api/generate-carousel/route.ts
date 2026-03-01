@@ -68,33 +68,49 @@ VOCABULARIO PROIBIDO: ${Array.isArray(clerkDNA.vocabularioProibido) ? clerkDNA.v
 MISSAO: Gerar exactamente 18 textos para um carrossel de 9 slides na voz de ${authorName}.
 ${vozDNASection}
 
-ESTRUTURA DO CARROSSEL (9 slides, 18 textos):
-- texto 1: Tag/subtitulo do cover (curto, 3-6 palavras, em maiusculas)
-- texto 2: Titulo principal do cover (impactante, 4-8 palavras, em maiusculas)
-- texto 3: Headline slide 2 (bold, directo, em maiusculas)
-- texto 4: Corpo slide 2 (1-2 frases explicativas)
-- texto 5: Corpo slide 3 paragrafo 1 (insight ou ponto principal)
-- texto 6: Corpo slide 3 paragrafo 2 (desenvolvimento)
-- texto 7: Headline slide 4 (frase de impacto, em maiusculas)
-- texto 8: Corpo slide 4 (pode estar escondido no template - manter curto)
-- texto 9: Corpo slide 5 paragrafo 1 (insight concreto)
-- texto 10: Corpo slide 5 paragrafo 2 (desenvolvimento)
-- texto 11: Headline slide 6 (bold, provocador, em maiusculas)
-- texto 12: Corpo slide 6 (1-2 frases)
-- texto 13: Headline slide 7 (em maiusculas)
-- texto 14: Corpo slide 7 (1-2 frases)
-- texto 15: Corpo slide 8 paragrafo 1 (insight)
-- texto 16: Corpo slide 8 paragrafo 2 (desenvolvimento)
-- texto 17: Corpo slide 8 paragrafo 3 (conclusao do ponto)
-- texto 18: CTA final (frase de chamada a accao + credito)
+ALGORITMO DO INSTAGRAM (confirmado por Adam Mosseri, CEO do Instagram, Janeiro 2025):
+Os 3 sinais que determinam se o carrossel chega a novas pessoas:
+1. WATCH TIME — o sinal #1. Cada slide tem de ganhar o direito de o utilizador passar para o proximo. O cover decide TUDO.
+2. SENDS PER REACH (DM Shares) — o sinal mais poderoso para alcance nao-seguidores. Cria conteudo que alguem quer enviar a um amigo. Isto vale 3-5x mais que likes.
+3. LIKES PER REACH — engagement genuino. Quanto mais likes por pessoa alcancada, melhor.
 
-REGRAS:
+REGRAS DO ALGORITMO PARA CARROSSEIS:
+- O cover (slide 1) tem 1.7 segundos para parar o scroll — usa contradição, numero concreto ou pergunta incomoda
+- Cada slide deve criar uma micro-tensao que puxa para o proximo (retencao = watch time)
+- O ultimo slide DEVE ter um CTA que gere DM shares: "Envia a alguem que [situacao]" ou "Guarda isto para quando [momento]"
+- ZERO emojis em todo o carrossel — texto limpo, profissional
+- Sem watermarks, sem conteudo reciclado — originalidade e o que o algoritmo premeia
+- Conteudo que provoca "eu preciso de enviar isto a alguem" = viral
+
+ESTRUTURA DO CARROSSEL (9 slides, 18 textos):
+- texto 1: Tag/subtitulo do cover (curto, 3-6 palavras, em maiusculas — cria contexto)
+- texto 2: Titulo principal do cover (HOOK que para o scroll em 1.7s, 4-8 palavras, em maiusculas)
+- texto 3: Headline slide 2 (bold, directo, em maiusculas — promessa do que vao aprender)
+- texto 4: Corpo slide 2 (1-2 frases — agita o problema com as palavras do leitor)
+- texto 5: Corpo slide 3 paragrafo 1 (primeiro insight concreto e accionavel)
+- texto 6: Corpo slide 3 paragrafo 2 (desenvolvimento com especificidade)
+- texto 7: Headline slide 4 (frase de impacto em maiusculas — virada ou contra-intuitivo)
+- texto 8: Corpo slide 4 (manter curto, complementa o headline)
+- texto 9: Corpo slide 5 paragrafo 1 (segundo insight, mais profundo)
+- texto 10: Corpo slide 5 paragrafo 2 (exemplo concreto ou prova)
+- texto 11: Headline slide 6 (bold, provocador, em maiusculas — o golden nugget)
+- texto 12: Corpo slide 6 (o insight mais valioso do carrossel, shareable)
+- texto 13: Headline slide 7 (em maiusculas — consequencia ou transformacao)
+- texto 14: Corpo slide 7 (1-2 frases — antes vs depois ou resultado)
+- texto 15: Corpo slide 8 paragrafo 1 (sintese — o que muda quando aplicas isto)
+- texto 16: Corpo slide 8 paragrafo 2 (reforco emocional)
+- texto 17: Corpo slide 8 paragrafo 3 (frase final do argumento)
+- texto 18: CTA final que GERA DM SHARES (ex: "Envia a alguem que precisa de ouvir isto" ou "Guarda para reler quando [situacao]")
+
+REGRAS ABSOLUTAS:
 1. Escreve em Portugues europeu, na voz de ${authorName}
 2. Headlines em MAIUSCULAS, corpo em minusculas normais
-3. Cada texto deve ser conciso e impactante
-4. O carrossel deve contar uma historia progressiva sobre o tema
-5. O CTA final deve ser natural, nao forcado
-6. NUNCA inventes dados, numeros ou provas sociais falsas
+3. ZERO emojis — nenhum emoji em nenhum texto
+4. Cada slide deve criar tensao para o proximo (retencao maximiza watch time)
+5. O carrossel conta uma historia progressiva — nao e uma lista, e uma narrativa
+6. Especificidade vence generalidade: "perder 8kg em 8 semanas" > "ficar em forma"
+7. O CTA final deve provocar DM shares — e o sinal mais valioso do algoritmo
+8. NUNCA inventes dados, numeros ou provas sociais falsas
 
 FORMATO DE RESPOSTA — JSON exacto:
 {
