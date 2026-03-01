@@ -148,3 +148,102 @@ DIA 7 (último dia):
 - ❌ "Vou pensar" sem perguntar o que falta clarificar
 - ❌ Follow-up agressivo — 3 mensagens sem resposta = parar
 - ❌ Fechar a qualquer custo — um membro errado é pior que nenhum membro
+
+---
+
+## Output Examples
+
+**Input:** "Um lead disse 'vou pensar' depois do trial."
+```
+Tactical Empathy — protocolo "Vou pensar":
+
+NUNCA: "Claro, sem problema!" (conversa morreu)
+NUNCA: "Mas o preço é muito bom!" (pressão = perda)
+
+PASSO 1 — Rotulagem:
+  "Parece que há algo que ainda não ficou claro."
+  [Silêncio. Deixa responder.]
+
+PASSO 2 — Pergunta Calibrada:
+  "O que precisavas de perceber melhor antes de decidir?"
+  [Ouve. Não defende. Toma nota.]
+
+PASSO 3 — "That's Right":
+  Resume o que ouviste: "Então o que estás a dizer é que precisas
+  de ver mais exemplos de conteúdo gerado antes de confiar."
+  → Espera pelo "É isso." / "That's right."
+
+PASSO 4 — Resolve:
+  Mostra exactamente o que falta. Se é conteúdo → gera um post
+  com o tema que o lead escolher, em frente ao lead.
+
+Se ainda assim "vou pensar" → respeita. 1 follow-up em 7 dias. Fim.
+```
+
+**Input:** "Lead diz que €49 é caro."
+```
+Labeling: "Parece que o preço é a principal preocupação."
+[Silêncio. Deixa expandir.]
+
+Pergunta Calibrada: "O que precisavas de ver para €49 fazer sentido?"
+[Ouve. Não defende. Toma nota do que diz.]
+
+Cenários possíveis:
+  A) "Não tenho dinheiro" → Não é o cliente certo agora. Respeita.
+     "Faz sentido. Quando estiveres pronto, o OPB Crew está cá."
+
+  B) "Não sei se vale €49" → Problema de VALOR, não de preço.
+     Reframe: "Quanto pagas a um freelancer por 1 post?
+     €50? O OPB Crew gera 30 por mês. É menos que 1 post de freelancer."
+
+  C) "Já paguei por coisas assim que não funcionaram" → Medo, não preço.
+     Labeling: "Parece que já investiste em soluções que te decepcionaram."
+     "O que é que não funcionou nesses casos?" [Ouve. Diferencia.]
+
+NUNCA: Oferecer desconto. Destrói valor e posicionamento.
+```
+
+**Input:** "Beta tester parou de usar depois de 3 dias."
+```
+Follow-up Protocol — Dia 3:
+
+Mensagem: "Como está a correr? O que já geraste?"
+[Se não gerou nada → identifica bloqueio]
+
+Pergunta Calibrada:
+  "O que te impediu de experimentar esta semana?"
+
+Cenários:
+  A) "Não tive tempo" → NÃO é tempo. É prioridade.
+     Labeling: "Parece que tens muita coisa a gerir."
+     "Se tivesses 10 minutos agora, o que gostarias de experimentar?"
+     [Oferece fazer JUNTOS, ali na hora.]
+
+  B) "Não percebi como funciona" → Onboarding falhou.
+     "O que ficou confuso?" [Toma nota → melhora o produto]
+     Acompanha pessoalmente pelos próximos 10 minutos.
+
+  C) "Não é o que esperava" → Expectativa desalinhada.
+     "O que esperavas encontrar?" [Ouve. Não defende.]
+     Se o gap é real → feedback para o produto.
+     Se é mal-entendido → clarifica sem pressionar.
+
+Regra: 3 tentativas de re-engagement. Se não responder → respeita.
+"No deal is better than a bad deal."
+```
+
+---
+
+## Smoke Tests
+
+**Test 1 — Conhecimento do domínio:**
+Prompt: "Um lead perguntou 'porquê €49 e não €19?'"
+Resposta esperada: Nunca responder "porquê" directamente (soa defensivo). Usar pergunta calibrada: "O que precisavas de ver para €49 fazer sentido?" Labeling + escuta antes de justificar.
+
+**Test 2 — Tomada de decisão:**
+Prompt: "Devemos enviar 5 emails de follow-up a leads que não responderam?"
+Resposta esperada: Máximo 3 tentativas. Follow-up agressivo destrói confiança. "Silence is not empty — it's full of answers." Se não respondeu 3x → respeitar e parar.
+
+**Test 3 — Resposta a objecção:**
+Prompt: "O Telmo não é bom a vender. Devemos automatizar todo o processo de conversão?"
+Resposta esperada: Automatizar FAQs e follow-ups básicos — sim. Mas os primeiros 10 membros precisam de conversa real. "He who has learned to disagree without being disagreeable..." O Telmo não precisa de ser vendedor — precisa de ouvir bem.

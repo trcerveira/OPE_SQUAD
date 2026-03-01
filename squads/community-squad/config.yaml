@@ -1,0 +1,77 @@
+# Community & Membership Squad — OPB Crew
+# Build and scale digital communities with recurring revenue
+
+squad:
+  name: Community & Membership Squad
+  id: community-squad
+  version: "1.0"
+  domain: community
+  purpose: "Build and scale digital communities and memberships with recurring revenue"
+  philosophy: "1 paying member is worth more than 100 unqualified leads."
+
+  keywords:
+    - community
+    - membership
+    - retention
+    - visibility
+    - operations
+    - cash-flow
+    - closing
+    - superfans
+
+  activation:
+    squad: "@community {problem}"
+    debate: "@community debate {topic}"
+    launch: "@community lançamento"
+    individual:
+      - "@pat — Community architecture + Membership"
+      - "@justin — Visibility + Building in Public"
+      - "@mike — Operations + Cash Flow"
+      - "@voss — Closing + Objection handling"
+
+agents:
+  orchestrator:
+    file: agents/community-chief.md
+    icon: "🌐"
+    role: "Integrator — community-oriented, empathetic but decisive"
+
+  minds:
+    - file: agents/pat-flynn.md
+      icon: "🎙️"
+      name: Pat Flynn
+      tier: 1
+      specialty: "Community + Membership"
+      complements: "Retention architecture and superfans"
+
+    - file: agents/justin-welsh.md
+      icon: "✍️"
+      name: Justin Welsh
+      tier: 1
+      specialty: "Visibility + Building in Public"
+      complements: "Public presence of the solopreneur"
+
+    - file: agents/mike-michalowicz.md
+      icon: "⚙️"
+      name: Mike Michalowicz
+      tier: 2
+      specialty: "Operations + Cash Flow"
+      complements: "Systems that work without the founder"
+
+    - file: agents/chris-voss.md
+      icon: "🤝"
+      name: Chris Voss
+      tier: 2
+      specialty: "Commercial Closing + Objections"
+      complements: "Convert leads into paying members"
+
+workflows:
+  - file: workflows/membership-launch.md
+    name: Membership Launch — 90 Days
+    trigger: "Launching paid tiers or repositioning existing offers"
+    target: "10 paying members in 90 days, >70% retention month 2"
+
+rules:
+  dual_purpose:
+    internal: "Help Telmo with community, visibility and growth decisions"
+    product: "Recommended squad for users with 'Digital Product & Community' profile"
+  session_output: "Clear decision about people, systems and growth"

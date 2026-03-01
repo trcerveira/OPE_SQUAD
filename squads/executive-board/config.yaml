@@ -1,0 +1,75 @@
+# Executive Board — OPB Crew
+# Strategic advisory board for product, business and growth decisions
+
+squad:
+  name: Executive Board
+  id: executive-board
+  version: "1.0"
+  domain: strategy
+  purpose: "Strategic decisions for OPB Crew — product, business, growth"
+  philosophy: "The board doesn't advise — it decides."
+
+  keywords:
+    - strategy
+    - product
+    - pricing
+    - growth
+    - first-principles
+    - leverage
+    - positioning
+    - monetization
+
+  activation:
+    squad: "@board {problem}"
+    debate: "@board debate {topic}"
+    priority: "@board prioridade"
+    individual:
+      - "@elon — First Principles + Speed"
+      - "@naval — Leverage + Solopreneur"
+      - "@seth — Content + Positioning + Audience"
+      - "@hormozi — Offers + Monetization + Conversion"
+
+agents:
+  orchestrator:
+    file: agents/board-chief.md
+    icon: "🏛️"
+    role: "Integrator — synthesizes decisions"
+
+  minds:
+    - file: agents/elon-musk.md
+      icon: "🚀"
+      name: Elon Musk
+      tier: 1
+      specialty: "First Principles + Speed"
+      veto: "Unnecessary complexity"
+
+    - file: agents/naval-ravikant.md
+      icon: "⚓"
+      name: Naval Ravikant
+      tier: 1
+      specialty: "Leverage + Solopreneur"
+      veto: "Trading time for money"
+
+    - file: agents/seth-godin.md
+      icon: "📣"
+      name: Seth Godin
+      tier: 1
+      specialty: "Content + Marketing + Positioning"
+      veto: "Generic audience"
+
+    - file: agents/alex-hormozi.md
+      icon: "💰"
+      name: Alex Hormozi
+      tier: 1
+      specialty: "Offers + Monetization + Conversion"
+      veto: "Weak offer or low pricing"
+
+workflows:
+  - file: workflows/board-decision.md
+    name: Board Decision Protocol
+    trigger: "Decisions with consequences > 1 month"
+
+rules:
+  max_members_per_simple_decision: 2
+  full_board_only: "Type 1 (irreversible) decisions"
+  session_output: "Clear decision + next action + metric"
