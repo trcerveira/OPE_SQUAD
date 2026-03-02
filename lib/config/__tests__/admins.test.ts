@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { isAdmin, hasBetaAccess, SUPER_ADMINS, BETA_USERS } from "../admins";
+import { isAdmin, SUPER_ADMINS } from "../admins";
 
 // ============================================================
-// Tests for access control functions (isAdmin and hasBetaAccess)
+// Tests for access control (isAdmin only — beta removed)
 // ============================================================
 
 describe("isAdmin", () => {
@@ -32,28 +32,6 @@ describe("isAdmin", () => {
   });
 });
 
-describe("hasBetaAccess", () => {
-  it("returns true for the founder", () => {
-    expect(hasBetaAccess("trcerveira@gmail.com")).toBe(true);
-  });
-
-  it("is case-insensitive", () => {
-    expect(hasBetaAccess("TRCERVEIRA@GMAIL.COM")).toBe(true);
-  });
-
-  it("returns false for email without access", () => {
-    expect(hasBetaAccess("stranger@example.com")).toBe(false);
-  });
-
-  it("returns false for null", () => {
-    expect(hasBetaAccess(null)).toBe(false);
-  });
-
-  it("returns false for undefined", () => {
-    expect(hasBetaAccess(undefined)).toBe(false);
-  });
-});
-
 describe("SUPER_ADMINS list", () => {
   it("is a non-empty array", () => {
     expect(Array.isArray(SUPER_ADMINS)).toBe(true);
@@ -62,18 +40,5 @@ describe("SUPER_ADMINS list", () => {
 
   it("contains the founder's email", () => {
     expect(SUPER_ADMINS).toContain("trcerveira@gmail.com");
-  });
-});
-
-describe("BETA_USERS list", () => {
-  it("is a non-empty array", () => {
-    expect(Array.isArray(BETA_USERS)).toBe(true);
-    expect(BETA_USERS.length).toBeGreaterThan(0);
-  });
-
-  it("includes all super admins", () => {
-    for (const admin of SUPER_ADMINS) {
-      expect(hasBetaAccess(admin)).toBe(true);
-    }
   });
 });
