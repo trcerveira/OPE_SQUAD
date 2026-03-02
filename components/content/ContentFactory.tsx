@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import type { GeneratedContent } from "@/lib/supabase/types";
 import ViralResearch from "@/components/content/ViralResearch";
@@ -93,6 +94,7 @@ function mapFormato(formato: string): { format: string; subtype: string } {
 
 export default function ContentFactory() {
   const { user } = useUser();
+  const router = useRouter();
   const [tab, setTab] = useState<"generate" | "calendar" | "history">("generate");
 
   // Selecção de formato
@@ -371,6 +373,17 @@ export default function ContentFactory() {
                 >
                   Regenerar
                 </button>
+                {selectedFormat === "carrossel" && (
+                  <button
+                    onClick={() => {
+                      localStorage.setItem("designMachineContent", generatedContent);
+                      router.push("/machine");
+                    }}
+                    className="text-sm font-bold border border-[#BFD64B]/30 text-[#BFD64B] rounded-lg px-4 py-2 hover:bg-[#BFD64B]/10 hover:border-[#BFD64B]/60 transition-all"
+                  >
+                    Criar Design →
+                  </button>
+                )}
                 <button
                   onClick={() => { setGeneratedContent(""); setTopic(""); setSelectedFormat(""); setSelectedSubtype(""); }}
                   className="text-sm text-[#8892a4] hover:text-[#F0ECE4] transition-colors px-4 py-2"
@@ -496,6 +509,17 @@ export default function ContentFactory() {
                         >
                           Copiar
                         </button>
+                        {item.platform === "carrossel" && (
+                          <button
+                            onClick={() => {
+                              localStorage.setItem("designMachineContent", item.content);
+                              router.push("/machine");
+                            }}
+                            className="text-xs font-bold border border-[#BFD64B]/30 text-[#BFD64B] rounded-lg px-3 py-1.5 hover:bg-[#BFD64B]/10 hover:border-[#BFD64B]/60 transition-all"
+                          >
+                            Criar Design →
+                          </button>
+                        )}
                         <button
                           onClick={() => handleDelete(item.id)}
                           className="text-xs text-red-500/60 hover:text-red-400 transition-colors px-3 py-1.5"

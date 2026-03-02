@@ -105,6 +105,19 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
     if (Object.keys(mapa).length > 0) setPasso(1);
   };
 
+  // ── Auto-fill from Content Factory transfer ─────────────────────────────
+
+  useEffect(() => {
+    const stored = localStorage.getItem("designMachineContent");
+    if (stored) {
+      setTextoRaw(stored);
+      const mapa = parseTextos(stored);
+      setTextos(mapa);
+      if (Object.keys(mapa).length > 0) setPasso(1);
+      localStorage.removeItem("designMachineContent");
+    }
+  }, [parseTextos]);
+
   // ── AI auto-generate ─────────────────────────────────────────────────────
 
   const gerarComIA = async () => {
