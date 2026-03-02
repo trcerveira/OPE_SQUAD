@@ -2,6 +2,9 @@ import { currentUser } from "@clerk/nextjs/server";
 import { createServerClient } from "@/lib/supabase/server";
 import Navbar from "@/components/layout/Navbar";
 
+// Todas as páginas do dashboard precisam de request context (currentUser)
+export const dynamic = "force-dynamic";
+
 // Layout partilhado por todas as páginas do dashboard.
 // Carrega as cores de marca do utilizador e aplica como CSS variables.
 export default async function DashboardLayout({

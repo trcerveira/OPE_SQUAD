@@ -3,6 +3,9 @@ import { Space_Grotesk } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
+// ClerkProvider precisa de request context — força rendering dinâmico
+export const dynamic = "force-dynamic";
+
 // Fonte principal OPB_CREW
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
