@@ -20,11 +20,20 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
     const brandShort = brandName.includes(" · ") ? brandName.split(" · ")[0] : brandName;
     const slide = slideIndex + 1;
 
-    // Alternating: odd=dark, even=light
-    const isDark = slide % 2 === 1;
-    const bgColor = isDark ? corTexto : corFundo;
-    const txtColor = isDark ? corFundo : corTexto;
-    const mutedTxt = isDark ? "rgba(255,255,255,.55)" : "rgba(0,0,0,.45)";
+    // ── Dark palette detection ──────────────────────────────────────────────
+    const isDarkPalette = (() => {
+      const r = parseInt(corFundo.slice(1, 3), 16);
+      const g = parseInt(corFundo.slice(3, 5), 16);
+      const b = parseInt(corFundo.slice(5, 7), 16);
+      return (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.35;
+    })();
+
+    // Dark palettes: ALL slides dark. Light palettes: alternating.
+    const isDark = isDarkPalette ? true : slide % 2 === 1;
+    const bgColor = isDarkPalette ? corFundo : (slide % 2 === 1 ? corTexto : corFundo);
+    const txtColor = isDarkPalette ? corTexto : (slide % 2 === 1 ? corFundo : corTexto);
+    const mutedTxt = isDark ? "rgba(255,255,255,.5)" : "rgba(0,0,0,.45)";
+    const glowColor = `${corDestaque}40`;
 
     // Date for header
     const now = new Date();
@@ -32,9 +41,9 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
       "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
     const dateLabel = `${months[now.getMonth()]} ${now.getFullYear()}`;
 
-    // ── Design tokens (research-based) ─────────────────────────────────────
+    // ── Design tokens (premium) ────────────────────────────────────────────
     const P = 60; // safe zone padding
-    const serif = "Georgia, 'Times New Roman', serif";
+    const heading = "'Space Grotesk', 'Inter', system-ui";
     const sans = "'Inter', 'Helvetica Neue', Arial, sans-serif";
 
     const base: React.CSSProperties = {
@@ -46,23 +55,24 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
       backgroundColor: bgColor,
     };
 
-    // ── Header bar (top of every slide) ────────────────────────────────────
+    // ── Header bar (top of every slide) — premium glassmorphism ────────────
     const headerBar = (color?: string) => {
-      const c = color || (isDark ? "rgba(255,255,255,.35)" : "rgba(0,0,0,.3)");
+      const c = color || (isDark ? "rgba(255,255,255,.3)" : "rgba(0,0,0,.25)");
       return (
         <div style={{
           position: "absolute", top: 0, left: 0, right: 0, height: 52,
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: `0 ${P}px`, fontSize: 14, fontWeight: 600,
-          letterSpacing: 1.2, color: c, zIndex: 10,
+          padding: `0 ${P}px`, fontSize: 13, fontWeight: 600,
+          letterSpacing: 1.5, color: c, zIndex: 10,
+          fontFamily: sans, textTransform: "uppercase",
           background: isDark
-            ? "linear-gradient(to bottom, rgba(0,0,0,.4) 0%, transparent 100%)"
+            ? "linear-gradient(to bottom, rgba(0,0,0,.5) 0%, transparent 100%)"
             : "linear-gradient(to bottom, rgba(255,255,255,.5) 0%, transparent 100%)",
-          borderBottom: `1px solid ${isDark ? "rgba(255,255,255,.06)" : "rgba(0,0,0,.06)"}`,
+          borderBottom: `1px solid ${isDark ? `${corDestaque}0A` : "rgba(0,0,0,.05)"}`,
         }}>
-          <span>Powered by OPB Crew</span>
-          <span style={{ fontWeight: 800, color: corDestaque }}>{brandShort}</span>
-          <span>{dateLabel}</span>
+          <span style={{ fontSize: 11, letterSpacing: 2 }}>Powered by OPB Crew</span>
+          <span style={{ fontWeight: 800, color: corDestaque, textShadow: `0 0 12px ${glowColor}` }}>{brandShort}</span>
+          <span style={{ fontSize: 11, letterSpacing: 2 }}>{dateLabel}</span>
         </div>
       );
     };
@@ -78,17 +88,17 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
       </div>
     );
 
-    // ── Accent line separator ─────────────────────────────────────────────
+    // ── Accent line separator — glow premium ──────────────────────────────
     const accentLine = (top: number, width = 70) => (
       <div style={{
         position: "absolute", top, left: P,
-        width, height: 4, borderRadius: 2,
+        width, height: 3, borderRadius: 2,
         backgroundColor: corDestaque,
-        boxShadow: `0 0 12px ${corDestaque}66, 0 0 4px ${corDestaque}33`,
+        boxShadow: `0 0 24px ${glowColor}, 0 0 8px ${corDestaque}55`,
       }} />
     );
 
-    // ── Rounded image ─────────────────────────────────────────────────────
+    // ── Rounded image — premium shadow + border ──────────────────────────
     const rImg = (src: string, style: React.CSSProperties) => {
       if (!src) return null;
       return (
@@ -96,8 +106,11 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
           backgroundImage: `url(${src})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          borderRadius: 16,
-          boxShadow: "0 8px 32px rgba(0,0,0,.25), 0 2px 8px rgba(0,0,0,.15)",
+          borderRadius: 18,
+          boxShadow: isDark
+            ? `0 12px 40px rgba(0,0,0,.4), 0 0 20px ${corDestaque}08`
+            : "0 8px 32px rgba(0,0,0,.2), 0 2px 8px rgba(0,0,0,.1)",
+          border: isDark ? `1px solid ${corDestaque}10` : "none",
           ...style,
         }} />
       );
@@ -107,32 +120,44 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
     // SLIDE 01 — COVER (DARK)
     // ════════════════════════════════════════════════════════════════════════
     if (slide === 1) {
+      const coverBg = isDarkPalette ? corFundo : corTexto;
       return (
-        <div ref={ref} style={{ ...base, backgroundColor: corTexto }}>
+        <div ref={ref} style={{ ...base, backgroundColor: coverBg }}>
           {img(1) && (
             <div style={{
               position: "absolute", inset: 0,
               backgroundImage: `url(${img(1)})`,
               backgroundSize: "cover", backgroundPosition: "center",
-              opacity: 0.45,
+              opacity: isDarkPalette ? 0.35 : 0.45,
             }} />
           )}
+          {/* Gradient overlay — cinematic */}
           <div style={{
             position: "absolute", inset: 0,
-            background: "linear-gradient(to top, rgba(0,0,0,.95) 20%, rgba(0,0,0,.7) 45%, rgba(0,0,0,.3) 70%, rgba(0,0,0,.6) 100%)",
+            background: isDarkPalette
+              ? `linear-gradient(to top, ${coverBg} 15%, rgba(0,0,0,.85) 40%, rgba(0,0,0,.5) 65%, rgba(0,0,0,.7) 100%)`
+              : "linear-gradient(to top, rgba(0,0,0,.95) 20%, rgba(0,0,0,.7) 45%, rgba(0,0,0,.3) 70%, rgba(0,0,0,.6) 100%)",
           }} />
-          {headerBar("rgba(255,255,255,.35)")}
+          {/* Radial accent glow — premium */}
+          {isDarkPalette && (
+            <div style={{
+              position: "absolute", inset: 0,
+              background: `radial-gradient(ellipse at 50% 30%, ${corDestaque}0C 0%, transparent 65%)`,
+            }} />
+          )}
+          {headerBar("rgba(255,255,255,.3)")}
 
           {/* Tag pill with glow */}
           {t(1) && (
             <div style={{
               position: "absolute", bottom: 370, left: P,
               display: "inline-block",
-              padding: "10px 22px", borderRadius: 6,
+              padding: "10px 24px", borderRadius: 6,
               backgroundColor: corDestaque,
-              fontSize: 17, fontWeight: 800, letterSpacing: 2.5,
-              color: corTexto, textTransform: "uppercase",
-              boxShadow: `0 0 20px ${corDestaque}44, 0 4px 12px rgba(0,0,0,.3)`,
+              fontSize: 15, fontWeight: 800, letterSpacing: 3,
+              fontFamily: sans, textTransform: "uppercase",
+              color: isDarkPalette ? coverBg : corTexto,
+              boxShadow: `0 0 30px ${glowColor}, 0 4px 16px rgba(0,0,0,.4)`,
             }}>
               {t(1)}
             </div>
@@ -143,15 +168,17 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
             position: "absolute", bottom: 340, left: P,
             width: 60, height: 3, borderRadius: 2,
             backgroundColor: corDestaque,
-            boxShadow: `0 0 10px ${corDestaque}55`,
+            boxShadow: `0 0 20px ${glowColor}`,
           }} />
 
-          {/* Main cover title */}
+          {/* Main cover title — premium typography */}
           <div style={{
             position: "absolute", bottom: 80, left: P, right: P,
-            fontFamily: serif, fontSize: 80, fontWeight: 700,
-            lineHeight: 1.08, color: "#fff", letterSpacing: -0.5,
-            textShadow: "0 2px 20px rgba(0,0,0,.5)",
+            fontFamily: heading, fontSize: 78, fontWeight: 700,
+            lineHeight: 1.05, color: "#fff", letterSpacing: "-0.045em",
+            textShadow: isDarkPalette
+              ? `0 2px 30px rgba(0,0,0,.6), 0 0 60px ${corDestaque}10`
+              : "0 2px 20px rgba(0,0,0,.5)",
           }}>
             {t(2) || "TITULO DO CARROSSEL"}
           </div>
@@ -168,13 +195,20 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
       const hasImg = !!img(2);
       return (
         <div ref={ref} style={base}>
+          {/* Subtle radial glow for dark palettes */}
+          {isDarkPalette && (
+            <div style={{
+              position: "absolute", inset: 0,
+              background: `radial-gradient(ellipse at 20% 30%, ${corDestaque}06 0%, transparent 55%)`,
+            }} />
+          )}
           {headerBar()}
 
           {/* Headline */}
           <div style={{
             position: "absolute", top: 76, left: P, right: hasImg ? 480 : P,
-            fontFamily: serif, fontSize: 52, fontWeight: 700,
-            lineHeight: 1.22, color: txtColor, letterSpacing: -0.5,
+            fontFamily: heading, fontSize: 52, fontWeight: 700,
+            lineHeight: 1.22, color: txtColor, letterSpacing: "-0.035em",
           }}>
             {t(3) || "HEADLINE DO SLIDE"}
           </div>
@@ -211,13 +245,20 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
       const hasImg = !!img(3);
       return (
         <div ref={ref} style={base}>
+          {/* Subtle radial glow for dark palettes */}
+          {isDarkPalette && (
+            <div style={{
+              position: "absolute", inset: 0,
+              background: `radial-gradient(ellipse at 80% 20%, ${corDestaque}06 0%, transparent 50%)`,
+            }} />
+          )}
           {headerBar()}
 
           {/* Main text */}
           <div style={{
             position: "absolute", top: 76, left: P, right: P,
-            fontFamily: serif, fontSize: 46, fontWeight: 700,
-            lineHeight: 1.3, color: txtColor, letterSpacing: -0.3,
+            fontFamily: heading, fontSize: 46, fontWeight: 700,
+            lineHeight: 1.3, color: txtColor, letterSpacing: "-0.03em",
           }}>
             {t(5) || "Primeiro insight concreto e accionavel."}
           </div>
@@ -254,6 +295,13 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
       const hasImg = !!img(4);
       return (
         <div ref={ref} style={base}>
+          {/* Subtle radial glow for dark palettes */}
+          {isDarkPalette && (
+            <div style={{
+              position: "absolute", inset: 0,
+              background: `radial-gradient(ellipse at 50% 70%, ${corDestaque}06 0%, transparent 55%)`,
+            }} />
+          )}
           {headerBar()}
 
           {/* Image — top */}
@@ -269,8 +317,8 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
             position: "absolute",
             top: hasImg ? 610 : 100,
             left: P, right: P,
-            fontFamily: serif, fontSize: 58, fontWeight: 700,
-            lineHeight: 1.18, color: txtColor, letterSpacing: -0.5,
+            fontFamily: heading, fontSize: 58, fontWeight: 700,
+            lineHeight: 1.18, color: txtColor, letterSpacing: "-0.04em",
           }}>
             {t(7) || "HEADLINE DE IMPACTO"}
           </div>
@@ -297,14 +345,21 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
       const hasImg = !!img(5);
       return (
         <div ref={ref} style={base}>
+          {/* Subtle radial glow for dark palettes */}
+          {isDarkPalette && (
+            <div style={{
+              position: "absolute", inset: 0,
+              background: `radial-gradient(ellipse at 15% 60%, ${corDestaque}06 0%, transparent 50%)`,
+            }} />
+          )}
           {headerBar()}
 
           {/* Headline */}
           <div style={{
             position: "absolute", top: 76, left: P,
             right: hasImg ? 480 : P,
-            fontFamily: serif, fontSize: 44, fontWeight: 700,
-            lineHeight: 1.3, color: txtColor, letterSpacing: -0.3,
+            fontFamily: heading, fontSize: 44, fontWeight: 700,
+            lineHeight: 1.3, color: txtColor, letterSpacing: "-0.03em",
           }}>
             {t(9) || "Segundo insight, mais profundo."}
           </div>
@@ -340,14 +395,21 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
       const hasImg = !!img(6);
       return (
         <div ref={ref} style={base}>
+          {/* Subtle radial glow for dark palettes */}
+          {isDarkPalette && (
+            <div style={{
+              position: "absolute", inset: 0,
+              background: `radial-gradient(ellipse at 70% 40%, ${corDestaque}08 0%, transparent 55%)`,
+            }} />
+          )}
           {headerBar()}
 
           {/* THE golden nugget headline */}
           <div style={{
             position: "absolute", top: 76, left: P,
             right: hasImg ? 480 : P,
-            fontFamily: serif, fontSize: 56, fontWeight: 700,
-            lineHeight: 1.2, color: txtColor, letterSpacing: -0.5,
+            fontFamily: heading, fontSize: 56, fontWeight: 700,
+            lineHeight: 1.2, color: txtColor, letterSpacing: "-0.04em",
           }}>
             {t(11) || "O INSIGHT MAIS VALIOSO."}
           </div>
@@ -360,7 +422,7 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
               position: "absolute",
               top: hasImg ? 490 : 470,
               left: P, right: hasImg ? 480 : P,
-              fontFamily: serif, fontSize: 28,
+              fontFamily: heading, fontSize: 28,
               lineHeight: 1.65, color: mutedTxt,
             }}>
               {t(12)}
@@ -385,6 +447,13 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
       const hasImg = !!img(7);
       return (
         <div ref={ref} style={base}>
+          {/* Subtle radial glow for dark palettes */}
+          {isDarkPalette && (
+            <div style={{
+              position: "absolute", inset: 0,
+              background: `radial-gradient(ellipse at 50% 80%, ${corDestaque}08 0%, transparent 55%)`,
+            }} />
+          )}
           {headerBar()}
 
           {/* Image — top */}
@@ -398,8 +467,9 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
             position: "absolute",
             top: hasImg ? 600 : 100,
             left: P, right: P,
-            fontFamily: serif, fontSize: 54, fontWeight: 700,
-            lineHeight: 1.2, color: corDestaque, letterSpacing: -0.5,
+            fontFamily: heading, fontSize: 54, fontWeight: 700,
+            lineHeight: 1.2, color: corDestaque, letterSpacing: "-0.04em",
+            textShadow: isDarkPalette ? `0 0 30px ${glowColor}` : "none",
           }}>
             {t(13) || "O QUE MUDA QUANDO APLICAS ISTO."}
           </div>
@@ -426,6 +496,13 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
       const hasImg = !!img(8);
       return (
         <div ref={ref} style={base}>
+          {/* Subtle radial glow for dark palettes */}
+          {isDarkPalette && (
+            <div style={{
+              position: "absolute", inset: 0,
+              background: `radial-gradient(ellipse at 30% 50%, ${corDestaque}06 0%, transparent 50%)`,
+            }} />
+          )}
           {headerBar()}
 
           <div style={{
@@ -438,7 +515,7 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
             {/* P1 — serif, large */}
             {t(15) && (
               <p style={{
-                margin: 0, fontFamily: serif,
+                margin: 0, fontFamily: heading,
                 fontSize: 38, fontWeight: 700, lineHeight: 1.3,
                 color: txtColor,
               }}>
@@ -465,7 +542,7 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
             {/* P3 — serif, bold closing */}
             {t(17) && (
               <p style={{
-                margin: 0, fontFamily: serif,
+                margin: 0, fontFamily: heading,
                 fontSize: 30, fontWeight: 700, lineHeight: 1.4,
                 color: txtColor,
               }}>
@@ -489,20 +566,31 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
     // SLIDE 09 — CTA FINAL (DARK)
     // ════════════════════════════════════════════════════════════════════════
     if (slide === 9) {
+      const ctaBg = isDarkPalette ? corFundo : corTexto;
       return (
-        <div ref={ref} style={{ ...base, backgroundColor: corTexto }}>
+        <div ref={ref} style={{ ...base, backgroundColor: ctaBg }}>
           {img(9) && (
             <div style={{
               position: "absolute", inset: 0,
               backgroundImage: `url(${img(9)})`,
               backgroundSize: "cover", backgroundPosition: "center",
-              opacity: 0.3,
+              opacity: isDarkPalette ? 0.25 : 0.3,
             }} />
           )}
+          {/* Cinematic gradient overlay */}
           <div style={{
             position: "absolute", inset: 0,
-            background: `linear-gradient(to top, ${corTexto} 45%, rgba(0,0,0,.5) 75%, rgba(0,0,0,.35) 100%)`,
+            background: isDarkPalette
+              ? `linear-gradient(to top, ${ctaBg} 40%, rgba(0,0,0,.85) 70%, rgba(0,0,0,.6) 100%)`
+              : `linear-gradient(to top, ${ctaBg} 45%, rgba(0,0,0,.5) 75%, rgba(0,0,0,.35) 100%)`,
           }} />
+          {/* Radial accent glow — premium */}
+          {isDarkPalette && (
+            <div style={{
+              position: "absolute", inset: 0,
+              background: `radial-gradient(ellipse at 50% 45%, ${corDestaque}0A 0%, transparent 60%)`,
+            }} />
+          )}
           {headerBar("rgba(255,255,255,.3)")}
 
           {/* CTA centered */}
@@ -511,26 +599,33 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
             transform: "translateY(-50%)", textAlign: "center",
           }}>
             <div style={{
-              fontFamily: serif, fontSize: 46, fontWeight: 700,
+              fontFamily: heading, fontSize: 46, fontWeight: 700,
               color: "#fff", lineHeight: 1.4, marginBottom: 40,
-              textShadow: "0 2px 16px rgba(0,0,0,.4)",
+              letterSpacing: "-0.02em",
+              textShadow: isDarkPalette
+                ? `0 2px 24px rgba(0,0,0,.6), 0 0 40px ${corDestaque}08`
+                : "0 2px 16px rgba(0,0,0,.4)",
             }}>
               {t(18) || "Guarda este carrossel para mais tarde."}
             </div>
 
-            {/* Glassmorphism card — upgraded */}
+            {/* Glassmorphism card — premium */}
             <div style={{
               display: "inline-block",
               padding: "26px 56px", borderRadius: 16,
-              backgroundColor: "rgba(255,255,255,.08)",
-              border: "1px solid rgba(255,255,255,.18)",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,.1), 0 8px 32px rgba(0,0,0,.3)",
+              backgroundColor: isDarkPalette ? `${corDestaque}08` : "rgba(255,255,255,.08)",
+              border: `1px solid ${isDarkPalette ? `${corDestaque}18` : "rgba(255,255,255,.18)"}`,
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              boxShadow: isDarkPalette
+                ? `inset 0 1px 0 ${corDestaque}0A, 0 8px 32px rgba(0,0,0,.4), 0 0 40px ${corDestaque}06`
+                : "inset 0 1px 0 rgba(255,255,255,.1), 0 8px 32px rgba(0,0,0,.3)",
             }}>
               <div style={{
                 fontSize: 22, fontWeight: 800,
                 color: corDestaque, letterSpacing: 3,
                 textTransform: "uppercase",
-                textShadow: `0 0 16px ${corDestaque}44`,
+                textShadow: `0 0 20px ${glowColor}`,
               }}>
                 {brandShort}
               </div>
@@ -549,8 +644,9 @@ const SlidePreview = forwardRef<HTMLDivElement, Props>(
             position: "absolute", bottom: 0, left: 0, right: 0, height: 52,
             background: `linear-gradient(135deg, ${corDestaque} 0%, ${corDestaque}dd 100%)`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 15, fontWeight: 800, letterSpacing: 3, color: corTexto,
-            boxShadow: `0 -4px 20px ${corDestaque}33`,
+            fontSize: 15, fontWeight: 800, letterSpacing: 3,
+            color: isDarkPalette ? corFundo : corTexto,
+            boxShadow: `0 -4px 24px ${corDestaque}33`,
           }}>
             {brandName}
           </div>

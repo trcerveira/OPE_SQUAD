@@ -249,13 +249,26 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
     <div style={{ minHeight: "100vh", backgroundColor: "var(--bg)", color: "var(--text)" }}>
 
       {/* Header */}
-      <div style={{ borderBottom: "1px solid var(--surface)", padding: "20px 24px" }}>
+      <div style={{
+        borderBottom: "1px solid rgba(16, 185, 129, 0.08)",
+        padding: "20px 24px",
+        background: "rgba(10, 26, 22, 0.5)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+      }}>
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0 }}>
+            <h1 style={{
+              fontSize: 22, fontWeight: 800, margin: 0,
+              letterSpacing: "-0.03em",
+              background: "linear-gradient(135deg, var(--accent), #10B981)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}>
               Design Machine
             </h1>
-            <p style={{ fontSize: 12, color: "#8892a4", margin: "4px 0 0" }}>
+            <p style={{ fontSize: 12, color: "#6A9A88", margin: "4px 0 0", letterSpacing: "0.04em" }}>
               Template Principal · 9 slides · 2160×2700px (retina)
             </p>
           </div>
@@ -270,11 +283,12 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
                   borderRadius: 8,
                   fontSize: 12,
                   fontWeight: 600,
-                  border: "none",
+                  border: passo === i ? "none" : "1px solid rgba(16, 185, 129, 0.08)",
                   cursor: "pointer",
-                  backgroundColor: passo === i ? "var(--accent)" : "var(--surface)",
-                  color: passo === i ? "var(--bg)" : "#8892a4",
-                  transition: "all .2s",
+                  backgroundColor: passo === i ? "var(--accent)" : "rgba(255,255,255,0.04)",
+                  color: passo === i ? "var(--bg)" : "#6A9A88",
+                  transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  boxShadow: passo === i ? "0 0 20px rgba(191, 214, 75, 0.25)" : "none",
                 }}
               >
                 {i + 1}. {nome}
@@ -293,15 +307,21 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
             {/* AI Auto-generate section */}
             <div style={{
               marginBottom: 24,
-              padding: 20,
-              borderRadius: 14,
-              border: "2px solid var(--accent)",
-              background: "rgba(191, 214, 75, 0.05)",
+              padding: 24,
+              borderRadius: 16,
+              border: "1px solid rgba(191, 214, 75, 0.12)",
+              background: "rgba(191, 214, 75, 0.03)",
+              backdropFilter: "blur(16px)",
+              WebkitBackdropFilter: "blur(16px)",
+              boxShadow: "0 0 40px rgba(191, 214, 75, 0.04), inset 0 1px 0 rgba(191, 214, 75, 0.06)",
             }}>
-              <h2 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 4px" }}>
+              <h2 style={{
+                fontSize: 18, fontWeight: 700, margin: "0 0 4px",
+                letterSpacing: "-0.02em",
+              }}>
                 Gerar carrossel com IA
               </h2>
-              <p style={{ fontSize: 13, color: "#8892a4", margin: "0 0 14px" }}>
+              <p style={{ fontSize: 13, color: "#6A9A88", margin: "0 0 14px" }}>
                 Escreve o tema e a IA gera os 18 textos + imagens automaticamente.
               </p>
 
@@ -315,12 +335,13 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
                   style={{
                     flex: 1,
                     padding: "12px 14px",
-                    borderRadius: 10,
-                    border: "1px solid var(--surface)",
-                    background: "var(--surface)",
+                    borderRadius: 12,
+                    border: "1px solid rgba(16, 185, 129, 0.1)",
+                    background: "rgba(255,255,255,0.03)",
                     color: "var(--text)",
                     fontSize: 14,
                     outline: "none",
+                    transition: "border-color .3s ease, box-shadow .3s ease",
                   }}
                 />
                 <button
@@ -334,9 +355,10 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
                     border: "none",
                     cursor: !tema.trim() || gerando ? "not-allowed" : "pointer",
                     backgroundColor: !tema.trim() || gerando ? "var(--surface)" : "var(--accent)",
-                    color: !tema.trim() || gerando ? "#8892a4" : "var(--bg)",
+                    color: !tema.trim() || gerando ? "#6A9A88" : "var(--bg)",
                     minWidth: 160,
-                    transition: "all .2s",
+                    transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    boxShadow: !tema.trim() || gerando ? "none" : "0 0 24px rgba(191, 214, 75, 0.3)",
                   }}
                 >
                   {gerando ? "A gerar..." : "Gerar com IA"}
@@ -379,12 +401,15 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
               alignItems: "center",
               gap: 12,
               marginBottom: 20,
-              color: "#8892a4",
-              fontSize: 12,
+              color: "#6A9A88",
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase" as const,
             }}>
-              <div style={{ flex: 1, height: 1, background: "var(--surface)" }} />
+              <div style={{ flex: 1, height: 1, background: "linear-gradient(to right, transparent, rgba(16, 185, 129, 0.2), transparent)" }} />
               <span>ou cola manualmente</span>
-              <div style={{ flex: 1, height: 1, background: "var(--surface)" }} />
+              <div style={{ flex: 1, height: 1, background: "linear-gradient(to right, transparent, rgba(16, 185, 129, 0.2), transparent)" }} />
             </div>
 
             {/* Manual text input */}
@@ -443,13 +468,16 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
             {/* Format guide */}
             <div style={{
               marginTop: 24,
-              padding: 16,
-              borderRadius: 12,
-              border: "1px solid var(--surface)",
+              padding: 20,
+              borderRadius: 16,
+              border: "1px solid rgba(16, 185, 129, 0.08)",
+              background: "rgba(16, 185, 129, 0.02)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
               fontSize: 12,
-              color: "#8892a4",
+              color: "#6A9A88",
             }}>
-              <p style={{ margin: "0 0 8px", fontWeight: 700, color: "var(--text)" }}>
+              <p style={{ margin: "0 0 10px", fontWeight: 700, color: "var(--text)", letterSpacing: "-0.01em" }}>
                 Estrutura do Template Principal (18 textos)
               </p>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px 16px" }}>
@@ -492,7 +520,10 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
         {/* ── STEP 2: Colors ────────────────────────────────────────────── */}
         {passo === 2 && (
           <div style={{ maxWidth: 640, margin: "0 auto" }}>
-            <h2 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 16px" }}>
+            <h2 style={{
+              fontSize: 18, fontWeight: 700, margin: "0 0 16px",
+              letterSpacing: "-0.02em",
+            }}>
               Escolhe a paleta de cores
             </h2>
 
@@ -506,12 +537,16 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    padding: "14px 16px",
-                    borderRadius: 12,
-                    border: `2px solid ${!usarCustom && paleta.id === p.id ? "var(--accent)" : "var(--surface)"}`,
-                    background: !usarCustom && paleta.id === p.id ? "var(--surface)" : "transparent",
+                    padding: "14px 18px",
+                    borderRadius: 14,
+                    border: `1px solid ${!usarCustom && paleta.id === p.id ? "rgba(191, 214, 75, 0.2)" : "rgba(16, 185, 129, 0.06)"}`,
+                    background: !usarCustom && paleta.id === p.id ? "rgba(191, 214, 75, 0.06)" : "rgba(255,255,255,0.02)",
+                    backdropFilter: !usarCustom && paleta.id === p.id ? "blur(16px)" : "none",
+                    WebkitBackdropFilter: !usarCustom && paleta.id === p.id ? "blur(16px)" : "none",
+                    boxShadow: !usarCustom && paleta.id === p.id ? "0 0 20px rgba(191, 214, 75, 0.08)" : "none",
                     cursor: "pointer",
                     color: "var(--text)",
+                    transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
                   }}
                 >
                   <span style={{ fontWeight: 600, fontSize: 14 }}>
@@ -558,12 +593,16 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    padding: "14px 16px",
-                    borderRadius: 12,
-                    border: `2px solid ${!usarCustom && paleta.id === p.id ? "var(--accent)" : "var(--surface)"}`,
-                    background: !usarCustom && paleta.id === p.id ? "var(--surface)" : "transparent",
+                    padding: "14px 18px",
+                    borderRadius: 14,
+                    border: `1px solid ${!usarCustom && paleta.id === p.id ? "rgba(191, 214, 75, 0.2)" : "rgba(16, 185, 129, 0.06)"}`,
+                    background: !usarCustom && paleta.id === p.id ? "rgba(191, 214, 75, 0.06)" : "rgba(255,255,255,0.02)",
+                    backdropFilter: !usarCustom && paleta.id === p.id ? "blur(16px)" : "none",
+                    WebkitBackdropFilter: !usarCustom && paleta.id === p.id ? "blur(16px)" : "none",
+                    boxShadow: !usarCustom && paleta.id === p.id ? "0 0 20px rgba(191, 214, 75, 0.08)" : "none",
                     cursor: "pointer",
                     color: "var(--text)",
+                    transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
                   }}
                 >
                   <span style={{ fontWeight: 600, fontSize: 14 }}>
@@ -701,7 +740,7 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
               <div>
-                <h2 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 4px" }}>Preview do carrossel</h2>
+                <h2 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Preview do carrossel</h2>
                 <p style={{ fontSize: 12, color: "#8892a4", margin: 0 }}>
                   Paleta: <span style={{ color: "var(--text)", fontWeight: 600 }}>{paletaEfectiva.nome}</span>
                   {" · "}
@@ -734,7 +773,9 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
                   border: "none",
                   cursor: exportando ? "not-allowed" : "pointer",
                   backgroundColor: exportando ? "var(--surface)" : "var(--accent)",
-                  color: exportando ? "#8892a4" : "var(--bg)",
+                  color: exportando ? "#6A9A88" : "var(--bg)",
+                  boxShadow: exportando ? "none" : "0 0 24px rgba(191, 214, 75, 0.3)",
+                  transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
               >
                 {exportando ? progresso || "A exportar…" : "Exportar ZIP (2x)"}
@@ -767,16 +808,18 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
                     aspectRatio: "1080/1350",
                     overflow: "hidden",
                     borderRadius: 10,
-                    border: "1px solid var(--surface)",
-                    transition: "border-color .2s, transform .2s",
+                    border: "1px solid rgba(16, 185, 129, 0.06)",
+                    transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
                   }}
                     onMouseEnter={e => {
-                      e.currentTarget.style.borderColor = "var(--accent)";
-                      e.currentTarget.style.transform = "scale(1.02)";
+                      e.currentTarget.style.borderColor = "rgba(191, 214, 75, 0.2)";
+                      e.currentTarget.style.transform = "scale(1.02) translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "0 0 24px rgba(191, 214, 75, 0.1)";
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.style.borderColor = "var(--surface)";
+                      e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.06)";
                       e.currentTarget.style.transform = "scale(1)";
+                      e.currentTarget.style.boxShadow = "none";
                     }}
                   >
                     <div style={{
@@ -811,7 +854,9 @@ export default function DesignMachine({ brandName = "COACH TEO · POWERED BY OPB
             position: "fixed",
             inset: 0,
             zIndex: 9999,
-            backgroundColor: "rgba(0, 0, 0, 0.85)",
+            backgroundColor: "rgba(0, 0, 0, 0.9)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
