@@ -1,10 +1,10 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { createServerClient } from "@/lib/supabase/server";
 import DesignMachine from "@/components/machine/DesignMachine";
 
 export default async function MachinePage() {
-  const { userId } = await auth();
   const user = await currentUser();
+  const userId = user?.id;
 
   let brandName = user?.firstName
     ? `${user.firstName.toUpperCase()} · POWERED BY OPB CREW`
@@ -28,8 +28,8 @@ export default async function MachinePage() {
       if (data?.name) {
         brandName = `${data.name.toUpperCase()} · POWERED BY OPB CREW`;
       }
-    } catch {
-      // Non-blocking — use defaults
+    } catch (error) {
+      console.error("Error loading brand data:", error);
     }
   }
 

@@ -3,7 +3,7 @@ import { SignIn } from "@clerk/nextjs";
 // Página de login — Clerk trata de tudo
 export default function SignInPage() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6">
+    <main className="min-h-screen flex flex-col items-center justify-center px-6 bg-[#0A0E1A]">
 
       {/* Header */}
       <div className="text-center mb-8">

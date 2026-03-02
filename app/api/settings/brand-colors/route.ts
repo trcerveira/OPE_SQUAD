@@ -1,11 +1,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { createServerClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
-
-// Validates whether a value is a valid hex colour (#RRGGBB)
-function isValidHex(color: string): boolean {
-  return /^#[0-9A-Fa-f]{6}$/.test(color)
-}
+import { validateInput, BrandColorsSchema } from '@/lib/validators'
 
 export async function POST(req: Request) {
   const { userId } = await auth()
@@ -13,19 +9,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
-  const body = await req.json()
-  const { brand_bg, brand_surface, brand_accent, brand_text } = body
-
-  // Validate all colours
-  const colors = { brand_bg, brand_surface, brand_accent, brand_text }
-  for (const [key, value] of Object.entries(colors)) {
-    if (value && !isValidHex(value)) {
-      return NextResponse.json(
-        { error: `Invalid colour: ${key} must be a hex value (#RRGGBB)` },
-        { status: 400 }
-      )
-    }
+  let rawBody: unknown
+  try {
+    rawBody = await req.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
   }
+
+  const validation = validateInput(BrandColorsSchema, rawBody)
+  if (!validation.success) {
+    return NextResponse.json({ error: validation.error }, { status: 400 })
+  }
+
+  const { brand_bg, brand_surface, brand_accent, brand_text } = validation.data
 
   const supabase = createServerClient()
 

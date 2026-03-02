@@ -1,8 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-
-const client = new Anthropic();
+import { validateInput, GenerateCaptionSchema } from "@/lib/validators";
+import { checkAndConsumeRateLimit, rateLimitResponse } from "@/lib/supabase/rate-limit";
+import { logAudit } from "@/lib/supabase/audit";
 
 // Rules and limits per platform
 const PLATFORM_RULES: Record<string, { limit: number; rules: string }> = {
@@ -47,13 +48,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const { headline, body, platform, niche } = await req.json();
-
-    if (!headline) {
-      return NextResponse.json({ error: "Headline is required" }, { status: 400 });
+    // Rate limiting
+    const rateCheck = await checkAndConsumeRateLimit(userId, "generate-caption");
+    if (!rateCheck.allowed) {
+      return NextResponse.json(rateLimitResponse(rateCheck), { status: 429 });
     }
 
-    const platformKey = (platform as string) in PLATFORM_RULES ? platform : "Instagram";
+    // Validate input with Zod
+    const body = await req.json();
+    const validation = validateInput(GenerateCaptionSchema, body);
+    if (!validation.success) {
+      return NextResponse.json({ error: validation.error }, { status: 400 });
+    }
+    const { headline, body: captionBody, platform, niche } = validation.data;
+
+    // Check API key
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return NextResponse.json({ error: "ANTHROPIC_API_KEY not configured" }, { status: 500 });
+    }
+
+    const client = new Anthropic();
+    const platformKey = platform in PLATFORM_RULES ? platform : "Instagram";
     const { limit, rules } = PLATFORM_RULES[platformKey];
 
     const message = await client.messages.create({
@@ -68,7 +83,7 @@ Contexto do post:
 - Plataforma: ${platformKey} (limite: ${limit} chars)
 - Nicho: ${niche || "solopreneur / negócio digital / coaching"}
 - Headline do design: ${headline}
-${body ? `- Conteúdo adicional: ${body}` : ""}
+${captionBody ? `- Conteúdo adicional: ${captionBody}` : ""}
 
 Regras para ${platformKey}:${rules}
 
@@ -83,7 +98,15 @@ IMPORTANTE: Escreve APENAS a legenda final, sem introdução, sem "Aqui está:",
       ],
     });
 
-    const caption = (message.content[0] as { type: string; text: string }).text;
+    const firstBlock = message.content[0];
+    const caption = firstBlock.type === "text" ? firstBlock.text : "";
+
+    // Audit log
+    logAudit({
+      userId,
+      action: "caption.generate",
+      metadata: { platform: platformKey },
+    });
 
     return NextResponse.json({ caption });
   } catch (error) {

@@ -95,7 +95,7 @@ export default function CalendarioPlanner() {
   const [expandedBulk, setExpandedBulk] = useState<string | null>(null);
   const [copiedBulk, setCopiedBulk] = useState<string | null>(null);
 
-  const editorialLines = (user?.unsafeMetadata?.editorialLines as EditorialLine[]) ?? [];
+  const editorialLines = (Array.isArray(user?.unsafeMetadata?.editorialLines) ? user.unsafeMetadata.editorialLines : []) as EditorialLine[];
   const temEditorias = editorialLines.length > 0;
 
   const formPreenchido =

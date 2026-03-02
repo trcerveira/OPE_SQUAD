@@ -9,9 +9,9 @@ export default async function DashboardPage() {
   const user = await currentUser();
   const email = user?.emailAddresses?.[0]?.emailAddress ?? null;
   const admin = isAdmin(email);
-  const geniusComplete    = user?.unsafeMetadata?.geniusComplete    as boolean;
-  const manifestoComplete = user?.unsafeMetadata?.manifestoComplete as boolean;
-  const vozDNAComplete    = user?.unsafeMetadata?.vozDNAComplete    as boolean;
+  const geniusComplete    = user?.unsafeMetadata?.geniusComplete    === true;
+  const manifestoComplete = user?.unsafeMetadata?.manifestoComplete === true;
+  const vozDNAComplete    = user?.unsafeMetadata?.vozDNAComplete    === true;
 
   // Sync profile with Supabase on every dashboard visit
   if (user?.id) {

@@ -11,6 +11,12 @@
     },
     "app/api/voz-dna/route.ts": {
       "maxDuration": 30
+    },
+    "app/api/generate-carousel/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/generate-caption/route.ts": {
+      "maxDuration": 30
     }
   }
 }

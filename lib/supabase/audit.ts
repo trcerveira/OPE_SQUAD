@@ -1,20 +1,11 @@
 import { createServerClient } from "@/lib/supabase/server";
+import type { AuditAction } from "@/lib/supabase/types";
 
 // ============================================================
 // Audit Log — Record of critical system actions
 // ============================================================
 
-export type AuditAction =
-  | "content.generate"
-  | "content.delete"
-  | "voz_dna.generate"
-  | "voz_dna.save"
-  | "manifesto.generate"
-  | "editorial.generate"
-  | "calendario.generate"
-  | "profile.update"
-  | "viral_research.generate"
-  | "carousel.generate";
+export type { AuditAction };
 
 interface AuditEntry {
   userId: string;

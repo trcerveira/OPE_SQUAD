@@ -49,8 +49,8 @@ export default async function DashboardLayout({
         };
       }
     }
-  } catch {
-    // Usa as cores por defeito se houver erro
+  } catch (error) {
+    console.error("Error loading brand colors:", error);
   }
 
   return (

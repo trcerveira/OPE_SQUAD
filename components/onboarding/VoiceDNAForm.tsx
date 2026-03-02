@@ -114,6 +114,7 @@ export default function VoiceDNAForm() {
     try {
       await user.update({
         unsafeMetadata: {
+          ...user.unsafeMetadata,
           voiceDNA: finalAnswers,
           onboardingComplete: true,
           onboardingDate: new Date().toISOString(),

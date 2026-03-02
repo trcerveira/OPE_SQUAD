@@ -107,14 +107,38 @@ export async function saveManifestoAnswers(
   const supabase = createServerClient();
 
   try {
-    await supabase.from("user_voice_profiles").upsert(
+    // Ensure the user_profiles row exists first (FK constraint)
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("user_id")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (!profile) {
+      console.warn("saveManifestoAnswers: user_profiles row not found for", userId);
+      return;
+    }
+
+    // Upsert with version increment
+    const { data: existing } = await supabase
+      .from("user_voice_profiles")
+      .select("manifesto_version")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    const { error } = await supabase.from("user_voice_profiles").upsert(
       {
-        user_id:           userId,
-        manifesto_answers: answers,
-        updated_at:        new Date().toISOString(),
+        user_id:            userId,
+        manifesto_answers:  answers,
+        manifesto_version:  (existing?.manifesto_version ?? 0) + 1,
+        updated_at:         new Date().toISOString(),
       },
       { onConflict: "user_id" }
     );
+
+    if (error) {
+      console.error("Error upserting manifesto answers:", error);
+    }
   } catch (error) {
     console.error("Error saving manifesto answers to Supabase:", error);
   }
@@ -213,7 +237,8 @@ export async function getUserProgress(userId: string): Promise<{
       manifestoComplete: data.manifesto_complete,
       vozDNAComplete:    data.voz_dna_complete,
     };
-  } catch {
+  } catch (error) {
+    console.error("Error reading user progress from Supabase:", error);
     return null;
   }
 }

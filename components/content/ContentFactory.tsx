@@ -114,7 +114,7 @@ export default function ContentFactory() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const vozDNA = (user?.unsafeMetadata?.vozDNA as VozDNA) ?? {};
-  const vozDNAComplete = user?.unsafeMetadata?.vozDNAComplete as boolean;
+  const vozDNAComplete = user?.unsafeMetadata?.vozDNAComplete === true;
   const calendarioRows = (user?.unsafeMetadata?.calendarioRows as CalendarioRow[]) ?? [];
   const temCalendario = calendarioRows.length > 0;
 
@@ -132,7 +132,7 @@ export default function ContentFactory() {
       const res = await fetch("/api/content");
       const data = await res.json();
       if (res.ok) setHistory(data.content ?? []);
-    } catch { /* silencioso */ }
+    } catch (err) { console.error("Error loading history:", err); }
     finally { setIsLoadingHistory(false); }
   }, []);
 
@@ -168,8 +168,13 @@ export default function ContentFactory() {
   }
 
   async function handleDelete(id: string) {
-    await fetch(`/api/content?id=${id}`, { method: "DELETE" });
-    setHistory((prev) => prev.filter((item) => item.id !== id));
+    try {
+      const res = await fetch(`/api/content?id=${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Falha ao apagar");
+      setHistory((prev) => prev.filter((item) => item.id !== id));
+    } catch {
+      setError("Erro ao apagar conteúdo. Tenta novamente.");
+    }
   }
 
   async function handleCopy(text: string) {

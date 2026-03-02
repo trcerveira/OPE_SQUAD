@@ -163,6 +163,7 @@ export default function VozDNAAssessment() {
   const [erro, setErro] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [guardado, setGuardado] = useState(false);
+  const [dnaLocalExiste, setDnaLocalExiste] = useState(false);
 
   // Ao montar: verifica se já existe DNA guardado no localStorage (sessão anterior)
   useEffect(() => {
@@ -172,6 +173,7 @@ export default function VozDNAAssessment() {
       if (dnaGuardado) {
         setDna(JSON.parse(dnaGuardado));
         setFase("resultado");
+        setDnaLocalExiste(true);
       }
       if (respostasGuardadas) {
         setRespostas(JSON.parse(respostasGuardadas));
@@ -317,7 +319,7 @@ export default function VozDNAAssessment() {
               Definir o meu DNA →
             </button>
             {/* Botão só aparece se já existe DNA guardado localmente */}
-            {typeof window !== "undefined" && localStorage.getItem(LS_KEY_DNA) && (
+            {dnaLocalExiste && (
               <button
                 onClick={() => {
                   try {

@@ -1,12 +1,22 @@
+import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
+  // Authenticate — only logged-in users can use the Unsplash proxy
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
+
   const query = req.nextUrl.searchParams.get("query");
-  const count = req.nextUrl.searchParams.get("count") || "12";
+  const rawCount = req.nextUrl.searchParams.get("count") || "12";
 
   if (!query) {
     return NextResponse.json({ error: "Parâmetro 'query' obrigatório" }, { status: 400 });
   }
+
+  // Validate and clamp count to a safe range
+  const count = Math.min(30, Math.max(1, parseInt(rawCount, 10) || 12));
 
   const key = process.env.UNSPLASH_ACCESS_KEY;
   if (!key) {

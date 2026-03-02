@@ -3,19 +3,10 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { saveVoiceProfile } from "@/lib/supabase/user-profiles";
 import { logAudit } from "@/lib/supabase/audit";
+import { checkAndConsumeRateLimit, rateLimitResponse } from "@/lib/supabase/rate-limit";
+import { validateInput, VozDNAAnswersSchema } from "@/lib/validators";
 
 // API that generates the brand voice DNA based on the solopreneur's 8 answers
-
-interface VozDNAAnswers {
-  tom: string;
-  personagem: string;
-  emocao: string;
-  vocabularioActivo: string;
-  vocabularioProibido: string;
-  frasesAssinatura: string;
-  estrutura: string;
-  posicao: string;
-}
 
 export async function POST(request: NextRequest) {
   const { userId } = await auth();
@@ -30,14 +21,26 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let body: { answers: VozDNAAnswers };
+  // Rate limiting
+  const rateLimit = await checkAndConsumeRateLimit(userId, "voz-dna");
+  if (!rateLimit.allowed) {
+    return NextResponse.json(rateLimitResponse(rateLimit), { status: 429 });
+  }
+
+  // Validate input with Zod
+  let rawBody: unknown;
   try {
-    body = await request.json();
+    rawBody = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const { answers } = body;
+  const validation = validateInput(VozDNAAnswersSchema, rawBody);
+  if (!validation.success) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
+  }
+
+  const { answers } = validation.data;
   const user = await currentUser();
   const nome = user?.firstName ?? "Solopreneur";
 
