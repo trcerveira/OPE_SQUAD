@@ -237,6 +237,7 @@ export default function UnsplashPicker({ imagens, onChange, onNext }: Props) {
                       background: "none",
                     }}
                   >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={foto.thumb}
                       alt={foto.alt}
@@ -384,6 +385,7 @@ export default function UnsplashPicker({ imagens, onChange, onNext }: Props) {
             >
               {imagens[i + 1] ? (
                 <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={imagens[i + 1]}
                     alt={`Slide ${i + 1}`}

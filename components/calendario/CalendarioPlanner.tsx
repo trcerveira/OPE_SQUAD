@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+
 
 interface EditorialLine {
   numero: string;
@@ -76,7 +76,6 @@ function mapFormato(formato: string): { format: string; subtype: string } {
 
 export default function CalendarioPlanner() {
   const { user } = useUser();
-  const router = useRouter();
 
   const [fase, setFase] = useState<"form" | "loading" | "tabela" | "bulk" | "bulkDone">("form");
   const [guardando, setGuardando] = useState(false);

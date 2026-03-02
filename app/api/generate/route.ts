@@ -7,7 +7,7 @@ import { logAudit } from "@/lib/supabase/audit";
 import { getUserProgress } from "@/lib/supabase/user-profiles";
 import { GenerateSchema, validateInput } from "@/lib/validators";
 
-import type { VozDNA, GeniusProfile } from "@/lib/supabase/types";
+import type { GeniusProfile } from "@/lib/supabase/types";
 
 // ─────────────────────────────────────────────
 // PROMPTS BY FORMAT + TYPE

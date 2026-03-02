@@ -66,6 +66,49 @@ ANTI-PADROES (NUNCA FAZER):
 - NUNCA usar "simples", "facil", "basico" — tudo aqui e premium
 - NUNCA inventar dados, numeros ou provas sociais falsas`;
 
+// -- Self-check block --------------------------------------------------------
+
+const SELF_CHECK = `
+<self_check>
+ANTES de enviar a resposta, verifica CADA um destes criterios. Se algum falhar, CORRIGE antes de responder:
+
+1. CONTAGEM: Existem EXACTAMENTE 18 linhas "texto N - ..."? Conta uma a uma.
+2. HEADLINES CURTOS: texto 2 (cover hook) tem 4-8 palavras? textos 3, 7, 11, 13 tem max 8 palavras cada?
+3. MAIUSCULAS: textos 1, 2, 3, 7, 11, 13 estao TODOS em MAIUSCULAS?
+4. CORPO CURTO: textos 4, 8, 12, 14 tem max 2 frases cada?
+5. ZERO EMOJIS: nenhum emoji em nenhum dos 18 textos? Procura um a um.
+6. PORTUGUES EUROPEU: "tu" nao "voce", sem gerundio brasileiro, sem "vc"?
+7. TENSAO NARRATIVA: cada slide cria curiosidade para o proximo? O leitor quer passar?
+8. CTA SHAREABLE: texto 18 provoca "preciso enviar isto a alguem"?
+9. ESPECIFICIDADE: ha numeros concretos, exemplos reais, dor especifica?
+10. IMAGE PROMPTS: sao 9, em INGLES, 15-25 palavras cada, especificos ao tema?
+11. KEYWORDS: sao 5, em INGLES, relevantes para busca no Unsplash?
+12. JSON VALIDO: o JSON pode ser parsed sem erros? Aspas correctas? Sem trailing commas?
+
+Se QUALQUER criterio falhar, reescreve o texto antes de enviar.
+</self_check>`;
+
+// -- Few-shot example -------------------------------------------------------
+
+const FEW_SHOT_EXAMPLE = `
+<example_output topic="3 sinais de que o teu negocio precisa de sistemas">
+{
+  "textos": "texto 1 - SOLOPRENEURS QUE ESCALAM\\ntexto 2 - O TEU NEGOCIO ESTA A GRITAR POR SISTEMAS\\ntexto 3 - SEM SISTEMAS, ES REFEM\\ntexto 4 - Quando tiras ferias e o negocio para, nao tens liberdade. Tens uma prisao dourada que construiste com as tuas proprias maos.\\ntexto 5 - Primeiro sinal: estas a responder as mesmas perguntas todas as semanas. Se 3 clientes fazem a mesma pergunta, o problema nao sao eles.\\ntexto 6 - Cada pergunta repetida e um SOP que nao existe. Documenta uma vez, responde para sempre. 20 minutos de trabalho que poupa 5 horas por mes.\\ntexto 7 - O CAOS NAO E SINAL DE CRESCIMENTO\\ntexto 8 - Segundo sinal: sentes que quanto mais facturas, mais trabalhas. Receita sobe 40%, tempo livre desce 60%. Isto tem nome: escala invertida.\\ntexto 9 - Terceiro sinal: decides tudo. Da cor do post ao valor do orcamento. Se cada decisao depende de ti, o bottleneck es tu.\\ntexto 10 - Um restaurante onde o chef tambem serve, lava pratos e faz contas fecha em 18 meses. O teu negocio nao e diferente.\\ntexto 11 - A LIBERDADE ESTA DO OUTRO LADO DO SISTEMA\\ntexto 12 - O solopreneur que fatura 10k por mes e trabalha 10 horas por semana nao e mais inteligente. Tem melhores sistemas. Ponto final.\\ntexto 13 - ANTES VS DEPOIS\\ntexto 14 - Antes: 12 horas por dia, telefone sempre a tocar, ferias com portatil. Depois: 6 horas focadas, processos que correm sozinhos, ferias reais.\\ntexto 15 - Nao precisas de mais motivacao. Precisas de um sistema que funcione sem ti durante 48 horas.\\ntexto 16 - O dia em que o teu negocio fatura sem tu estares presente e o dia em que passas de freelancer a empresario.\\ntexto 17 - Comeca por uma coisa: a tarefa que mais repetes esta semana. Documenta. Automatiza. Liberta.\\ntexto 18 - Envia isto a alguem que trabalha 12 horas por dia e acha que e normal.",
+  "keywords": ["business", "systems", "entrepreneur", "freedom", "productivity"],
+  "imagePrompts": [
+    "dark moody office desk with single lamp light, scattered papers and laptop, dramatic shadows, cinematic overhead shot",
+    "dark studio portrait of stressed entrepreneur looking at phone, rim lighting, professional, emerald green accents",
+    "dark abstract geometric shapes forming a maze pattern, atmospheric, subtle emerald green highlights",
+    "dark workspace with organized desk and digital screens, rim lighting, professional, emerald green accents",
+    "dark atmospheric chains breaking apart, abstract shapes, subtle emerald green glow, freedom symbolism",
+    "dark studio shot of hands organizing puzzle pieces into system, rim lighting, professional, emerald green accents",
+    "dark moody split composition showing chaos vs order, atmospheric, subtle emerald green highlights",
+    "dark cinematic laptop on clean desk with coffee, morning light through blinds, professional, emerald green accents",
+    "dark cinematic wide shot of person walking towards horizon sunrise, inspirational, subtle emerald green glow"
+  ]
+}
+</example_output>`;
+
 // -- Image prompt rules by palette type --------------------------------------
 
 function buildImageRules(paletteId?: string): string {
@@ -172,6 +215,11 @@ REGRAS ABSOLUTAS:
 8. NUNCA inventes dados, numeros ou provas sociais falsas
 
 ${ANTI_PATTERNS}
+
+${SELF_CHECK}
+
+EXEMPLO DE OUTPUT PERFEITO (estuda a qualidade, o ritmo, a especificidade):
+${FEW_SHOT_EXAMPLE}
 
 FORMATO DE RESPOSTA — JSON exacto:
 {
