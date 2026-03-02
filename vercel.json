@@ -17,6 +17,9 @@
     },
     "app/api/generate-caption/route.ts": {
       "maxDuration": 30
+    },
+    "app/api/viral-research/route.ts": {
+      "maxDuration": 30
     }
   }
 }
