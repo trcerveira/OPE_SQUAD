@@ -1,0 +1,67 @@
+squad:
+  name: saas-dev-squad
+  version: "1.0"
+  mode: QUALITY
+  score: 0/10  # to be validated
+  purpose: >
+    Full-stack SaaS development squad for OPB Crew.
+    Eliminates build errors, TypeScript issues, deployment failures,
+    and bad architecture patterns. Covers frontend, backend, DevOps,
+    QA, security, and performance for Next.js 15 + Supabase + Clerk + Vercel stack.
+
+stack_context:
+  frontend: "Next.js 15 App Router + React 19 + Tailwind CSS 4"
+  backend: "Supabase (PostgreSQL) + Clerk (auth) + Vercel serverless"
+  language: "TypeScript"
+  ai: "Claude API (claude-sonnet-4-6)"
+  deploy: "Vercel"
+  payments: "Stripe (planned)"
+
+agents:
+  orchestrator:
+    - saas-dev-chief     # Coordena squad e distribui tarefas
+
+  tier_0:                # Diagnóstico — analisam antes de actuar
+    - uncle-bob          # Clean Architecture + SOLID
+    - martin-fowler      # Patterns + Refactoring
+
+  tier_1:                # Masters — execução principal
+    - josh-comeau        # Frontend: React/Next.js components
+    - brad-frost         # Frontend: Atomic Design systems
+    - giancarlo-buomprisco  # Backend: Next.js + Supabase + Stripe SaaS patterns
+    - phil-sturgeon      # Backend: API design
+    - kent-dodds         # QA: Testing strategy JS/TS
+    - jez-humble         # DevOps: CI/CD + deployment
+    - tanya-janca        # Security: secure coding + auth
+    - matt-pocock        # TypeScript: type errors + Zod integration
+    - delba-oliveira     # Next.js App Router: server/client, build errors
+
+  tier_2:                # Sistemáticos — frameworks especializados
+    - addy-osmani        # Performance: Core Web Vitals + bundle
+    - charity-majors     # Observability: debug em produção
+    - gleb-bahmutov      # QA/E2E: Cypress + CI reliability
+    - ryan-singer        # Process: Shape Up, scoping sem erros
+    - lee-robinson       # Deploy: Vercel-specific patterns
+
+activation:
+  orchestrator: "@saas-dev-squad"
+  agents: "@saas-dev-squad:{agent-id}"
+  examples:
+    - "@saas-dev-squad — activar o chief"
+    - "@saas-dev-squad:uncle-bob — diagnóstico de arquitectura"
+    - "@saas-dev-squad:matt-pocock — erro TypeScript"
+    - "@saas-dev-squad:delba-oliveira — erro App Router"
+    - "@saas-dev-squad:kent-dodds — estratégia de testes"
+    - "@saas-dev-squad:jez-humble — pipeline CI/CD"
+
+workflows:
+  - wf-fix-error         # Diagnóstico e resolução de erros
+  - wf-code-review       # Code review antes de commit
+  - wf-deploy-checklist  # Checklist antes de deploy
+
+tasks:
+  - debug-error          # Debugar erro específico
+  - code-review          # Rever código de uma feature
+  - deploy-checklist     # Validar antes de deploy
+  - security-audit       # Auditoria de segurança
+  - performance-audit    # Auditoria de performance
