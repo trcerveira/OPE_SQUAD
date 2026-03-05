@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
+import { hasBetaAccess } from '@/lib/config/admins'
 
 // Protected routes — only authenticated users
 const isProtectedRoute = createRouteMatcher([
@@ -19,9 +20,17 @@ const isProtectedRoute = createRouteMatcher([
 
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
-    const { userId } = await auth()
+    const { userId, sessionClaims } = await auth()
+
+    // Not logged in → sign-in
     if (!userId) {
       return NextResponse.redirect(new URL('/sign-in', req.url))
+    }
+
+    // Logged in but not in beta whitelist → landing page waitlist
+    const email = sessionClaims?.email as string | undefined
+    if (!hasBetaAccess(email)) {
+      return NextResponse.redirect(new URL('/#beta', req.url))
     }
   }
 })

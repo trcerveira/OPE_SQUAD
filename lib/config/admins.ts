@@ -1,9 +1,6 @@
 // ============================================================
 // Access Control — OPE_SQUAD
 // ============================================================
-// Only super admins are needed now (for /admin panel).
-// All dashboard routes are open to any authenticated user.
-// ============================================================
 
 function parseEmailList(envVar: string | undefined, defaults: string[]): string[] {
   if (!envVar) return defaults.map(e => e.toLowerCase().trim());
@@ -18,6 +15,15 @@ export const SUPER_ADMINS: string[] = parseEmailList(
   ["trcerveira@gmail.com"]
 );
 
+// Beta whitelist — only these users can access the dashboard
+export const BETA_USERS: string[] = [
+  "trcerveira@gmail.com",
+  "miguel.rodrigues@imomaster.com",
+  "geral@arm-lda.com",
+  "cleciofwise@hotmail.com",
+  "bruno@pulsifyai.com",
+];
+
 /**
  * Checks whether an email belongs to a super admin.
  * Super admins have access to the /admin panel.
@@ -25,4 +31,13 @@ export const SUPER_ADMINS: string[] = parseEmailList(
 export function isAdmin(email: string | null | undefined): boolean {
   if (!email) return false;
   return SUPER_ADMINS.includes(email.toLowerCase().trim());
+}
+
+/**
+ * Checks whether an email has beta access.
+ * Only users in BETA_USERS can access the dashboard.
+ */
+export function hasBetaAccess(email: string | null | undefined): boolean {
+  if (!email) return false;
+  return BETA_USERS.includes(email.toLowerCase().trim());
 }
