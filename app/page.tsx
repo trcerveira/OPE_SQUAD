@@ -87,6 +87,68 @@ export default function Home() {
         <p className="text-[#4a5568] text-xs mt-4">
           *Dados confirmados por Adam Mosseri (Head do Instagram), Dezembro 2025
         </p>
+
+        {/* HERO MOCKUP — Product Preview */}
+        <div className="mt-20 w-full max-w-4xl px-4">
+          <div className="relative">
+            <div className="absolute -inset-4 bg-[#BFD64B]/5 blur-3xl rounded-3xl" />
+            <div className="relative bg-[#111827] border border-white/[0.1] rounded-2xl overflow-hidden shadow-2xl">
+              {/* Browser title bar */}
+              <div className="flex items-center gap-2 px-4 py-3 bg-[#0d1117] border-b border-white/[0.06]">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-500/60" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
+                  <div className="w-3 h-3 rounded-full bg-green-500/60" />
+                </div>
+                <div className="flex-1 text-center">
+                  <span className="text-[#8892a4] text-xs">opb-crew.vercel.app/content</span>
+                </div>
+              </div>
+              {/* Mock dashboard */}
+              <div className="p-5 md:p-6">
+                <div className="flex gap-4">
+                  {/* Sidebar */}
+                  <div className="hidden md:flex flex-col gap-2 w-44 flex-shrink-0">
+                    <div className="flex items-center gap-2 bg-[#BFD64B]/10 border border-[#BFD64B]/20 rounded-lg px-3 py-2">
+                      <div className="w-4 h-4 rounded bg-[#BFD64B]/30" />
+                      <span className="text-[#BFD64B] text-xs font-medium">Content Factory</span>
+                    </div>
+                    {["Genius Zone", "Voz & DNA", "Linhas Editoriais", "Calendario"].map((item) => (
+                      <div key={item} className="flex items-center gap-2 px-3 py-2 rounded-lg">
+                        <div className="w-4 h-4 rounded bg-white/10" />
+                        <span className="text-[#8892a4] text-xs">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Main area */}
+                  <div className="flex-1 space-y-4">
+                    <div className="flex gap-2 flex-wrap">
+                      <span className="bg-[#BFD64B] text-[#0A0E1A] text-[10px] font-bold px-3 py-1.5 rounded-full">Instagram</span>
+                      <span className="bg-white/5 text-[#8892a4] text-[10px] px-3 py-1.5 rounded-full border border-white/[0.06]">LinkedIn</span>
+                      <span className="bg-white/5 text-[#8892a4] text-[10px] px-3 py-1.5 rounded-full border border-white/[0.06]">X</span>
+                      <span className="bg-white/5 text-[#8892a4] text-[10px] px-3 py-1.5 rounded-full border border-white/[0.06]">Email</span>
+                    </div>
+                    <div className="bg-[#0A0E1A] rounded-xl p-4 border border-white/[0.06]">
+                      <div className="space-y-2.5">
+                        <div className="h-3 bg-[#F0ECE4]/20 rounded w-3/4" />
+                        <div className="h-3 bg-[#F0ECE4]/10 rounded w-full" />
+                        <div className="h-3 bg-[#F0ECE4]/10 rounded w-5/6" />
+                        <div className="h-3 bg-[#F0ECE4]/10 rounded w-2/3" />
+                        <div className="h-px bg-white/[0.06] my-1" />
+                        <div className="h-3 bg-[#BFD64B]/20 rounded w-1/2" />
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="bg-[#BFD64B] text-[#0A0E1A] text-[10px] font-bold px-4 py-2 rounded-lg">Gerar Post</div>
+                      <div className="bg-white/5 text-[#8892a4] text-[10px] px-4 py-2 rounded-lg border border-white/[0.06]">Copiar</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </section>
 
       {/* PROBLEMA */}
@@ -244,6 +306,35 @@ export default function Home() {
             <p className="text-[#8892a4] mt-4 max-w-xl mx-auto">
               Fazes o setup uma unica vez. O sistema aprende quem es, estrutura o teu plano editorial, e depois e so gerar.
             </p>
+
+            {/* Visual Pipeline */}
+            <div className="mt-10 flex items-center justify-center gap-1 md:gap-2 flex-wrap">
+              {[
+                { step: "01", label: "Genius Zone", active: false },
+                { step: "02", label: "Manifesto", active: false },
+                { step: "03", label: "Voz & DNA", active: true },
+                { step: "04", label: "Content", active: false },
+                { step: "05", label: "Editorial", active: false },
+                { step: "06", label: "Calendario", active: false },
+              ].map((s, i) => (
+                <div key={s.step} className="flex items-center gap-1 md:gap-2">
+                  <div className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg border ${
+                    s.active
+                      ? "bg-[#BFD64B]/10 border-[#BFD64B]/40 shadow-[0_0_20px_rgba(191,214,75,0.15)]"
+                      : "bg-[#111827] border-white/[0.06]"
+                  }`}>
+                    <span className={`text-[10px] font-bold ${s.active ? "text-[#BFD64B]" : "text-[#8892a4]"}`}>{s.step}</span>
+                    <span className={`text-[10px] md:text-xs whitespace-nowrap ${s.active ? "text-[#F0ECE4] font-medium" : "text-[#8892a4]"}`}>{s.label}</span>
+                  </div>
+                  {i < 5 && (
+                    <svg className="w-4 h-4 text-[#8892a4]/30 flex-shrink-0 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  )}
+                </div>
+              ))}
+            </div>
+
           </div>
           <div className="space-y-4">
             <div className="flex gap-5 items-start bg-[#111827] border border-white/[0.06] rounded-xl p-6">
