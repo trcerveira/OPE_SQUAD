@@ -29,6 +29,7 @@ squad:
     individual:
       - "@ann — Content strategy + quality standards"
       - "@cole — Viral writing + hooks + digital frameworks"
+      - "@kane — Reels, short-form video + hook point strategy"
       - "@laura — Personality-driven copy + authentic voice"
       - "@david — Online writing + essays + deep content"
       - "@pulizzi — Content systems + editorial calendar"
@@ -53,6 +54,13 @@ agents:
       tier: 1
       specialty: "Viral Writing, Hooks & Digital Frameworks"
       veto: "Post without a strong hook in the first 2 seconds"
+
+    - file: agents/brendan-kane.md
+      icon: "🎬"
+      name: Brendan Kane
+      tier: 1
+      specialty: "Reels, Short-Form Video & Hook Point Strategy"
+      veto: "Reel without visual hook in the first 1.5 seconds"
 
     - file: agents/laura-belgray.md
       icon: "💬"

@@ -1,0 +1,66 @@
+# Telmo Cerveira — Operational Profile for QBR Protection
+# Source: Genius Zone Blueprint (2026-03-05)
+
+genius_zone:
+  current_zone: "Excelencia em transicao para Genialidade"
+  genialidade: "Criar sistemas de transformacao humana"
+  excelencia_trap: "PT presencial tecnico — funciona mas drena"
+
+  zona_08_percent:
+    - "Criar o Content Machine Method (o sistema em si)"
+    - "Definir direccao estrategica do PUBLYQ"
+    - "Decidir sobre mudancas no metodo"
+
+  zona_4_percent:
+    - "Revisar e aprovar conteudo antes de publicar"
+    - "Feedback sobre design/UX do produto"
+    - "Definir pricing e posicionamento"
+
+  zona_20_percent:
+    - "Testar o produto como utilizador"
+    - "Participar em reunioes estrategicas"
+    - "Networking com potenciais parceiros"
+
+  zona_80_percent:
+    - "Criar posts para redes sociais"
+    - "Gerir email e admin"
+    - "Configurar ferramentas"
+    - "Debug de codigo"
+    - "Customer support"
+    - "Contabilidade e financas"
+
+kolbe:
+  quick_start: 8
+  alert: "Salta de projecto em projecto sem estrutura externa"
+  solution: "Prazos curtos (7 dias), accountability externa, 1 projecto principal"
+  kills: "Sem deadline, trabalhar sozinho, multiplos projectos em paralelo"
+
+hamilton:
+  primary: "Mecanico — cria, melhora, sistematiza"
+  secondary: "Criador — gera ideias, comeca projectos"
+  path: "Sistematizar produto → Sistema de entrega → Sistema de aquisicao → Escalar"
+
+hogshead:
+  primary: "Mystique — comunicacao selectiva, profundidade"
+  secondary: "Innovation — novas solucoes, desafia convencional"
+  archetype: "O Detective — nao e o mais barulhento, e o mais certeiro"
+  implication: "Conteudo de profundidade, nao dancas no TikTok"
+
+ulp:
+  name: "Upper Limit Problem (Gay Hendricks)"
+  trigger: "Medo de julgamento e de ficar conhecido"
+  mechanism: "Foge para ferramentas/tecnologia em vez de lancar"
+  pattern: "Comeca com entusiasmo mas nao acaba projectos digitais"
+  solution: "Reconhecer o padrao no momento e fazer o que da medo — lancar"
+
+clifton_top5:
+  - "Learner — aprende constantemente"
+  - "Ideation — cria do zero, ve padroes"
+  - "Empathy — le pessoas"
+  - "Input — colecciona ferramentas e frameworks"
+  - "Developer — emocionado com transformacao dos clientes"
+
+unique_ability: "Eu crio sistemas progressivos simples que transformam [publico-alvo] — em pouco tempo, sem complicacoes, em qualquer lugar."
+
+faceless: true
+working_hours: "07:00-17:00"

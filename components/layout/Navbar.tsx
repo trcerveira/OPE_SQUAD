@@ -14,6 +14,7 @@ const navLinks = [
   { href: "/content",    label: "Conteúdo",    icon: "✍️" },
   { href: "/machine",    label: "Machine",     icon: "⚙️" },
   { href: "/design",     label: "Design",      icon: "🖼️" },
+  { href: "/mission-control", label: "Control", icon: "🎛️" },
   { href: "/settings",   label: "Marca",       icon: "🎨" },
 ];
 

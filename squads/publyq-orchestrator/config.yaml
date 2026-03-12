@@ -1,0 +1,90 @@
+# PUBLYQ Orchestrator — Squad Configuration
+# The Integrator: manages all squads, protects Telmo's 0.8%
+
+squad:
+  name: PUBLYQ Orchestrator
+  id: publyq-orchestrator
+  version: "1.0"
+  domain: operations
+  purpose: "Integrator/Maker for Telmo (Visionary/Thinker) — executes everything outside his 0.8% Zona de Genialidade"
+  philosophy: "Proteger a Zona de Genialidade do Telmo a todo o custo."
+
+  minds:
+    - name: Gino Wickman
+      framework: "EOS (Entrepreneurial Operating System)"
+      contribution: "Rocks, L10, Scorecard, IDS, V/TO, Visionary vs Integrator"
+    - name: Mike Michalowicz
+      framework: "Clockwork + Fix This Next + Profit First"
+      contribution: "4D Mix, QBR, ACDC, Capture-Transfer-Protect, Trash-Transfer-Trim"
+    - name: Dan Sullivan
+      framework: "Who Not How + Strategic Coach"
+      contribution: "Impact Filter, 4 Freedoms, Gap and Gain, 10x vs 2x, Free/Focus/Buffer Days"
+
+  keywords:
+    - orchestrator
+    - integrator
+    - operations
+    - delegation
+    - execution
+    - rocks
+    - priorities
+    - standup
+    - review
+    - qbr
+    - fix-this-next
+    - acdc
+
+  activation:
+    squad: "/publyq-chief"
+    standup: "/publyq-chief standup"
+    eod: "/publyq-chief eod"
+    rocks: "/publyq-chief rocks"
+    diagnose: "/publyq-chief diagnose"
+
+agents:
+  orchestrator:
+    file: agents/publyq-chief.md
+    icon: "🎯"
+    role: "The Integrator — Maker do Telmo"
+
+workflows:
+  - file: workflows/morning-standup.md
+    name: Morning Standup
+    trigger: "Daily — start of day"
+    cadence: daily
+
+  - file: workflows/eod-review.md
+    name: EOD Review
+    trigger: "Daily — end of day"
+    cadence: daily
+
+  - file: workflows/weekly-rocks-review.md
+    name: Weekly Rocks Review
+    trigger: "Weekly — Friday"
+    cadence: weekly
+
+data:
+  - file: data/rocks-q1-2026.yaml
+    name: Current Rocks
+    purpose: "Active quarterly priorities"
+
+  - file: data/telmo-profile.yaml
+    name: Telmo Profile
+    purpose: "Genius Zone data for QBR protection"
+
+rules:
+  autonomy_level: "B — decides 95%, asks authorization for 5 veto items"
+  cadence: "Daily standup + EOD review"
+  veto_conditions:
+    - "Publish content"
+    - "Change prices"
+    - "Alter the Content Machine Method"
+    - "Spend money"
+    - "Hire people/services"
+  squad_connections:
+    - "/content-squad"
+    - "/saas-dev-squad"
+    - "/executive-board"
+    - "/onboarding-squad"
+    - "/community-squad"
+    - "/design-chief"

@@ -552,6 +552,23 @@ export async function POST(request: NextRequest) {
     ? `\nGENIUS PROFILE DE ${authorName.toUpperCase()}:\n• Zona de Genialidade: ${geniusProfile.hendricksZone ?? "—"}\n• Perfil de Riqueza: ${geniusProfile.wealthProfile ?? "—"}\n• Modo de Acção: ${geniusProfile.kolbeMode ?? "—"}\n• Vantagem Fascinante: ${geniusProfile.fascinationAdvantage ?? "—"}\n`
     : "";
 
+  // DNA da Marca — strategic foundation for content generation
+  const dnaMarca = user?.unsafeMetadata?.dnaMarca as Record<string, unknown> | undefined;
+  const dnaMarcaSection = dnaMarca
+    ? `
+DNA DA MARCA DE ${authorName.toUpperCase()}:
+• CLIENTE IDEAL: ${(dnaMarca.clienteIdeal as Record<string, unknown>)?.perfil ?? "—"}
+• DORES DO CLIENTE: ${((dnaMarca.clienteIdeal as Record<string, unknown>)?.dores as string[])?.join(", ") ?? "—"}
+• LINGUAGEM DO CLIENTE: ${((dnaMarca.clienteIdeal as Record<string, unknown>)?.linguagem as string[])?.join(", ") ?? "—"}
+• BIG IDEA: ${(dnaMarca.bigIdea as Record<string, unknown>)?.frase ?? "—"}
+• INIMIGO: ${(dnaMarca.inimigo as Record<string, unknown>)?.quem ?? "—"} — ${(dnaMarca.inimigo as Record<string, unknown>)?.porque ?? ""}
+• COMMANDER'S INTENT: ${dnaMarca.commandersIntent ?? "—"}
+• HISTÓRIA DO PERSONAGEM: ${(dnaMarca.personagem as Record<string, unknown>)?.historia ?? "—"}
+• SUPERPODER: ${(dnaMarca.personagem as Record<string, unknown>)?.superpoder ?? "—"}
+• CAUSA FUTURA: ${(dnaMarca.causaFutura as Record<string, unknown>)?.movimento ?? "—"}
+• NOVA OPORTUNIDADE: ${(dnaMarca.novaOportunidade as Record<string, unknown>)?.diferencial ?? "—"}`
+    : "";
+
   const vozDNASection = vozDNA
     ? `
 VOZ & DNA DE ${authorName.toUpperCase()}:
@@ -571,6 +588,7 @@ REGRAS DE ESTILO: ${vozDNA.regrasEstilo?.join(" | ") ?? "Vai directo ao ponto"}`
   const systemPrompt = `És o melhor criador de conteúdo do mundo para solopreneurs e criadores de marca pessoal.
 
 MISSÃO: Gerar conteúdo que soe EXACTAMENTE a ${authorName} E aplique os princípios dos melhores copywriters do mundo.
+${dnaMarcaSection}
 ${vozDNASection}
 ${geniusSection}
 ${copywritingMasters}
@@ -580,7 +598,9 @@ REGRAS ABSOLUTAS:
 2. NUNCA uses vocabulário proibido
 3. NUNCA inventas resultados, números, prova social ou factos não fornecidos
 4. Uma única ideia central por peça
-5. Soa a ${authorName}, não a template de IA — se soar a template, reescreve`;
+5. Usa a BIG IDEA e o COMMANDER'S INTENT como filtro estratégico — cada peça de conteúdo deve reforçar o posicionamento da marca
+6. Fala para as DORES e DESEJOS do cliente ideal, usando a LINGUAGEM dele
+7. Soa a ${authorName}, não a template de IA — se soar a template, reescreve`;
 
   const userPrompt = `Cria conteúdo sobre o seguinte tema para ${authorName}:
 

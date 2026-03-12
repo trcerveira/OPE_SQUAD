@@ -1,0 +1,40 @@
+# Rocks Q1 2026 (Marco-Maio) — PUBLYQ
+# Updated: 2026-03-12
+
+rocks:
+  - id: 1
+    name: "Landing page PUBLYQ live com lista de espera"
+    status: "in_progress"
+    owner: "publyq-chief"
+    metric: "Landing page publicada em publyq.ai"
+    deadline: "2026-03-31"
+    notes: "Copy em progresso via /content-squad. Design via /design-chief."
+
+  - id: 2
+    name: "50+ inscritos na waitlist"
+    status: "not_started"
+    owner: "publyq-chief"
+    metric: "50 emails validados na waitlist"
+    deadline: "2026-04-30"
+    depends_on: 1
+    notes: "So comeca depois da landing page estar live. Canais: content + building in public."
+
+  - id: 3
+    name: "Comprar dominio publyq.ai"
+    status: "blocked"
+    owner: "telmo"
+    metric: "Dominio registado e apontado"
+    deadline: "2026-03-15"
+    notes: "Precisa de autorizacao do Telmo (veto: gastar dinheiro)."
+
+fix_this_next:
+  current_level: 1
+  level_name: "SALES"
+  diagnosis: "PUBLYQ ainda nao vendeu nada. Foco total em validar e vender."
+
+acdc:
+  attract: 0
+  convert: 0
+  deliver: 0
+  collect: 0
+  notes: "Tudo a zero — normal, produto em pre-lancamento."

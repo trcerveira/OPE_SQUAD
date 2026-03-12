@@ -89,6 +89,70 @@ export const ManifestoSchema = z.object({
   }),
 });
 
+// ── POST /api/dna-marca — Brand DNA (MAV + Manifesto fusion) ──
+
+const dnaMarcaField = z.string().min(10, "Minimum 10 characters").max(3000);
+
+export const DNAMarcaAnswersSchema = z.object({
+  answers: z.object({
+    // Bloco 1 — Quem Serves (Cliente Ideal)
+    clienteIdeal:       dnaMarcaField,
+    tentativasFalhadas: dnaMarcaField,
+    linguagemCliente:   dnaMarcaField,
+    vidaIdeal:          dnaMarcaField,
+    // Bloco 2 — Quem És (Personagem + Essência)
+    especialidade:      dnaMarcaField,
+    personalidade:      dnaMarcaField,
+    piorMomento:        dnaMarcaField,
+    erroQueEnsina:      dnaMarcaField,
+    // Bloco 3 — O Que Defendes (Big Idea + Crenças + Inimigo)
+    irritacoes:         dnaMarcaField,
+    crencas:            dnaMarcaField,
+    bigIdea:            dnaMarcaField,
+    proposito:          dnaMarcaField,
+    visao:              dnaMarcaField,
+    // Bloco 4 — A Tua Promessa (Transformação + Commander's Intent)
+    transformacao:      dnaMarcaField,
+    resultados:         dnaMarcaField,
+    diferencaFundamental: dnaMarcaField,
+    commandersIntent:   dnaMarcaField,
+  }),
+});
+
+// ── DNA da Marca Card (Claude output structure) ───────────────
+
+export const DNAMarcaCardSchema = z.object({
+  clienteIdeal: z.object({
+    perfil:     z.string(),
+    dores:      z.array(z.string()),
+    desejos:    z.array(z.string()),
+    linguagem:  z.array(z.string()),
+  }),
+  personagem: z.object({
+    historia:    z.string(),
+    superpoder:  z.string(),
+    defeito:     z.string(),
+    voz:         z.string(),
+  }),
+  bigIdea: z.object({
+    frase:       z.string(),
+    explicacao:  z.string(),
+  }),
+  inimigo: z.object({
+    quem:        z.string(),
+    porque:      z.string(),
+  }),
+  causaFutura: z.object({
+    movimento:   z.string(),
+    visao10anos: z.string(),
+  }),
+  commandersIntent: z.string(),
+  novaOportunidade: z.object({
+    diferencial: z.string(),
+    reframe:     z.string(),
+  }),
+});
+
 // ── POST /api/viral-research ─────────────────────────────────
 
 export const ViralResearchSchema = z.object({
@@ -148,17 +212,33 @@ export const WaitlistSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").trim().optional(),
 });
 
+// ── POST /api/mission-control/chat ─────────────────────────
+
+export const MissionControlChatSchema = z.object({
+  messages: z.array(
+    z.object({
+      role: z.enum(["user", "assistant"]),
+      content: z.string().min(1).max(10000),
+    })
+  ).min(1).max(100),
+  agentId: z.string().min(1).max(200),
+  squadId: z.string().min(1).max(100),
+});
+
 // ── Inferred TypeScript types ────────────────────────────────
 
 export type GenerateInput        = z.infer<typeof GenerateSchema>;
 export type VozDNAInput          = z.infer<typeof VozDNASchema>;
 export type VozDNAAnswersInput   = z.infer<typeof VozDNAAnswersSchema>;
 export type ManifestoInput       = z.infer<typeof ManifestoSchema>;
+export type DNAMarcaAnswersInput = z.infer<typeof DNAMarcaAnswersSchema>;
+export type DNAMarcaCard         = z.infer<typeof DNAMarcaCardSchema>;
 export type ViralResearchInput   = z.infer<typeof ViralResearchSchema>;
 export type CalendarioInput      = z.infer<typeof CalendarioSchema>;
 export type GenerateCaptionInput = z.infer<typeof GenerateCaptionSchema>;
 export type BrandColorsInput     = z.infer<typeof BrandColorsSchema>;
 export type WaitlistInput        = z.infer<typeof WaitlistSchema>;
+export type MissionControlChatInput = z.infer<typeof MissionControlChatSchema>;
 
 // ── Helper function ──────────────────────────────────────────
 

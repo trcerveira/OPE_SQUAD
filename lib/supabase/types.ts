@@ -17,12 +17,14 @@ export type AuditAction =
   | "voz_dna.generate"
   | "voz_dna.save"
   | "manifesto.generate"
+  | "dna-marca.generate"
   | "editorial.generate"
   | "calendario.generate"
   | "profile.update"
   | "viral_research.generate"
   | "carousel.generate"
-  | "caption.generate";
+  | "caption.generate"
+  | "mission_control.chat";
 
 // ── Table: generated_content (migrations 001, 008) ────────────
 
@@ -173,4 +175,27 @@ export interface RateLimit {
   user_id:    string;
   endpoint:   string;
   created_at: string;
+}
+
+// ── Table: conversations (migration 011) ────────────────────
+
+export interface Conversation {
+  id:         string;
+  user_id:    string;
+  agent_id:   string;
+  squad_id:   string;
+  title:      string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// ── Table: messages (migration 011) ─────────────────────────
+
+export interface Message {
+  id:              string;
+  conversation_id: string;
+  role:            "user" | "assistant" | "system";
+  content:         string;
+  tokens_used:     number | null;
+  created_at:      string;
 }

@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 import { WaitlistSchema, validateInput } from "@/lib/validators";
+import { checkAndConsumeRateLimit, rateLimitResponse } from "@/lib/supabase/rate-limit";
 
 export async function POST(req: NextRequest) {
+  // IP-based rate limit (5 per day) — no auth required
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const rateCheck = await checkAndConsumeRateLimit(`ip:${ip}`, "waitlist");
+  if (!rateCheck.allowed) {
+    return NextResponse.json(rateLimitResponse(rateCheck), { status: 429 });
+  }
+
   let body: unknown;
   try {
     body = await req.json();

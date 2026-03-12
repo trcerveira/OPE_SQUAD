@@ -77,6 +77,43 @@ ADAPTAR AO FORMATO DA PLATAFORMA:
 
 ---
 
+## Fase 2.5 — Reels & Short-Form Video (Brendan Kane)
+
+**Executor:** Brendan Kane (Tier 1)
+**Activação:** APENAS quando plataforma = Instagram Reels ou TikTok. Para posts de texto, saltar para Fase 3.
+
+```
+HOOK POINT VALIDATION (1.5 segundos):
+  □ O Reel tem um pattern interrupt visual nos primeiros 1.5s?
+  □ O hook funciona SEM som? (80% vê no mudo → text overlay obrigatório)
+  □ Qual mecânica de hook? (Tension / Shortcut / Proof / Identity)
+
+ESTRUTURA HST (Hook → Story → Takeaway):
+  □ Hook (0-1.5s): pattern interrupt claro
+  □ Story (1.5s-80%): arco narrativo com micro-hooks a cada 3-5s
+  □ Takeaway (últimos 20%): valor concreto + CTA de shares
+
+FORMATO VIRAL:
+  □ Formato escolhido? (Talking Head / Before-After / List / Story / Pattern Interrupt)
+  □ Duração optimizada para o formato? (7-60s conforme tipo)
+  □ Ritmo visual: mudança a cada 3-5 segundos? (corte, zoom, texto)
+
+LEGENDA QUE CONVERTE:
+  □ Linha 1: hook de texto DIFERENTE do hook do vídeo
+  □ Corpo: contexto extra (3-5 linhas max)
+  □ CTA duplo: "Guarda" + "Envia a quem precisa"
+  □ Hashtags: 3-5 (1 broad + 1 nicho + 1 branded)
+
+AVD PREDICTION:
+  □ Os primeiros 30 viewers vão reter >70%?
+  □ O Reel tem share trigger? (alguém vai enviar por DM?)
+```
+
+**Checkpoint:** Reel passa no 1.5s test + AVD prediction >70% antes de avançar.
+**Veto:** Reel sem hook visual nos primeiros 1.5s → reescrever. Reel que começa com saudação → BLOQUEIO.
+
+---
+
 ## Fase 3 — Voz & Personalidade (Laura Belgray)
 
 **Executor:** Laura Belgray (Tier 1)
@@ -159,6 +196,7 @@ CALENDAR INTEGRATION:
 | 0 — Validação | Inputs confirmados (Voice DNA, tema, plataforma) |
 | 1 — Estratégia | Ângulo + tipo + target reader |
 | 2 — Hooks | 3 opções de hook + estrutura 1/3/1 |
+| 2.5 — Reels (se vídeo) | Script HST + formato viral + legenda + AVD prediction |
 | 3 — Voz | Post na voz do utilizador (4 testes passam) |
 | 4 — Profundidade | Content Triangle >=2/3, depth check pass |
 | 5 — Formatação | Post final + CTA + repurpose plan |
