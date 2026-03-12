@@ -212,19 +212,6 @@ export const WaitlistSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").trim().optional(),
 });
 
-// ── POST /api/mission-control/chat ─────────────────────────
-
-export const MissionControlChatSchema = z.object({
-  messages: z.array(
-    z.object({
-      role: z.enum(["user", "assistant"]),
-      content: z.string().min(1).max(10000),
-    })
-  ).min(1).max(100),
-  agentId: z.string().min(1).max(200),
-  squadId: z.string().min(1).max(100),
-});
-
 // ── Inferred TypeScript types ────────────────────────────────
 
 export type GenerateInput        = z.infer<typeof GenerateSchema>;
@@ -238,8 +225,6 @@ export type CalendarioInput      = z.infer<typeof CalendarioSchema>;
 export type GenerateCaptionInput = z.infer<typeof GenerateCaptionSchema>;
 export type BrandColorsInput     = z.infer<typeof BrandColorsSchema>;
 export type WaitlistInput        = z.infer<typeof WaitlistSchema>;
-export type MissionControlChatInput = z.infer<typeof MissionControlChatSchema>;
-
 // ── Helper function ──────────────────────────────────────────
 
 export function validateInput<T>(

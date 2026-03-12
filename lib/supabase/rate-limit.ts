@@ -15,7 +15,6 @@ const DAILY_LIMITS: Record<string, number> = {
   "viral-research":  20,  // Viral Angles — 20/day
   "generate-caption": 30, // Captions — 30/day (lighter calls)
   "waitlist":          5, // Waitlist — 5 submissions/day per IP (public, no auth)
-  "mission-control":  50, // Mission Control chat — 50 messages/day
 };
 
 export interface RateLimitResult {
