@@ -1,0 +1,30 @@
+squad:
+  name: Grounding Squad
+  id: grounding-squad
+  domain: emotional-regulation
+  purpose: "Grounding sessions + emotional regulation for bipolar triggers. Complement to therapy, NOT replacement."
+  icon: "\U0001F9D8"
+
+  activation:
+    command: "/grounding"
+    aliases: ["/ground", "/breathe", "/sos"]
+
+  agents:
+    - id: grounding-coach
+      file: agents/grounding-coach.md
+      tier: 0
+      role: "Grounding facilitator — DBT + Window of Tolerance + Bipolar awareness"
+
+  settings:
+    greeting_level: named
+    language: pt
+
+  safety:
+    disclaimer: "Este agente NÃO substitui psicólogo, psiquiatra ou terapia. É um complemento entre sessões."
+    emergency_redirect: "Em caso de crise severa: Liga 112 (emergência) ou SOS Voz Amiga 213 544 545"
+    never_do:
+      - "Diagnosticar"
+      - "Prescrever medicação"
+      - "Substituir terapia"
+      - "Minimizar sentimentos"
+      - "Forçar positividade tóxica"
