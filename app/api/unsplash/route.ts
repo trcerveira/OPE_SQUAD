@@ -1,11 +1,18 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { checkAndConsumeRateLimit, rateLimitResponse } from "@/lib/supabase/rate-limit";
 
 export async function GET(req: NextRequest) {
   // Authenticate — only logged-in users can use the Unsplash proxy
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
+
+  // Rate limiting — 30 Unsplash searches per day
+  const rateLimit = await checkAndConsumeRateLimit(userId, "unsplash");
+  if (!rateLimit.allowed) {
+    return NextResponse.json(rateLimitResponse(rateLimit), { status: 429 });
   }
 
   const query = req.nextUrl.searchParams.get("query");

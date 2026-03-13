@@ -1,6 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { getVoiceProfile, saveGeniusProfile } from "@/lib/supabase/user-profiles";
+import { checkAndConsumeRateLimit, rateLimitResponse } from "@/lib/supabase/rate-limit";
 
 // GET /api/voice-profile — returns the user's voice profile
 // Source of truth: Supabase (user_voice_profiles table)
@@ -57,6 +58,12 @@ export async function PUT(request: NextRequest) {
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
+
+  // Rate limiting — 5 voice profile saves per day
+  const rateLimit = await checkAndConsumeRateLimit(userId, "voice-profile");
+  if (!rateLimit.allowed) {
+    return NextResponse.json(rateLimitResponse(rateLimit), { status: 429 });
   }
 
   let body: { geniusProfile?: Record<string, unknown> };

@@ -15,6 +15,9 @@ const DAILY_LIMITS: Record<string, number> = {
   "viral-research":  20,  // Viral Angles — 20/day
   "generate-caption": 30, // Captions — 30/day (lighter calls)
   "waitlist":          5, // Waitlist — 5 submissions/day per IP (public, no auth)
+  "voice-profile":     5, // Voice Profile PUT — 5/day
+  "unsplash":         30, // Unsplash proxy — 30/day
+  "progress":        100, // Progress check — 100/day
 };
 
 export interface RateLimitResult {

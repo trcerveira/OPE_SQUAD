@@ -16,13 +16,17 @@ export const SUPER_ADMINS: string[] = parseEmailList(
 );
 
 // Beta whitelist — only these users can access the dashboard
-export const BETA_USERS: string[] = [
-  "trcerveira@gmail.com",
-  "miguel.rodrigues@imomaster.com",
-  "geral@arm-lda.com",
-  "cleciofwise@hotmail.com",
-  "bruno@pulsifyai.com",
-];
+// Reads from BETA_USERS env var (comma-separated); falls back to hardcoded defaults
+export const BETA_USERS: string[] = parseEmailList(
+  process.env.BETA_USERS,
+  [
+    "trcerveira@gmail.com",
+    "miguel.rodrigues@imomaster.com",
+    "geral@arm-lda.com",
+    "cleciofwise@hotmail.com",
+    "bruno@pulsifyai.com",
+  ]
+);
 
 /**
  * Checks whether an email belongs to a super admin.
